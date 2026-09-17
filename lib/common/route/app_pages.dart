@@ -17,6 +17,7 @@ import '../../views/starterScreens/morescreen.dart';
 import '../../views/starterScreens/purchasePage.dart';
 import '../../views/starterScreens/saleView.dart';
 import '../../views/starterScreens/addProductWizardView.dart';
+import '../bindings/AllProductsBinding.dart';
 import '../bindings/dashboardBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
 import 'app_routes.dart';
@@ -85,6 +86,7 @@ class AppPages {
     GetPage(
       name: Routes.allProducts,
       page: () =>  AllProducts(),
+      binding: AllProductsBinding(),
     ),
     GetPage(
       name: Routes.allPurchase,
