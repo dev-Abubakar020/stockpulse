@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "875735535485",
+    "project_id": "stockpulse-786",
+    "storage_bucket": "stockpulse-786.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875735535485:android:3c83235c87ae4296dcc614",
+        "android_client_info": {
+          "package_name": "com.fastgen.stockpulse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875735535485-6i4at947a0qs2f1olk5eb0jvnuepuh3j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fastgen.stockpulse",
+            "certificate_hash": "d9472da0dabe852d3416114243cdf7c86cf24d22"
+          }
+        },
+        {
+          "client_id": "875735535485-6jb7n1hgrknqsfnnf2i641co6o2cb971.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCguOHXmZNEQDx-i8lynasWicEU4f1UGDw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875735535485-6jb7n1hgrknqsfnnf2i641co6o2cb971.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "875735535485-2opp6las5tn4lt6o8tvir4rq97dokhjd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fastgen.stockpulse"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
