@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custome_appbar.dart';
-import 'package:stockpulse/common/widgets/custome_button.dart';
-import 'package:stockpulse/common/widgets/custome_textfield.dart';
+import 'package:stockpulse/common/widgets/custom_button.dart';
+import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 

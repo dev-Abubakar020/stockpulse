@@ -23,11 +23,23 @@ class SplashController extends GetxController {
 
   Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 2));
+    Get.offAllNamed(getInitialRoute());
+  }
+
+  static String getInitialRoute() {
+    final storage = Get.find<LocalStorageService>();
 
     if (storage.isFirstTime()) {
-      Get.offAllNamed(Routes.onboarding);
+      return Routes.onboarding;
+    }
+
+    final session = Supabase.instance.client.auth.currentSession;
+    final bool isAuthenticated = session != null || storage.isLoggedIn();
+
+    if (isAuthenticated) {
+      return Routes.dashboard;
     } else {
-      Get.offAllNamed(Routes.dashboard);
+      return Routes.login;
     }
   }
 

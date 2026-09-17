@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stockpulse/utils/app_constants.dart';
 import 'package:stockpulse/views/starterScreens/allProducts.dart';
 import 'package:stockpulse/views/starterScreens/homeView.dart';
 import 'package:stockpulse/views/starterScreens/purchasePage.dart';

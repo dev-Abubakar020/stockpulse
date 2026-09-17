@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
-import 'package:stockpulse/common/widgets/custome_button.dart';
+import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';

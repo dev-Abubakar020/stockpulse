@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custome_button.dart';
+import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
 

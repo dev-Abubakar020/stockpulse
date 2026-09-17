@@ -6,8 +6,8 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:stockpulse/common/bindings/initialBinding.dart';
 import 'package:stockpulse/common/route/app_pages.dart';
-import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/app_theme.dart';
+import 'package:stockpulse/controllers/splashController.dart';
 import 'package:stockpulse/firebase_options.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
@@ -33,23 +33,6 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-String getInitialRoute() {
-  final storage = Get.find<LocalStorageService>();
-
-  if (storage.isFirstTime()) {
-    return Routes.onboarding;
-  }
-
-  final session = Supabase.instance.client.auth.currentSession;
-  final bool isAuthenticated = session != null || storage.isLoggedIn();
-
-  if (isAuthenticated) {
-    return Routes.dashboard;
-  } else {
-    return Routes.login;
-  }
-}
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -67,7 +50,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: initialThemeMode,
-      initialRoute: getInitialRoute(),
+      initialRoute: SplashController.getInitialRoute(),
       getPages: AppPages.pages,
     );
   }

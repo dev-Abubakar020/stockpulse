@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/data/countries_data.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custome_button.dart';
-import 'package:stockpulse/common/widgets/custome_textfield.dart';
+import 'package:stockpulse/common/widgets/custom_button.dart';
+import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/controllers/shopCreateController.dart';
 import 'package:stockpulse/models/country_model.dart';
 
