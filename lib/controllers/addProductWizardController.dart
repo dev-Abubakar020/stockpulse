@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../models/productItemModel.dart';
+import '../repositories/product_repository.dart';
+import 'allProductsController.dart';
 
 class AddProductWizardController extends GetxController {
   // Step navigation (1, 2, 3)
@@ -66,7 +69,41 @@ class AddProductWizardController extends GetxController {
     selectedCategory.value = cat;
   }
 
-  void nextStep() {
+  Future<void> saveProduct() async {
+    try {
+      final repository = Get.find<ProductRepository>();
+      
+      final newProduct = ProductItemModel(
+        id: '',
+        article: nameController.text.trim(),
+        unit: selectedUnit.value,
+        purchasePrice: double.tryParse(purchasePriceController.text) ?? 0.0,
+        salePrice: double.tryParse(salePriceController.text) ?? 0.0,
+        currentStock: initialStock.value.toDouble(),
+        minStockThreshold: lowStockLimit.value.toDouble(),
+        barcode: skuController.text.trim().isEmpty ? null : skuController.text.trim(),
+        isActive: activeForSale.value,
+      );
+
+      await repository.addProduct(newProduct);
+
+      // Refresh the all products controller list
+      if (Get.isRegistered<ProductController>()) {
+        Get.find<ProductController>().fetchProducts();
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to save product to database: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  void nextStep() async {
+    if (currentStep.value == 2) {
+      await saveProduct();
+    }
     if (currentStep.value < 3) {
       currentStep.value++;
     }

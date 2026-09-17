@@ -26,7 +26,7 @@ class CustomFilterTabs extends StatelessWidget {
           final selected = selectedIndex == index;
 
           return InkWell(
-            // onTap: () => onChanged(index),
+            onTap: onChanged != null ? () => onChanged!(index) : null,
             borderRadius: BorderRadius.circular(10),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),

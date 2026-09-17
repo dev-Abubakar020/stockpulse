@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import '../../../models/productItemModel.dart';
 import '../repositories/product_repository.dart';
@@ -28,12 +29,16 @@ class ProductController extends GetxController {
   Future<void> fetchProducts() async {
     try {
       isLoading.value = true;
-
-      products.value = await repository.getProducts();
+      debugPrint('Fetching products from Supabase...');
+      final fetched = await repository.getProducts();
+      debugPrint('Successfully fetched ${fetched.length} products.');
+      products.assignAll(fetched);
     } catch (e) {
+      debugPrint('EXCEPTION CAUGHT IN fetchProducts: $e');
       Get.snackbar(
         'Error',
-        'Unable to load products',
+        'Unable to load products: $e',
+        snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
       isLoading.value = false;
@@ -45,19 +50,20 @@ class ProductController extends GetxController {
   // =========================
 
   List<ProductItemModel> get filteredProducts {
+    final allProducts = products.toList();
     switch (selectedFilterIndex.value) {
       case 1:
-        return products
+        return allProducts
             .where((product) => product.isLowStock)
             .toList();
 
       case 2:
-        return products
+        return allProducts
             .where((product) => product.isOutOfStock)
             .toList();
 
       default:
-        return products;
+        return allProducts;
     }
   }
 
