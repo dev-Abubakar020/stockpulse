@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
 import '../../common/widgets/custome_button.dart';
@@ -62,15 +63,15 @@ class SaleView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomeAppBar(
-                  title: 'Sales',
+                  title: AppConstants.saleTitle,
                 actions: [
-                  Expanded(child: AppButton(text: '+ New Sale', onPressed: () {  },))
+                  Expanded(child: AppButton(text: AppConstants.addSale, onPressed: () {  },))
                 ],
               ),
               SizedBox(height: 15,),
               CustomSearchField(
                 // controller: controller.searchController,
-                hintText: 'Search product, barcode...',
+                hintText: AppConstants.searchHint,
                 showScanner: true,
                 // onChanged: controller.searchProducts,
                 // onScannerTap: controller.scanBarcode,

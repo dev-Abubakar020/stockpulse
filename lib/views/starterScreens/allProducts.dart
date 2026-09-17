@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
 import '../../models/productItemModel.dart';
@@ -75,13 +77,13 @@ class _AllProductsState extends State<AllProducts> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomeAppBar(
-                    title: 'All Products',
+                    title: AppConstants.productTitle,
                     actions: [
                       TextButton.icon(
-                        onPressed: () => Get.toNamed('/addProductWizard'),
+                        onPressed: () => Get.toNamed(Routes.addProductWizard),
                         icon: const Icon(Icons.add, size: 18, color: Colors.white),
                         label: Text(
-                          'Add',
+                          AppConstants.add,
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -99,7 +101,7 @@ class _AllProductsState extends State<AllProducts> {
                   ),
                   const SizedBox(height: 12),
                   CustomSearchField(
-                    hintText: 'Search product, barcode...',
+                    hintText: AppConstants.searchHint,
                     showScanner: true,
                   ),
                   const SizedBox(height: 14),
@@ -202,7 +204,7 @@ class _AllProductsState extends State<AllProducts> {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: 'Rs. ',
+                                          text: AppConstants.defaultCurrency,
                                           style: GoogleFonts.sora(
                                             fontSize: 13,
                                             color: theme.textSecondary,
@@ -218,7 +220,7 @@ class _AllProductsState extends State<AllProducts> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: ' /unit',
+                                          text: AppConstants.unit,
                                           style: GoogleFonts.plusJakartaSans(
                                             fontSize: 12,
                                             color: theme.textSecondary,

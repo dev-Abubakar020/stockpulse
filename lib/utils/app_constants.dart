@@ -42,6 +42,16 @@ class AppConstants {
   static const String loginWelcomeTitle = 'Welcome Back';
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String signupTitle = 'Create Account';
+  static const String saleTitle = 'Sale';
+  static const String productTitle = 'All Products';
+  static const String businessTitle = 'Business Management';
+  static const String totalProduct = 'Total Products';
+  static const String quickAction = "Quick Actions";
+  static const String recentSales = "Recent Sales";
+  static const String moreTitle = 'More';
+  static const String purchaseTitle = 'Purchase';
+  static const String profitTitle = 'Profit';
+  static const String settingTitle = 'Setting';
   static const String enterPhoneNumber = "Enter Phone Number";
   static const String signupSubtitle =
       'Enter your details to register your secure zero-knowledge workspace';
@@ -52,11 +62,19 @@ class AppConstants {
   static const String loginSlug = "Enter your credentials to access your Shop";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
+  static const String greeting  = "Good Morning";
   static const String nameHint = 'Enter your name';
   static const String emailHint = 'abc@company.com';
   static const String loginEmailHint = 'Enter your email';
   static const String loginPasswordLabel = 'Password';
   static const String loginPasswordHint = 'Enter your password';
+  static const String searchHint = "Search product, barcode...";
+  static const String searchHint1 = 'Search Invoices, suppliers...';
+  static const String unit = "/unit";
+  static const String defaultCurrency = "Rs. ";
+  static const String todayCardSummary = "Today's Sales";
+  static const String addSale = "+ New Sale";
+  static const String add = "+ Add";
   static const String loginForgotPassword = 'Forgot password?';
   static const String rememberMe = 'Remember me';
   static const String rememberPassword = 'Remember your password?';

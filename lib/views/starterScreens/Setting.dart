@@ -17,7 +17,7 @@ class SettingPage extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              CustomeAppBar(title: 'Setting',showBackButton: true,),
+              CustomeAppBar(title: AppConstants.settingTitle,showBackButton: true,),
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

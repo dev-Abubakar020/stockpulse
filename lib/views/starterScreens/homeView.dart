@@ -4,6 +4,7 @@ import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/Custom_card.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/common/widgets/custome_header.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -28,7 +29,7 @@ class HomeView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Good morning,',
+                        AppConstants.greeting,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           color: theme.textSecondary,
@@ -51,15 +52,6 @@ class HomeView extends StatelessWidget {
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'My General Store',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          color: theme.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
                       ),
                     ],
                   ),
@@ -95,7 +87,7 @@ class HomeView extends StatelessWidget {
 
               // --- Today's Sales (Main Full-Width Card Summary) ---
               CardSummary(
-                title: "Today's Sales",
+                title: AppConstants.todayCardSummary,
                 value: "Rs. 48,250",
                 subtitle: "32 sales today",
                 badgeText: "+12%",
@@ -110,7 +102,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CardSummary(
-                      title: 'Purchases',
+                      title: AppConstants.purchaseTitle,
                       value: 'Rs. 19,300',
                       subtitle: 'Today',
                       icon: Icons.receipt_long_outlined,
@@ -121,7 +113,7 @@ class HomeView extends StatelessWidget {
                   const SizedBox(width: 14),
                   Expanded(
                     child: CardSummary(
-                      title: 'Profit',
+                      title: AppConstants.profitTitle,
                       value: 'Rs. 8,420',
                       subtitle: 'Today',
                       icon: Icons.trending_up_rounded,
@@ -136,7 +128,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CardSummary(
-                      title: 'Total Products',
+                      title: AppConstants.totalProduct,
                       value: '284',
                       subtitle: 'In inventory',
                       icon: Icons.grid_view_rounded,
@@ -161,7 +153,7 @@ class HomeView extends StatelessWidget {
 
               // --- Quick Actions Section ---
               CustomHeading(
-                title: 'Quick Actions',
+                title: AppConstants.quickAction,
               ),
               const SizedBox(height: 14),
               Row(
@@ -204,7 +196,7 @@ class HomeView extends StatelessWidget {
 
               // --- Recent Sales Section ---
               CustomHeading(
-                title: 'Recent Sales',
+                title: AppConstants.recentSales,
                 actionText: 'See All',
                 onPressed: () {},
               ),

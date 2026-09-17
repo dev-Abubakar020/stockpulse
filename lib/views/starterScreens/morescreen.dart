@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/custom_MenuTile.dart';
 
@@ -22,8 +23,8 @@ class MoreScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 children: [
-                  // Section 1: Business Management
-                  _buildSectionHeader('Business Management'),
+                  CustomeAppBar(title:AppConstants.businessTitle),
+                  const SizedBox(height: 10,),
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.category_outlined,
@@ -61,7 +62,8 @@ class MoreScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Section 2: App Options
-                  _buildSectionHeader('App Options'),
+                  CustomeAppBar(title: 'App Options'),
+                  const SizedBox(height: 20),
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.store_outlined,
@@ -91,7 +93,8 @@ class MoreScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Section 3: Support
-                  _buildSectionHeader('Support'),
+                  CustomeAppBar(title: 'Support'),
+                  const SizedBox(height: 10),
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.help_outline_rounded,
@@ -113,20 +116,6 @@ class MoreScreen extends StatelessWidget {
           ],
         ),
       )
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        title,
-        style: GoogleFonts.sora(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFF64748B),
-        ),
-      ),
     );
   }
 
