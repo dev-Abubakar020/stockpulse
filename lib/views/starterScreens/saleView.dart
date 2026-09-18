@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
-import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
@@ -62,7 +62,7 @@ class SaleView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomeAppBar(
+              CustomAppBar(
                   title: AppConstants.saleTitle,
                 actions: [
                   Expanded(child: AppButton(text: AppConstants.addSale, onPressed: () {  },))
@@ -94,7 +94,7 @@ class SaleView extends StatelessWidget {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: transactions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final item = transactions[index];
 

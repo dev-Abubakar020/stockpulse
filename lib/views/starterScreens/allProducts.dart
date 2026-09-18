@@ -6,12 +6,11 @@ import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
 import '../../controllers/allProductsController.dart';
-import '../../models/productItemModel.dart';
 
 
 
@@ -32,7 +31,7 @@ class AllProducts extends GetView<ProductController>  {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomeAppBar(
+                  CustomAppBar(
                     title: AppConstants.productTitle,
                     actions: [
                       TextButton.icon(
@@ -102,7 +101,7 @@ class AllProducts extends GetView<ProductController>  {
                       24,
                     ),
                     itemCount: products.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                     const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final product = products[index];

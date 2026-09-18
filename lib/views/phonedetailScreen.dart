@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/data/countries_data.dart';
 import 'package:stockpulse/common/data/phone_hint.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
@@ -72,7 +72,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Top bar
-                    CustomeAppBar(
+                    CustomAppBar(
                       showBackButton: true,
                       title: AppConstants.phoneLoginTitle,
                       actions: const [_ThemeToggleButton()],

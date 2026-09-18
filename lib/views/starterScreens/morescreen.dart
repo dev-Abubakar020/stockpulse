@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
-import 'package:stockpulse/common/widgets/custome_appbar.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/custom_MenuTile.dart';
@@ -18,18 +17,20 @@ class MoreScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            CustomeAppBar(title: 'More'),
+            CustomAppBar(title: 'More'),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 children: [
-                  CustomeAppBar(title:AppConstants.businessTitle),
+                  CustomAppBar(title:AppConstants.businessTitle),
                   const SizedBox(height: 10,),
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.category_outlined,
                       title: 'Categories',
-                      onTap: () {},
+                      onTap: () {
+                        Get.toNamed(Routes.allCategories);
+                      },
                     ),
                     MoreMenuTile(
                       icon: Icons.people_outline_rounded,
@@ -62,7 +63,7 @@ class MoreScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Section 2: App Options
-                  CustomeAppBar(title: 'App Options'),
+                  CustomAppBar(title: 'App Options'),
                   const SizedBox(height: 20),
                   _buildCardGroup([
                     MoreMenuTile(
@@ -93,7 +94,7 @@ class MoreScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Section 3: Support
-                  CustomeAppBar(title: 'Support'),
+                  CustomAppBar(title: 'Support'),
                   const SizedBox(height: 10),
                   _buildCardGroup([
                     MoreMenuTile(

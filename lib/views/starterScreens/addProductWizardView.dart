@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../common/theme/theme_helper.dart';
 import '../../controllers/addProductWizardController.dart';
+import '../../models/category_model.dart';
 
 class AddProductWizardView extends GetView<AddProductWizardController> {
   const AddProductWizardView({super.key});
@@ -267,57 +268,53 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: theme.border),
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: controller.selectedCategory.value,
-                    isExpanded: true,
-                    icon: Icon(Icons.keyboard_arrow_down, color: theme.textSecondary),
-                    items: controller.categories.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: GoogleFonts.plusJakartaSans(color: theme.textPrimary, fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      if (val != null) controller.selectedCategory.value = val;
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
+                child: Obx(() {
+                  if (controller.isCategoriesLoading.value) {
+                    return const SizedBox(
+                      height: 48,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-              // Horizontal Category Chips selector items list
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: controller.categories.map((cat) {
-                    final isSelected = controller.selectedCategory.value == cat;
+                  if (controller.categories.isEmpty) {
                     return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: ChoiceChip(
-                        label: Text(cat),
-                        selected: isSelected,
-                        selectedColor: theme.primary.withValues(alpha: 0.15),
-                        backgroundColor: theme.surfaceMuted,
-                        labelStyle: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                          color: isSelected ? theme.primary : theme.textSecondary,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: isSelected ? theme.primary : Colors.transparent),
-                        ),
-                        onSelected: (_) => controller.selectCategory(cat),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Text(
+                        'No categories available',
+                        style: GoogleFonts.plusJakartaSans(color: theme.textSecondary, fontSize: 14),
                       ),
                     );
-                  }).toList(),
-                ),
+                  }
+
+                  return DropdownButtonHideUnderline(
+                    child: DropdownButton<CategoryModel>(
+                      value: controller.selectedCategory.value,
+                      isExpanded: true,
+                      icon: Icon(Icons.keyboard_arrow_down, color: theme.textSecondary),
+                      dropdownColor: theme.surface,
+                      items: controller.categories.map((category) {
+                        return DropdownMenuItem<CategoryModel>(
+                          value: category,
+                          child: Text(
+                            category.name,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: theme.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (category) {
+                        if (category != null) {
+                          controller.selectCategory(category);
+                        }
+                      },
+                    ),
+                  );
+                }),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
               // SKU Field box
               Row(
@@ -843,7 +840,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  _buildBadge(controller.selectedCategory.value, theme),
+                                  _buildBadge(controller.selectedCategory.value?.name ?? '', theme),
                                   const SizedBox(width: 6),
                                   _buildBadge(controller.selectedUnit.value, theme, isGreen: true),
                                 ],
@@ -1026,6 +1023,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
         ),
         Obx(() => Switch.adaptive(
               value: value.value,
+              // ignore: deprecated_member_use
               activeColor: theme.primary,
               onChanged: (val) => value.value = val,
             )),

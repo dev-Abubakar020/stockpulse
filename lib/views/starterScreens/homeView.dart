@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/Custom_card.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
-import 'package:stockpulse/common/widgets/custome_header.dart';
+import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 class HomeView extends StatelessWidget {
@@ -207,7 +207,7 @@ class HomeView extends StatelessWidget {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 3,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final invoices = ['INV-1048', 'INV-1047', 'INV-1046'];
                   final times = ['Today, 10:42 AM', 'Today, 10:21 AM', 'Today, 9:55 AM'];

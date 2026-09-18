@@ -24,7 +24,7 @@ class MoreMenuTile extends StatelessWidget {
 
     // Background color defaults to light green, or red with opacity if custom color is provided
     final backgroundColor = color != null
-        ? color!.withOpacity(0.1)
+        ? color!.withValues(alpha: 0.1)
         : const Color(0xFFE8F5E9);
 
     // Icon color defaults to dark green, or uses the custom primary color

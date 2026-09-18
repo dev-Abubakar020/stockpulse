@@ -10,6 +10,8 @@ import 'package:stockpulse/views/phonedetailScreen.dart';
 import 'package:stockpulse/views/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
 
+import '../../views/addcategories.dart';
+import '../../views/allcategories.dart';
 import '../../views/starterScreens/Setting.dart';
 import '../../views/starterScreens/allProducts.dart';
 import '../../views/starterScreens/homeView.dart';
@@ -82,6 +84,14 @@ class AppPages {
     GetPage(
       name: Routes.settingPage,
       page: () =>  SettingPage(),
+    ),
+    GetPage(
+      name: Routes.allCategories,
+      page: () =>  AllCategories(),
+    ),
+    GetPage(
+      name: Routes.addCategories,
+      page: () =>  AddCategories(),
     ),
     GetPage(
       name: Routes.allProducts,

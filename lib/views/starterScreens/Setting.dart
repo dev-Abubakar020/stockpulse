@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:stockpulse/common/widgets/custome_appbar.dart';
-import 'package:stockpulse/common/widgets/custome_header.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
+import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/custom_MenuTile.dart';
@@ -17,7 +16,7 @@ class SettingPage extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              CustomeAppBar(title: AppConstants.settingTitle,showBackButton: true,),
+              CustomAppBar(title: AppConstants.settingTitle,showBackButton: true,),
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

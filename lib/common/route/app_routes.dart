@@ -14,6 +14,8 @@ abstract class Routes {
   static const sale = '/saleView';
   static const moreScreen = '/moreScreen';
   static const allProducts = '/allProducts';
+  static const allCategories = '/allCategory';
+  static const addCategories = '/addCategory';
   static const allPurchase = '/allPurchase';
   static const settingPage = '/settingPage';
   static const addProductWizard = '/addProductWizard';

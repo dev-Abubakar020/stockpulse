@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/productItemModel.dart';
+import '../models/category_model.dart';
 import '../repositories/product_repository.dart';
 import 'allProductsController.dart';
 
@@ -11,16 +13,20 @@ class AddProductWizardController extends GetxController {
   // STEP 1 Fields
   final nameController = TextEditingController();
   final skuController = TextEditingController();
-  final RxString selectedCategory = 'Beverages'.obs;
+  final Rxn<CategoryModel> selectedCategory =
+  Rxn<CategoryModel>();
   final RxString selectedUnit = 'Piece (pcs)'.obs;
-  final RxString imagePath = ''.obs; // Holds mock or picked image state
+  final RxString imagePath = ''.obs;
 
-  final List<String> categories = ['Beverages', 'Groceries', 'Snacks', 'Dairy', 'Personal Care'];
+
+  final categories = <CategoryModel>[].obs;
+  final isCategoriesLoading = false.obs;
+
   final List<String> units = ['Piece (pcs)', 'Box', 'Kilogram (kg)', 'Litre (L)'];
 
   // STEP 2 Fields
-  final purchasePriceController = TextEditingController(text: '120');
-  final salePriceController = TextEditingController(text: '180');
+  final purchasePriceController = TextEditingController();
+  final salePriceController = TextEditingController();
   final RxInt initialStock = 24.obs;
   final RxInt lowStockLimit = 5.obs;
   final RxBool trackStock = true.obs;
@@ -34,9 +40,9 @@ class AddProductWizardController extends GetxController {
   void onInit() {
     super.onInit();
     // Pre-populate name or code as example mock if needed
-    nameController.text = 'Coca Cola 1.5L';
-    skuController.text = '5449000000996';
-
+    nameController.text = '';
+    skuController.text = '';
+    fetchCategories();
     // Add listeners to price changes for automatic margin calculation
     purchasePriceController.addListener(calculateMargin);
     salePriceController.addListener(calculateMargin);
@@ -57,7 +63,9 @@ class AddProductWizardController extends GetxController {
 
   void incrementStock() => initialStock.value++;
   void decrementStock() {
-    if (initialStock.value > 0) initialStock.value--;
+    if (initialStock.value > 0) {
+      initialStock.value--;
+    }
   }
 
   void incrementLowStock() => lowStockLimit.value++;
@@ -65,23 +73,39 @@ class AddProductWizardController extends GetxController {
     if (lowStockLimit.value > 0) lowStockLimit.value--;
   }
 
-  void selectCategory(String cat) {
-    selectedCategory.value = cat;
+  void selectCategory(CategoryModel category) {
+    selectedCategory.value = category;
   }
 
   Future<void> saveProduct() async {
     try {
       final repository = Get.find<ProductRepository>();
-      
+
       final newProduct = ProductItemModel(
         id: '',
+
         article: nameController.text.trim(),
+
+        categoryId: selectedCategory.value?.id,
+
         unit: selectedUnit.value,
-        purchasePrice: double.tryParse(purchasePriceController.text) ?? 0.0,
-        salePrice: double.tryParse(salePriceController.text) ?? 0.0,
-        currentStock: initialStock.value.toDouble(),
-        minStockThreshold: lowStockLimit.value.toDouble(),
-        barcode: skuController.text.trim().isEmpty ? null : skuController.text.trim(),
+
+        purchasePrice:
+        double.tryParse(purchasePriceController.text) ?? 0.0,
+
+        salePrice:
+        double.tryParse(salePriceController.text) ?? 0.0,
+
+        currentStock:
+        initialStock.value.toDouble(),
+
+        minStockThreshold:
+        lowStockLimit.value.toDouble(),
+
+        barcode: skuController.text.trim().isEmpty
+            ? null
+            : skuController.text.trim(),
+
         isActive: activeForSale.value,
       );
 
@@ -117,11 +141,11 @@ class AddProductWizardController extends GetxController {
 
   void resetWizard() {
     currentStep.value = 1;
-    nameController.text = 'Coca Cola 1.5L';
+    nameController.text = '';
     skuController.text = '5449000000996';
-    purchasePriceController.text = '120';
-    salePriceController.text = '180';
-    selectedCategory.value = 'Beverages';
+    purchasePriceController.text = '0';
+    salePriceController.text = '0';
+    selectedCategory.value = categories.isNotEmpty ? categories.first : null;
     selectedUnit.value = 'Piece (pcs)';
     initialStock.value = 24;
     lowStockLimit.value = 5;
@@ -139,5 +163,42 @@ class AddProductWizardController extends GetxController {
     purchasePriceController.dispose();
     salePriceController.dispose();
     super.onClose();
+  }
+
+  Future<void> fetchCategories() async {
+    try {
+      isCategoriesLoading.value = true;
+      if (kDebugMode) {
+        print('DEBUG: Fetching categories from Supabase repository...');
+      }
+      final repository = Get.find<ProductRepository>();
+
+      final list = await repository.getCategories();
+      if (kDebugMode) {
+        print('DEBUG: Successfully retrieved ${list.length} categories from Supabase.');
+      }
+      for (var cat in list) {
+        if (kDebugMode) {
+          print('DEBUG: Category ID: ${cat.id}, Name: ${cat.name}, Active: ${cat.isActive}');
+        }
+      }
+      
+      categories.assignAll(list);
+
+      if (categories.isNotEmpty) {
+        selectedCategory.value = categories.first;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('DEBUG ERROR: Exception inside fetchCategories: $e');
+      }
+      Get.snackbar(
+        'Error',
+        'Failed to load categories: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isCategoriesLoading.value = false;
+    }
   }
 }

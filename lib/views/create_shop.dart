@@ -109,6 +109,7 @@ class CreateShop extends GetView<ShopCreateController> {
                         ),
                         const SizedBox(height: 12),
                         Obx(() => DropdownButtonFormField<CountryModel>(
+                              //  ignore: deprecated_member_use
                               value: controller.selectedCountry.value,
                               isExpanded: true,
                               decoration: InputDecoration(

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/productItemModel.dart';
+import '../models/category_model.dart';
 
 class ProductRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -23,6 +24,52 @@ class ProductRepository {
     return (response as List)
         .map(
           (item) => ProductItemModel.fromJson(
+        Map<String, dynamic>.from(item),
+      ),
+    )
+        .toList();
+  }
+
+
+  // =========================
+  // ADDING + FETCH PRODUCT CATEGORIES
+  // =========================
+
+  Future<CategoryModel> addCategory(
+      CategoryModel category,
+      ) async {
+    final userId = _supabase.auth.currentUser!.id;
+
+    final data = {
+      ...category.toJson(),
+      'created_by': userId,
+      'updated_by': userId,
+    };
+
+    final response = await _supabase
+        .from('categories')
+        .insert(data)
+        .select('''
+          *,
+          categories (
+            name
+          )
+        ''')
+        .single();
+
+    return CategoryModel.fromJson(response);
+  }
+
+  Future<List<CategoryModel>> getCategories() async {
+    final response = await _supabase
+        .from('categories')
+        .select('id, name, is_active')
+        .eq('is_active', true)
+        .order('name');
+
+    return (response as List)
+        .map(
+          (item) => CategoryModel.fromJson(
         Map<String, dynamic>.from(item),
       ),
     )
