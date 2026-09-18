@@ -22,16 +22,57 @@ final _mockSuppliers = [
 ];
 
 final _mockPurchaseProducts = [
-  _PurchaseProduct(name: 'Basmati Rice 50kg', sku: 'BRS-050', cost: 4800, unit: 'Bag', category: 'Grains'),
-  _PurchaseProduct(name: 'Cooking Oil 16L', sku: 'COL-016', cost: 5200, unit: 'Can', category: 'Oils'),
-  _PurchaseProduct(name: 'Sugar 50kg', sku: 'SGR-050', cost: 6800, unit: 'Bag', category: 'Grocery'),
-  _PurchaseProduct(name: 'Wheat Flour 50kg', sku: 'WFL-050', cost: 3900, unit: 'Bag', category: 'Grains'),
-  _PurchaseProduct(name: 'Salt 25kg', sku: 'SLT-025', cost: 950, unit: 'Bag', category: 'Spices'),
+  _PurchaseProduct(
+    name: 'Basmati Rice 50kg',
+    sku: 'BRS-050',
+    cost: 4800,
+    unit: 'Bag',
+    category: 'Grains',
+  ),
+  _PurchaseProduct(
+    name: 'Cooking Oil 16L',
+    sku: 'COL-016',
+    cost: 5200,
+    unit: 'Can',
+    category: 'Oils',
+  ),
+  _PurchaseProduct(
+    name: 'Sugar 50kg',
+    sku: 'SGR-050',
+    cost: 6800,
+    unit: 'Bag',
+    category: 'Grocery',
+  ),
+  _PurchaseProduct(
+    name: 'Wheat Flour 50kg',
+    sku: 'WFL-050',
+    cost: 3900,
+    unit: 'Bag',
+    category: 'Grains',
+  ),
+  _PurchaseProduct(
+    name: 'Salt 25kg',
+    sku: 'SLT-025',
+    cost: 950,
+    unit: 'Bag',
+    category: 'Spices',
+  ),
 ];
 
-final _purchasePaymentMethods = ['Cash', 'Bank Transfer', 'Cheque', 'Credit', 'Online'];
+final _purchasePaymentMethods = [
+  'Cash',
+  'Bank Transfer',
+  'Cheque',
+  'Credit',
+  'Online',
+];
 final _purchaseStatuses = ['Received', 'Ordered', 'Partial', 'Cancelled'];
-final _warehouses = ['Main Store', 'Warehouse A', 'Warehouse B', 'Cold Storage'];
+final _warehouses = [
+  'Main Store',
+  'Warehouse A',
+  'Warehouse B',
+  'Cold Storage',
+];
 
 // ─── Model ────────────────────────────────────────────────────────────────────
 
@@ -53,7 +94,7 @@ class _PurchaseItem {
   double costOverride;
   double bonus;
   _PurchaseItem({required this.product, this.qty = 1, this.bonus = 0})
-      : costOverride = product.cost;
+    : costOverride = product.cost;
   double get lineTotal => costOverride * qty;
 }
 
@@ -68,10 +109,13 @@ class AddPurchase extends StatefulWidget {
 
 class _AddPurchaseState extends State<AddPurchase> {
   // Controllers
-  final _poCtrl = TextEditingController(text: 'PO-${DateTime.now().millisecondsSinceEpoch % 10000}');
+  final _poCtrl = TextEditingController(
+    text: 'PO-${DateTime.now().millisecondsSinceEpoch % 10000}',
+  );
   final _invoiceCtrl = TextEditingController();
   final _orderDateCtrl = TextEditingController(
-    text: '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
+    text:
+        '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
   );
   final _receiveDateCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
@@ -190,7 +234,10 @@ class _AddPurchaseState extends State<AddPurchase> {
                                   controller: _invoiceCtrl,
                                   hintText: 'Supplier invoice #',
                                   labelText: 'Supplier Invoice No.',
-                                  prefixIcon: const Icon(Icons.receipt_rounded, size: 18),
+                                  prefixIcon: const Icon(
+                                    Icons.receipt_rounded,
+                                    size: 18,
+                                  ),
                                 ),
                               ),
                             ],
@@ -203,7 +250,10 @@ class _AddPurchaseState extends State<AddPurchase> {
                                   controller: _orderDateCtrl,
                                   hintText: 'DD/MM/YYYY',
                                   labelText: 'Order Date',
-                                  prefixIcon: const Icon(Icons.calendar_today_rounded, size: 18),
+                                  prefixIcon: const Icon(
+                                    Icons.calendar_today_rounded,
+                                    size: 18,
+                                  ),
                                   readOnly: true,
                                   onTap: () async {
                                     final d = await showDatePicker(
@@ -212,7 +262,9 @@ class _AddPurchaseState extends State<AddPurchase> {
                                       firstDate: DateTime(2020),
                                       lastDate: DateTime(2030),
                                     );
-                                    if (d != null) _orderDateCtrl.text = '${d.day}/${d.month}/${d.year}';
+                                    if (d != null)
+                                      _orderDateCtrl.text =
+                                          '${d.day}/${d.month}/${d.year}';
                                   },
                                 ),
                               ),
@@ -222,7 +274,10 @@ class _AddPurchaseState extends State<AddPurchase> {
                                   controller: _receiveDateCtrl,
                                   hintText: 'DD/MM/YYYY',
                                   labelText: 'Receive Date',
-                                  prefixIcon: const Icon(Icons.calendar_month_rounded, size: 18),
+                                  prefixIcon: const Icon(
+                                    Icons.calendar_month_rounded,
+                                    size: 18,
+                                  ),
                                   readOnly: true,
                                   onTap: () async {
                                     final d = await showDatePicker(
@@ -231,7 +286,9 @@ class _AddPurchaseState extends State<AddPurchase> {
                                       firstDate: DateTime(2020),
                                       lastDate: DateTime(2030),
                                     );
-                                    if (d != null) _receiveDateCtrl.text = '${d.day}/${d.month}/${d.year}';
+                                    if (d != null)
+                                      _receiveDateCtrl.text =
+                                          '${d.day}/${d.month}/${d.year}';
                                   },
                                 ),
                               ),
@@ -244,14 +301,18 @@ class _AddPurchaseState extends State<AddPurchase> {
                             iconColor: _statusColor(_selectedStatus),
                             value: _selectedStatus,
                             items: _purchaseStatuses,
-                            onChanged: (v) => setState(() => _selectedStatus = v!),
+                            onChanged: (v) =>
+                                setState(() => _selectedStatus = v!),
                           ),
                           const SizedBox(height: 14),
                           CustomTextField(
                             controller: _refNoCtrl,
                             hintText: 'e.g. Cheque No. or Transfer ID',
                             labelText: 'Reference No. (Optional)',
-                            prefixIcon: const Icon(Icons.numbers_rounded, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.numbers_rounded,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -268,7 +329,8 @@ class _AddPurchaseState extends State<AddPurchase> {
                         icon: Icons.store_mall_directory_rounded,
                         value: _selectedSupplier,
                         items: _mockSuppliers,
-                        onChanged: (v) => setState(() => _selectedSupplier = v!),
+                        onChanged: (v) =>
+                            setState(() => _selectedSupplier = v!),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -283,7 +345,8 @@ class _AddPurchaseState extends State<AddPurchase> {
                         icon: Icons.place_rounded,
                         value: _selectedWarehouse,
                         items: _warehouses,
-                        onChanged: (v) => setState(() => _selectedWarehouse = v!),
+                        onChanged: (v) =>
+                            setState(() => _selectedWarehouse = v!),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -296,7 +359,10 @@ class _AddPurchaseState extends State<AddPurchase> {
                       trailing: GestureDetector(
                         onTap: () => _showProductPicker(context),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF2563EB),
                             borderRadius: BorderRadius.circular(8),
@@ -304,7 +370,11 @@ class _AddPurchaseState extends State<AddPurchase> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.add, color: Colors.white, size: 16),
+                              const Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 'Add',
@@ -319,7 +389,10 @@ class _AddPurchaseState extends State<AddPurchase> {
                         ),
                       ),
                       child: _items.isEmpty
-                          ? _EmptyItems(label: 'No items added yet', hint: 'Tap "+ Add" to add products to purchase')
+                          ? _EmptyItems(
+                              label: 'No items added yet',
+                              hint: 'Tap "+ Add" to add products to purchase',
+                            )
                           : Column(
                               children: List.generate(
                                 _items.length,
@@ -328,9 +401,13 @@ class _AddPurchaseState extends State<AddPurchase> {
                                   isDark: isDark,
                                   index: i,
                                   onRemove: () => _removeItem(i),
-                                  onQtyChanged: (q) => setState(() => _items[i].qty = q),
-                                  onCostChanged: (c) => setState(() => _items[i].costOverride = c),
-                                  onBonusChanged: (b) => setState(() => _items[i].bonus = b),
+                                  onQtyChanged: (q) =>
+                                      setState(() => _items[i].qty = q),
+                                  onCostChanged: (c) => setState(
+                                    () => _items[i].costOverride = c,
+                                  ),
+                                  onBonusChanged: (b) =>
+                                      setState(() => _items[i].bonus = b),
                                 ),
                               ),
                             ),
@@ -352,8 +429,13 @@ class _AddPurchaseState extends State<AddPurchase> {
                                   hintText: '0',
                                   labelText: 'Discount (Rs.)',
                                   keyboardType: TextInputType.number,
-                                  prefixIcon: const Icon(Icons.local_offer_rounded, size: 18),
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  prefixIcon: const Icon(
+                                    Icons.local_offer_rounded,
+                                    size: 18,
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                   onChanged: (_) => setState(() {}),
                                 ),
                               ),
@@ -364,8 +446,13 @@ class _AddPurchaseState extends State<AddPurchase> {
                                   hintText: '0',
                                   labelText: 'GST / Tax (%)',
                                   keyboardType: TextInputType.number,
-                                  prefixIcon: const Icon(Icons.percent_rounded, size: 18),
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  prefixIcon: const Icon(
+                                    Icons.percent_rounded,
+                                    size: 18,
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                   onChanged: (_) => setState(() {}),
                                 ),
                               ),
@@ -377,15 +464,33 @@ class _AddPurchaseState extends State<AddPurchase> {
                             hintText: '0',
                             labelText: 'Freight / Shipping (Rs.)',
                             keyboardType: TextInputType.number,
-                            prefixIcon: const Icon(Icons.local_shipping_rounded, size: 18),
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            prefixIcon: const Icon(
+                              Icons.local_shipping_rounded,
+                              size: 18,
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             onChanged: (_) => setState(() {}),
                           ),
                           const SizedBox(height: 16),
-                          _OrderSummaryRow(label: 'Subtotal', value: 'Rs. ${_subtotal.toStringAsFixed(0)}'),
-                          _OrderSummaryRow(label: 'Discount', value: '- Rs. ${_discount.toStringAsFixed(0)}', valueColor: Colors.red),
-                          _OrderSummaryRow(label: 'GST/Tax', value: '+ Rs. ${_tax.toStringAsFixed(0)}'),
-                          _OrderSummaryRow(label: 'Freight', value: '+ Rs. ${_shipping.toStringAsFixed(0)}'),
+                          _OrderSummaryRow(
+                            label: 'Subtotal',
+                            value: 'Rs. ${_subtotal.toStringAsFixed(0)}',
+                          ),
+                          _OrderSummaryRow(
+                            label: 'Discount',
+                            value: '- Rs. ${_discount.toStringAsFixed(0)}',
+                            valueColor: Colors.red,
+                          ),
+                          _OrderSummaryRow(
+                            label: 'GST/Tax',
+                            value: '+ Rs. ${_tax.toStringAsFixed(0)}',
+                          ),
+                          _OrderSummaryRow(
+                            label: 'Freight',
+                            value: '+ Rs. ${_shipping.toStringAsFixed(0)}',
+                          ),
                           const Divider(height: 20),
                           _OrderSummaryRow(
                             label: 'Grand Total',
@@ -424,7 +529,10 @@ class _AddPurchaseState extends State<AddPurchase> {
                         labelText: 'Notes (Optional)',
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
-                        prefixIcon: const Icon(Icons.edit_note_rounded, size: 18),
+                        prefixIcon: const Icon(
+                          Icons.edit_note_rounded,
+                          size: 18,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -444,10 +552,13 @@ class _AddPurchaseState extends State<AddPurchase> {
                 await Future.delayed(const Duration(seconds: 1));
                 setState(() => _isSaving = false);
                 Get.back();
-                Get.snackbar('Success', 'Purchase order saved!',
-                    backgroundColor: Colors.blue.shade50,
-                    colorText: Colors.blue.shade800,
-                    icon: const Icon(Icons.check_circle, color: Colors.blue));
+                Get.snackbar(
+                  'Success',
+                  'Purchase order saved!',
+                  backgroundColor: Colors.blue.shade50,
+                  colorText: Colors.blue.shade800,
+                  icon: const Icon(Icons.check_circle, color: Colors.blue),
+                );
               },
             ),
           ],
@@ -516,7 +627,9 @@ class _PurchaseItemTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF111A2E) : const Color(0xFFF8FAFB),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -533,7 +646,11 @@ class _PurchaseItemTile extends StatelessWidget {
                 child: Center(
                   child: Text(
                     '${index + 1}',
-                    style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w700, color: blue),
+                    style: GoogleFonts.sora(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: blue,
+                    ),
                   ),
                 ),
               ),
@@ -542,15 +659,30 @@ class _PurchaseItemTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.product.name, style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w600)),
-                    Text('SKU: ${item.product.sku} · ${item.product.category}',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary)),
+                    Text(
+                      item.product.name,
+                      style: GoogleFonts.sora(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      'SKU: ${item.product.sku} · ${item.product.category}',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
               GestureDetector(
                 onTap: onRemove,
-                child: const Icon(Icons.close_rounded, size: 18, color: Color(0xFFDC2626)),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: Color(0xFFDC2626),
+                ),
               ),
             ],
           ),
@@ -561,10 +693,20 @@ class _PurchaseItemTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Qty (${item.product.unit}s)',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Qty (${item.product.unit}s)',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    _QtyControl(qty: item.qty, onChanged: onQtyChanged, accentColor: blue),
+                    _QtyControl(
+                      qty: item.qty,
+                      onChanged: onQtyChanged,
+                      accentColor: blue,
+                    ),
                   ],
                 ),
               ),
@@ -573,8 +715,14 @@ class _PurchaseItemTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Unit Cost (Rs.)',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Unit Cost (Rs.)',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     _InlineNumberField(
                       value: item.costOverride,
@@ -589,8 +737,14 @@ class _PurchaseItemTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Bonus Qty',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Bonus Qty',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     _InlineNumberField(
                       value: item.bonus,
@@ -607,7 +761,11 @@ class _PurchaseItemTile extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text(
               'Line Total: Rs. ${item.lineTotal.toStringAsFixed(0)}',
-              style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w700, color: blue),
+              style: GoogleFonts.sora(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: blue,
+              ),
             ),
           ),
         ],
@@ -620,16 +778,22 @@ class _PurchaseProductPickerSheet extends StatefulWidget {
   final List<_PurchaseProduct> products;
   final ValueChanged<_PurchaseProduct> onSelected;
 
-  const _PurchaseProductPickerSheet({required this.products, required this.onSelected});
+  const _PurchaseProductPickerSheet({
+    required this.products,
+    required this.onSelected,
+  });
 
   @override
-  State<_PurchaseProductPickerSheet> createState() => _PurchaseProductPickerSheetState();
+  State<_PurchaseProductPickerSheet> createState() =>
+      _PurchaseProductPickerSheetState();
 }
 
-class _PurchaseProductPickerSheetState extends State<_PurchaseProductPickerSheet> {
+class _PurchaseProductPickerSheetState
+    extends State<_PurchaseProductPickerSheet> {
   String _query = '';
-  List<_PurchaseProduct> get _filtered =>
-      widget.products.where((p) => p.name.toLowerCase().contains(_query.toLowerCase())).toList();
+  List<_PurchaseProduct> get _filtered => widget.products
+      .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -642,11 +806,24 @@ class _PurchaseProductPickerSheetState extends State<_PurchaseProductPickerSheet
       builder: (_, ctrl) => Column(
         children: [
           const SizedBox(height: 12),
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(4))),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Add Product to Purchase', style: GoogleFonts.sora(fontSize: 17, fontWeight: FontWeight.w700)),
+            child: Text(
+              'Add Product to Purchase',
+              style: GoogleFonts.sora(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           Padding(
@@ -657,7 +834,10 @@ class _PurchaseProductPickerSheetState extends State<_PurchaseProductPickerSheet
                 prefixIcon: const Icon(Icons.search_rounded),
                 filled: true,
                 fillColor: const Color(0xFFF1F5F9),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
               ),
               onChanged: (v) => setState(() => _query = v),
             ),
@@ -683,12 +863,25 @@ class _PurchaseProductPickerSheetState extends State<_PurchaseProductPickerSheet
                       color: blue.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.inventory_2_rounded, color: blue, size: 20),
+                    child: const Icon(
+                      Icons.inventory_2_rounded,
+                      color: blue,
+                      size: 20,
+                    ),
                   ),
-                  title: Text(p.name, style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w600)),
+                  title: Text(
+                    p.name,
+                    style: GoogleFonts.sora(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   subtitle: Text(
                     'Rs. ${p.cost.toStringAsFixed(0)}/${p.unit} · ${p.category}',
-                    style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   trailing: const Icon(Icons.add_circle_rounded, color: blue),
                   onTap: () {
@@ -747,14 +940,21 @@ class _StatusBanner extends StatelessWidget {
       duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         children: [
           Icon(icon, size: 16, color: textColor),
           const SizedBox(width: 8),
           Text(
             'Status: $status',
-            style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: textColor),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
           ),
         ],
       ),
@@ -786,7 +986,9 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF131D2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -808,7 +1010,10 @@ class _SectionCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: GoogleFonts.sora(fontSize: 14, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.sora(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (trailing != null) trailing!,
@@ -876,19 +1081,27 @@ class _DropdownField extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14.5,
                 fontWeight: FontWeight.w500,
-                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF1F5F9)
+                    : const Color(0xFF0F172A),
               ),
               items: items
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Row(
-                          children: [
-                            Icon(icon, size: 17, color: iconColor ?? AppColors.primary),
-                            const SizedBox(width: 8),
-                            Text(e),
-                          ],
-                        ),
-                      ))
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Row(
+                        children: [
+                          Icon(
+                            icon,
+                            size: 17,
+                            color: iconColor ?? AppColors.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(e),
+                        ],
+                      ),
+                    ),
+                  )
                   .toList(),
               onChanged: onChanged,
             ),
@@ -904,7 +1117,12 @@ class _OrderSummaryRow extends StatelessWidget {
   final bool isBold;
   final Color? valueColor;
 
-  const _OrderSummaryRow({required this.label, required this.value, this.isBold = false, this.valueColor});
+  const _OrderSummaryRow({
+    required this.label,
+    required this.value,
+    this.isBold = false,
+    this.valueColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -913,14 +1131,22 @@ class _OrderSummaryRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: GoogleFonts.plusJakartaSans(
-                  fontSize: isBold ? 14 : 13,
-                  fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
-                  color: isBold ? null : AppColors.textSecondary)),
-          Text(value,
-              style: GoogleFonts.sora(
-                  fontSize: isBold ? 16 : 13, fontWeight: isBold ? FontWeight.w700 : FontWeight.w600, color: valueColor)),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: isBold ? 14 : 13,
+              fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+              color: isBold ? null : AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.sora(
+              fontSize: isBold ? 16 : 13,
+              fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
+              color: valueColor,
+            ),
+          ),
         ],
       ),
     );
@@ -937,11 +1163,27 @@ class _EmptyItems extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          Icon(Icons.add_shopping_cart_rounded, size: 48, color: Colors.grey.shade300),
+          Icon(
+            Icons.add_shopping_cart_rounded,
+            size: 48,
+            color: Colors.grey.shade300,
+          ),
           const SizedBox(height: 8),
-          Text(label, style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontSize: 13)),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(hint, style: GoogleFonts.plusJakartaSans(color: AppColors.textHint, fontSize: 12)),
+          Text(
+            hint,
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textHint,
+              fontSize: 12,
+            ),
+          ),
         ],
       ),
     );
@@ -953,17 +1195,32 @@ class _QtyControl extends StatelessWidget {
   final ValueChanged<int> onChanged;
   final Color accentColor;
 
-  const _QtyControl({required this.qty, required this.onChanged, this.accentColor = AppColors.primary});
+  const _QtyControl({
+    required this.qty,
+    required this.onChanged,
+    this.accentColor = AppColors.primary,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _QtyBtn(icon: Icons.remove, onTap: qty > 1 ? () => onChanged(qty - 1) : null, accentColor: accentColor),
+        _QtyBtn(
+          icon: Icons.remove,
+          onTap: qty > 1 ? () => onChanged(qty - 1) : null,
+          accentColor: accentColor,
+        ),
         const SizedBox(width: 8),
-        Text('$qty', style: GoogleFonts.sora(fontSize: 15, fontWeight: FontWeight.w700)),
+        Text(
+          '$qty',
+          style: GoogleFonts.sora(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
         const SizedBox(width: 8),
-        _QtyBtn(icon: Icons.add, onTap: () => onChanged(qty + 1), accentColor: accentColor),
+        _QtyBtn(
+          icon: Icons.add,
+          onTap: () => onChanged(qty + 1),
+          accentColor: accentColor,
+        ),
       ],
     );
   }
@@ -974,7 +1231,11 @@ class _QtyBtn extends StatelessWidget {
   final VoidCallback? onTap;
   final Color accentColor;
 
-  const _QtyBtn({required this.icon, this.onTap, this.accentColor = AppColors.primary});
+  const _QtyBtn({
+    required this.icon,
+    this.onTap,
+    this.accentColor = AppColors.primary,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -984,10 +1245,16 @@ class _QtyBtn extends StatelessWidget {
         width: 28,
         height: 28,
         decoration: BoxDecoration(
-          color: onTap != null ? accentColor.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: onTap != null
+              ? accentColor.withValues(alpha: 0.1)
+              : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(6),
         ),
-        child: Icon(icon, size: 16, color: onTap != null ? accentColor : Colors.grey),
+        child: Icon(
+          icon,
+          size: 16,
+          color: onTap != null ? accentColor : Colors.grey,
+        ),
       ),
     );
   }
@@ -997,7 +1264,11 @@ class _InlineNumberField extends StatelessWidget {
   final double value;
   final ValueChanged<double> onChanged;
   final String hint;
-  const _InlineNumberField({required this.value, required this.onChanged, required this.hint});
+  const _InlineNumberField({
+    required this.value,
+    required this.onChanged,
+    required this.hint,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1013,9 +1284,18 @@ class _InlineNumberField extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+        ),
       ),
     );
   }
@@ -1042,7 +1322,11 @@ class _BottomSaveBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF131D2E) : Colors.white,
-        border: Border(top: BorderSide(color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0))),
+        border: Border(
+          top: BorderSide(
+            color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0),
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -1050,10 +1334,20 @@ class _BottomSaveBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Grand Total', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary)),
+              Text(
+                'Grand Total',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
               Text(
                 label.replaceFirst('Total: ', ''),
-                style: GoogleFonts.sora(fontSize: 18, fontWeight: FontWeight.w700, color: buttonColor ?? AppColors.primary),
+                style: GoogleFonts.sora(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: buttonColor ?? AppColors.primary,
+                ),
               ),
             ],
           ),

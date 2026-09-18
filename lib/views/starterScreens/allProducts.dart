@@ -121,8 +121,11 @@ class AllProducts extends GetView<ProductController>  {
                         qtyTextColor = const Color(0xFFDC2626);
                         imgBgColor = const Color(0xFFFFF5F5);
                       }
-                      return Container(
-                        padding: const EdgeInsets.all(12),
+                      return InkWell(
+                        onTap: () => Get.toNamed(Routes.productDetail, arguments: product),
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: theme.surface,
                           borderRadius: BorderRadius.circular(16),
@@ -247,7 +250,7 @@ class AllProducts extends GetView<ProductController>  {
                             ),
                           ],
                         ),
-                      );
+                      ));
                     },
                   ),
                 );

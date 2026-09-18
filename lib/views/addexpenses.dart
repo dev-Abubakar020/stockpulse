@@ -26,7 +26,14 @@ const _expenseCategories = [
   'Miscellaneous',
 ];
 
-const _paymentMethods = ['Cash', 'Bank Transfer', 'Jazzcash', 'Easypaisa', 'Card', 'Cheque'];
+const _paymentMethods = [
+  'Cash',
+  'Bank Transfer',
+  'Jazzcash',
+  'Easypaisa',
+  'Card',
+  'Cheque',
+];
 const _statuses = ['Paid', 'Unpaid', 'Partial'];
 const _recurrenceOptions = ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'];
 
@@ -40,16 +47,52 @@ class _ExpenseCategoryInfo {
 const _categoryMeta = <_ExpenseCategoryInfo>[
   _ExpenseCategoryInfo('Rent', Icons.home_rounded, Color(0xFF7C3AED)),
   _ExpenseCategoryInfo('Electricity', Icons.bolt_rounded, Color(0xFFD97706)),
-  _ExpenseCategoryInfo('Gas / Fuel', Icons.local_gas_station_rounded, Color(0xFFDC2626)),
-  _ExpenseCategoryInfo('Staff Salaries', Icons.group_rounded, Color(0xFF2563EB)),
-  _ExpenseCategoryInfo('Maintenance & Repairs', Icons.build_rounded, Color(0xFF059669)),
-  _ExpenseCategoryInfo('Marketing & Advertising', Icons.campaign_rounded, Color(0xFFDB2777)),
-  _ExpenseCategoryInfo('Transport & Logistics', Icons.local_shipping_rounded, Color(0xFF0891B2)),
-  _ExpenseCategoryInfo('Packaging & Supplies', Icons.inventory_2_rounded, Color(0xFF65A30D)),
-  _ExpenseCategoryInfo('Internet & Phone', Icons.wifi_rounded, Color(0xFF6366F1)),
-  _ExpenseCategoryInfo('Bank Charges', Icons.account_balance_rounded, Color(0xFF475569)),
+  _ExpenseCategoryInfo(
+    'Gas / Fuel',
+    Icons.local_gas_station_rounded,
+    Color(0xFFDC2626),
+  ),
+  _ExpenseCategoryInfo(
+    'Staff Salaries',
+    Icons.group_rounded,
+    Color(0xFF2563EB),
+  ),
+  _ExpenseCategoryInfo(
+    'Maintenance & Repairs',
+    Icons.build_rounded,
+    Color(0xFF059669),
+  ),
+  _ExpenseCategoryInfo(
+    'Marketing & Advertising',
+    Icons.campaign_rounded,
+    Color(0xFFDB2777),
+  ),
+  _ExpenseCategoryInfo(
+    'Transport & Logistics',
+    Icons.local_shipping_rounded,
+    Color(0xFF0891B2),
+  ),
+  _ExpenseCategoryInfo(
+    'Packaging & Supplies',
+    Icons.inventory_2_rounded,
+    Color(0xFF65A30D),
+  ),
+  _ExpenseCategoryInfo(
+    'Internet & Phone',
+    Icons.wifi_rounded,
+    Color(0xFF6366F1),
+  ),
+  _ExpenseCategoryInfo(
+    'Bank Charges',
+    Icons.account_balance_rounded,
+    Color(0xFF475569),
+  ),
   _ExpenseCategoryInfo('Insurance', Icons.shield_rounded, Color(0xFF0F766E)),
-  _ExpenseCategoryInfo('Miscellaneous', Icons.more_horiz_rounded, Color(0xFF78716C)),
+  _ExpenseCategoryInfo(
+    'Miscellaneous',
+    Icons.more_horiz_rounded,
+    Color(0xFF78716C),
+  ),
 ];
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -66,7 +109,8 @@ class _AddExpensesState extends State<AddExpenses> {
   final _titleCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
   final _dateCtrl = TextEditingController(
-    text: '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
+    text:
+        '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
   );
   final _dueDateCtrl = TextEditingController();
   final _refNoCtrl = TextEditingController();
@@ -83,12 +127,15 @@ class _AddExpensesState extends State<AddExpenses> {
   bool _isBillable = false;
   bool _isSaving = false;
 
-  double get _amount => double.tryParse(_amountCtrl.text.replaceAll(',', '')) ?? 0;
+  double get _amount =>
+      double.tryParse(_amountCtrl.text.replaceAll(',', '')) ?? 0;
   double get _tax => (_amount * (double.tryParse(_taxCtrl.text) ?? 0)) / 100;
   double get _total => _amount + _tax;
 
-  _ExpenseCategoryInfo get _currentCategoryMeta =>
-      _categoryMeta.firstWhere((m) => m.name == _selectedCategory, orElse: () => _categoryMeta.last);
+  _ExpenseCategoryInfo get _currentCategoryMeta => _categoryMeta.firstWhere(
+    (m) => m.name == _selectedCategory,
+    orElse: () => _categoryMeta.last,
+  );
 
   @override
   void dispose() {
@@ -178,7 +225,10 @@ class _AddExpensesState extends State<AddExpenses> {
                             controller: _titleCtrl,
                             hintText: 'e.g., Monthly Shop Rent',
                             labelText: 'Expense Title *',
-                            prefixIcon: const Icon(Icons.label_rounded, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.label_rounded,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(height: 14),
                           Row(
@@ -189,8 +239,13 @@ class _AddExpensesState extends State<AddExpenses> {
                                   hintText: '0',
                                   labelText: 'Amount (Rs.) *',
                                   keyboardType: TextInputType.number,
-                                  prefixIcon: const Icon(Icons.currency_rupee_rounded, size: 18),
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  prefixIcon: const Icon(
+                                    Icons.currency_rupee_rounded,
+                                    size: 18,
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                   onChanged: (_) => setState(() {}),
                                 ),
                               ),
@@ -201,8 +256,13 @@ class _AddExpensesState extends State<AddExpenses> {
                                   hintText: '0',
                                   labelText: 'Tax (%)',
                                   keyboardType: TextInputType.number,
-                                  prefixIcon: const Icon(Icons.percent_rounded, size: 18),
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  prefixIcon: const Icon(
+                                    Icons.percent_rounded,
+                                    size: 18,
+                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                   onChanged: (_) => setState(() {}),
                                 ),
                               ),
@@ -215,7 +275,8 @@ class _AddExpensesState extends State<AddExpenses> {
                             iconColor: meta.color,
                             value: _selectedCategory,
                             items: _expenseCategories,
-                            onChanged: (v) => setState(() => _selectedCategory = v!),
+                            onChanged: (v) =>
+                                setState(() => _selectedCategory = v!),
                           ),
                         ],
                       ),
@@ -236,7 +297,10 @@ class _AddExpensesState extends State<AddExpenses> {
                                   controller: _dateCtrl,
                                   hintText: 'DD/MM/YYYY',
                                   labelText: 'Expense Date *',
-                                  prefixIcon: const Icon(Icons.today_rounded, size: 18),
+                                  prefixIcon: const Icon(
+                                    Icons.today_rounded,
+                                    size: 18,
+                                  ),
                                   readOnly: true,
                                   onTap: () async {
                                     final d = await showDatePicker(
@@ -245,7 +309,9 @@ class _AddExpensesState extends State<AddExpenses> {
                                       firstDate: DateTime(2020),
                                       lastDate: DateTime(2030),
                                     );
-                                    if (d != null) _dateCtrl.text = '${d.day}/${d.month}/${d.year}';
+                                    if (d != null)
+                                      _dateCtrl.text =
+                                          '${d.day}/${d.month}/${d.year}';
                                   },
                                 ),
                               ),
@@ -255,7 +321,10 @@ class _AddExpensesState extends State<AddExpenses> {
                                   controller: _dueDateCtrl,
                                   hintText: 'DD/MM/YYYY',
                                   labelText: 'Due Date (Optional)',
-                                  prefixIcon: const Icon(Icons.event_rounded, size: 18),
+                                  prefixIcon: const Icon(
+                                    Icons.event_rounded,
+                                    size: 18,
+                                  ),
                                   readOnly: true,
                                   onTap: () async {
                                     final d = await showDatePicker(
@@ -264,7 +333,9 @@ class _AddExpensesState extends State<AddExpenses> {
                                       firstDate: DateTime(2020),
                                       lastDate: DateTime(2030),
                                     );
-                                    if (d != null) _dueDateCtrl.text = '${d.day}/${d.month}/${d.year}';
+                                    if (d != null)
+                                      _dueDateCtrl.text =
+                                          '${d.day}/${d.month}/${d.year}';
                                   },
                                 ),
                               ),
@@ -276,24 +347,34 @@ class _AddExpensesState extends State<AddExpenses> {
                             icon: Icons.repeat_rounded,
                             value: _selectedRecurrence,
                             items: _recurrenceOptions,
-                            onChanged: (v) => setState(() => _selectedRecurrence = v!),
+                            onChanged: (v) =>
+                                setState(() => _selectedRecurrence = v!),
                           ),
                           if (_selectedRecurrence != 'None') ...[
                             const SizedBox(height: 10),
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.06),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.06,
+                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.primary),
+                                  const Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 16,
+                                    color: AppColors.primary,
+                                  ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       'This expense will auto-repeat $_selectedRecurrence. You can disable it later.',
-                                      style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.primary),
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -316,14 +397,20 @@ class _AddExpensesState extends State<AddExpenses> {
                             controller: _vendorCtrl,
                             hintText: 'e.g., LESCO, SNGPL, Landlord Name',
                             labelText: 'Vendor / Payee Name',
-                            prefixIcon: const Icon(Icons.store_rounded, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.store_rounded,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(height: 14),
                           CustomTextField(
                             controller: _receiptCtrl,
                             hintText: 'e.g., Bill No. or Invoice No.',
                             labelText: 'Receipt / Invoice No.',
-                            prefixIcon: const Icon(Icons.receipt_rounded, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.receipt_rounded,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -342,7 +429,8 @@ class _AddExpensesState extends State<AddExpenses> {
                             icon: Icons.account_balance_wallet_rounded,
                             value: _selectedPayment,
                             items: _paymentMethods,
-                            onChanged: (v) => setState(() => _selectedPayment = v!),
+                            onChanged: (v) =>
+                                setState(() => _selectedPayment = v!),
                           ),
                           const SizedBox(height: 14),
                           _DropdownField(
@@ -351,18 +439,22 @@ class _AddExpensesState extends State<AddExpenses> {
                             iconColor: _selectedStatus == 'Paid'
                                 ? Colors.green
                                 : _selectedStatus == 'Unpaid'
-                                    ? Colors.red
-                                    : Colors.orange,
+                                ? Colors.red
+                                : Colors.orange,
                             value: _selectedStatus,
                             items: _statuses,
-                            onChanged: (v) => setState(() => _selectedStatus = v!),
+                            onChanged: (v) =>
+                                setState(() => _selectedStatus = v!),
                           ),
                           const SizedBox(height: 14),
                           CustomTextField(
                             controller: _refNoCtrl,
                             hintText: 'e.g., Cheque No. or Transaction ID',
                             labelText: 'Reference No. (Optional)',
-                            prefixIcon: const Icon(Icons.numbers_rounded, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.numbers_rounded,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -400,7 +492,10 @@ class _AddExpensesState extends State<AddExpenses> {
                         labelText: 'Notes (Optional)',
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
-                        prefixIcon: const Icon(Icons.edit_note_rounded, size: 18),
+                        prefixIcon: const Icon(
+                          Icons.edit_note_rounded,
+                          size: 18,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -417,18 +512,25 @@ class _AddExpensesState extends State<AddExpenses> {
               isLoading: _isSaving,
               onSave: () async {
                 if (_titleCtrl.text.isEmpty || _amountCtrl.text.isEmpty) {
-                  Get.snackbar('Required Fields', 'Please fill in title and amount.',
-                      backgroundColor: Colors.red.shade50, colorText: Colors.red.shade800);
+                  Get.snackbar(
+                    'Required Fields',
+                    'Please fill in title and amount.',
+                    backgroundColor: Colors.red.shade50,
+                    colorText: Colors.red.shade800,
+                  );
                   return;
                 }
                 setState(() => _isSaving = true);
                 await Future.delayed(const Duration(seconds: 1));
                 setState(() => _isSaving = false);
                 Get.back();
-                Get.snackbar('Success', 'Expense recorded!',
-                    backgroundColor: Colors.green.shade50,
-                    colorText: Colors.green.shade800,
-                    icon: const Icon(Icons.check_circle, color: Colors.green));
+                Get.snackbar(
+                  'Success',
+                  'Expense recorded!',
+                  backgroundColor: Colors.green.shade50,
+                  colorText: Colors.green.shade800,
+                  icon: const Icon(Icons.check_circle, color: Colors.green),
+                );
               },
             ),
           ],
@@ -469,14 +571,22 @@ class _CategoryQuickSelector extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               width: 64,
               decoration: BoxDecoration(
-                color: isSelected ? cat.color : cat.color.withValues(alpha: 0.08),
+                color: isSelected
+                    ? cat.color
+                    : cat.color.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(14),
-                border: isSelected ? null : Border.all(color: cat.color.withValues(alpha: 0.2)),
+                border: isSelected
+                    ? null
+                    : Border.all(color: cat.color.withValues(alpha: 0.2)),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(cat.icon, color: isSelected ? Colors.white : cat.color, size: 22),
+                  Icon(
+                    cat.icon,
+                    color: isSelected ? Colors.white : cat.color,
+                    size: 22,
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     cat.name.split(' ')[0],
@@ -573,11 +683,37 @@ class _AmountHeroCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('Base', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white70)),
-                Text('Rs. ${amount.toStringAsFixed(0)}', style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+                Text(
+                  'Base',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    color: Colors.white70,
+                  ),
+                ),
+                Text(
+                  'Rs. ${amount.toStringAsFixed(0)}',
+                  style: GoogleFonts.sora(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Tax', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white70)),
-                Text('+ Rs. ${tax.toStringAsFixed(0)}', style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white)),
+                Text(
+                  'Tax',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    color: Colors.white70,
+                  ),
+                ),
+                Text(
+                  '+ Rs. ${tax.toStringAsFixed(0)}',
+                  style: GoogleFonts.sora(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
         ],
@@ -622,8 +758,20 @@ class _ToggleRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600)),
-              Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary)),
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -636,7 +784,11 @@ class _ToggleRow extends StatelessWidget {
             activeColor: Colors.white,
             thumbIcon: WidgetStateProperty.resolveWith<Icon?>((states) {
               if (states.contains(WidgetState.selected)) {
-                return const Icon(Icons.check, size: 14, color: Color(0xFF059669));
+                return const Icon(
+                  Icons.check,
+                  size: 14,
+                  color: Color(0xFF059669),
+                );
               }
               return null;
             }),
@@ -671,7 +823,9 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF131D2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -693,7 +847,10 @@ class _SectionCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: GoogleFonts.sora(fontSize: 14, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.sora(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (trailing != null) trailing!,
@@ -761,19 +918,27 @@ class _DropdownField extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14.5,
                 fontWeight: FontWeight.w500,
-                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF1F5F9)
+                    : const Color(0xFF0F172A),
               ),
               items: items
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Row(
-                          children: [
-                            Icon(icon, size: 17, color: iconColor ?? AppColors.expense),
-                            const SizedBox(width: 8),
-                            Text(e),
-                          ],
-                        ),
-                      ))
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Row(
+                        children: [
+                          Icon(
+                            icon,
+                            size: 17,
+                            color: iconColor ?? AppColors.expense,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(e),
+                        ],
+                      ),
+                    ),
+                  )
                   .toList(),
               onChanged: onChanged,
             ),
@@ -803,14 +968,18 @@ class _BottomSaveBar extends StatelessWidget {
     final statusColor = status == 'Paid'
         ? Colors.green
         : status == 'Unpaid'
-            ? Colors.red
-            : Colors.orange;
+        ? Colors.red
+        : Colors.orange;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF131D2E) : Colors.white,
-        border: Border(top: BorderSide(color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0))),
+        border: Border(
+          top: BorderSide(
+            color: isDark ? const Color(0xFF1E2D44) : const Color(0xFFE2E8F0),
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -818,8 +987,21 @@ class _BottomSaveBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Total Amount', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.textSecondary)),
-              Text(amountLabel, style: GoogleFonts.sora(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.expense)),
+              Text(
+                'Total Amount',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Text(
+                amountLabel,
+                style: GoogleFonts.sora(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.expense,
+                ),
+              ),
               const SizedBox(height: 2),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -829,7 +1011,11 @@ class _BottomSaveBar extends StatelessWidget {
                 ),
                 child: Text(
                   status,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w700, color: statusColor),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor,
+                  ),
                 ),
               ),
             ],
