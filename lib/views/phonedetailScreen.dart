@@ -13,6 +13,8 @@ import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../common/widgets/themetogglebtn.dart';
+
 class PhoneDetailScreen extends StatefulWidget {
   const PhoneDetailScreen({super.key});
 
@@ -75,7 +77,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                     CustomAppBar(
                       showBackButton: true,
                       title: AppConstants.phoneLoginTitle,
-                      actions: const [_ThemeToggleButton()],
+                      actions: const [ThemeToggleButton()],
                     ),
                     const SizedBox(height: 28),
 
@@ -312,33 +314,3 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
   }
 }
 
-class _ThemeToggleButton extends StatelessWidget {
-  const _ThemeToggleButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
-    return Material(
-      color: theme.card,
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: () => ThemeController.to.toggleTheme(),
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: theme.border, width: 1),
-          ),
-          child: Icon(
-            theme.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-            color: theme.primary,
-            size: 17,
-          ),
-        ),
-      ),
-    );
-  }
-}

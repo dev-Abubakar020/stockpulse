@@ -11,6 +11,8 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../common/widgets/themetogglebtn.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -47,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Top bar with optional theme toggle
                       Align(
                         alignment: Alignment.topRight,
-                        child: const _ThemeToggleButton(),
+                        child: const ThemeToggleButton(),
                       ),
                       const SizedBox(height: 8),
                       const _BrandHeader(),
@@ -450,33 +452,3 @@ class _SocialTile extends StatelessWidget {
   }
 }
 
-class _ThemeToggleButton extends StatelessWidget {
-  const _ThemeToggleButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
-    return Material(
-      color: theme.card,
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: () => ThemeController.to.toggleTheme(),
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: theme.border, width: 1),
-          ),
-          child: Icon(
-            theme.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-            color: theme.primary,
-            size: 18,
-          ),
-        ),
-      ),
-    );
-  }
-}

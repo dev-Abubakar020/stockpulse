@@ -93,30 +93,3 @@ class DashboardScreen extends GetView<DashboardController> {
     });
   }
 }
-
-
-
-//Future<void> _checkShopProfile() async {
-//     final user = Supabase.instance.client.auth.currentUser;
-//     if (user == null) {
-//       if (mounted) Get.offAllNamed(Routes.login);
-//       return;
-//     }
-//
-//     try {
-//       final hasShop = await Get.find<ShopRepository>().currentUserHasShop();
-//       if (!mounted) return;
-//       if (!hasShop) Get.offAllNamed(Routes.createShop);
-//     } catch (error) {
-//       if (!mounted) return;
-//       Get.snackbar(
-//         'Shop profile required',
-//         'Complete your shop profile before continuing. Details: $error',
-//         duration: const Duration(seconds: 5),
-//       );
-//       Get.offAllNamed(Routes.createShop);
-//       return;
-//     } finally {
-//       if (mounted) setState(() => isChecking = false);
-//     }
-//   }

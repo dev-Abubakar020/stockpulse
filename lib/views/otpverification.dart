@@ -8,6 +8,8 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
 
+import '../common/widgets/themetogglebtn.dart';
+
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
 
@@ -147,7 +149,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const _ThemeToggleButton(),
+                              const ThemeToggleButton(),
                             ],
                           ),
                         ],
@@ -474,37 +476,6 @@ class _InteractiveKeypad extends StatelessWidget {
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-}
-
-class _ThemeToggleButton extends StatelessWidget {
-  const _ThemeToggleButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
-    return Material(
-      color: theme.card,
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: () => ThemeController.to.toggleTheme(),
-        customBorder: const CircleBorder(),
-        child: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: theme.border, width: 1),
-          ),
-          child: Icon(
-            theme.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-            color: theme.primary,
-            size: 17,
-          ),
-        ),
       ),
     );
   }
