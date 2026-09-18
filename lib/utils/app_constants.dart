@@ -93,4 +93,7 @@ class AppConstants {
   static const String regEmailAddress = 'Registered Email';
   static const String sendVerificationCode = 'Send Verification Code';
   static const String logout = 'Log out';
+
+  static const String exitAppTitle = 'Exit App';
+  static const String exitAppSnackBarMsg = 'Press back again to exit the app';
 }

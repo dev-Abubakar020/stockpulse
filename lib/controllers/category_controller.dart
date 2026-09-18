@@ -3,12 +3,16 @@ import 'package:get/get.dart';
 import '../models/category_model.dart';
 import '../repositories/category_repository.dart';
 
+import '../repositories/product_repository.dart';
+
 class CategoryController extends GetxController {
   final CategoryRepository _categoryRepository = CategoryRepository();
+  final ProductRepository _productRepository = ProductRepository();
 
   var isLoading = false.obs;
   var isSaving = false.obs;
   var categoriesList = <CategoryModel>[].obs;
+  var categoryCounts = <String, int>{}.obs;
   
   // Search and Filter state
   var searchQuery = ''.obs;
@@ -35,6 +39,20 @@ class CategoryController extends GetxController {
     try {
       isLoading.value = true;
       final list = await _categoryRepository.getAllCategories();
+      
+      try {
+        final products = await _productRepository.getProducts();
+        final counts = <String, int>{};
+        for (var p in products) {
+          if (p.categoryId != null) {
+            counts[p.categoryId!] = (counts[p.categoryId!] ?? 0) + 1;
+          }
+        }
+        categoryCounts.assignAll(counts);
+      } catch (e) {
+        debugPrint('Error fetching product counts for categories: $e');
+      }
+
       categoriesList.assignAll(list);
     } catch (e) {
       Get.snackbar(

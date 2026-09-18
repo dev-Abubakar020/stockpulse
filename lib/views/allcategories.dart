@@ -182,7 +182,7 @@ class CategoryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Category status active: ${category.isActive}',
+                    'Linked items: ${Get.find<CategoryController>().categoryCounts[category.id] ?? 0}',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade600,

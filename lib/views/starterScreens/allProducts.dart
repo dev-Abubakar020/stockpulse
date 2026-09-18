@@ -147,7 +147,7 @@ class AllProducts extends GetView<ProductController>  {
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                'Emoji',
+                                '📦',
                                 style: const TextStyle(fontSize: 28),
                               ),
                             ),
