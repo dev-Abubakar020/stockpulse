@@ -17,9 +17,7 @@ Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
@@ -40,8 +38,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final storage = Get.find<LocalStorageService>();
     final savedDark = storage.isDarkMode();
-    final initialThemeMode =
-    (savedDark == true) ? ThemeMode.dark : ThemeMode.light;
+    final initialThemeMode = (savedDark == true)
+        ? ThemeMode.dark
+        : ThemeMode.light;
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,

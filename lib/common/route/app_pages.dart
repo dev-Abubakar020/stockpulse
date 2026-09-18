@@ -22,6 +22,7 @@ import '../../views/starterScreens/morescreen.dart';
 import '../../views/starterScreens/purchasePage.dart';
 import '../../views/starterScreens/saleView.dart';
 import '../../views/starterScreens/addProductWizardView.dart';
+import '../../views/starterScreens/productDetailView.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/dashboardBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
@@ -122,6 +123,11 @@ class AppPages {
     GetPage(
       name: Routes.addExpense,
       page: () => const AddExpenses(),
+    ),
+    GetPage(
+      name: Routes.productDetail,
+      page: () => const ProductDetailView(),
+      binding: AllProductsBinding(),
     ),
     // GetPage(name: Routes.onboarding, page: () => const OnboardingScreen()),
   ];

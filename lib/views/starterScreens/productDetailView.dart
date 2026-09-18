@@ -6,6 +6,7 @@ import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+import '../../common/route/app_routes.dart';
 import '../../controllers/allProductsController.dart';
 import '../../models/productItemModel.dart';
 
@@ -33,7 +34,7 @@ class ProductDetailView extends GetView<ProductController> {
             padding: const EdgeInsets.only(right: 10.0),
             child: AppButton(
               text: 'Edit',
-              onPressed: () {},
+              onPressed: () => Get.toNamed(Routes.addProductWizard, arguments: product),
               fullWidth: false,
               height: 36,
               borderRadius: 8,
@@ -58,11 +59,18 @@ class ProductDetailView extends GetView<ProductController> {
                       decoration: BoxDecoration(
                         color: theme.surfaceMuted,
                         borderRadius: BorderRadius.circular(16),
+                        image: product.imageUrl != null
+                            ? DecorationImage(
+                                image: NetworkImage(product.imageUrl!),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
                       alignment: Alignment.center,
                       child: Stack(
                         children: [
-                          const Center(child: Text('📦', style: TextStyle(fontSize: 48))),
+                          if (product.imageUrl == null)
+                            const Center(child: Text('📦', style: TextStyle(fontSize: 48))),
                           Positioned(
                             bottom: 8,
                             left: 8,
@@ -292,55 +300,39 @@ class ProductDetailView extends GetView<ProductController> {
                             ],
                           ),
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                'Low Stock Alert',
-                                style: GoogleFonts.plusJakartaSans(fontSize: 12, color: theme.textSecondary),
-                              ),
-                              const SizedBox(height: 4),
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '${product.minStockThreshold.toInt()} ',
-                                      style: GoogleFonts.sora(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.textPrimary,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: 'pcs',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 13,
-                                        color: theme.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline, size: 16, color: theme.textSecondary),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Optimal velocity: Estimated 8 days remaining before re-order point.',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: theme.textSecondary,
-                            ),
-                          ),
-                        ),
+                        // Expanded(
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.end,
+                        //     children: [
+                        //       Text(
+                        //         'Low Stock Alert',textAlign: .end,
+                        //         style: GoogleFonts.plusJakartaSans(fontSize: 12, color: theme.textSecondary),
+                        //       ),
+                        //       const SizedBox(height: 4),
+                        //       RichText(
+                        //         text: TextSpan(
+                        //           children: [
+                        //             TextSpan(
+                        //               text: '${product.minStockThreshold.toInt()} ',
+                        //               style: GoogleFonts.sora(
+                        //                 fontSize: 18,
+                        //                 fontWeight: FontWeight.bold,
+                        //                 color: theme.textPrimary,
+                        //               ),
+                        //             ),
+                        //             TextSpan(
+                        //               text: 'pcs',
+                        //               style: GoogleFonts.plusJakartaSans(
+                        //                 fontSize: 13,
+                        //                 color: theme.textSecondary,
+                        //               ),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],

@@ -20,10 +20,13 @@ class MoreScreen extends StatelessWidget {
             CustomAppBar(title: 'More'),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 children: [
-                  CustomAppBar(title:AppConstants.businessTitle),
-                  const SizedBox(height: 10,),
+                  CustomAppBar(title: AppConstants.businessTitle),
+                  const SizedBox(height: 10),
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.category_outlined,
@@ -45,7 +48,9 @@ class MoreScreen extends StatelessWidget {
                     MoreMenuTile(
                       icon: Icons.receipt_long_outlined,
                       title: 'Expenses',
-                      onTap: () {},
+                      onTap: () {
+                        Get.toNamed(Routes.addExpense);
+                      },
                     ),
                     MoreMenuTile(
                       icon: Icons.bar_chart_outlined,
@@ -116,7 +121,7 @@ class MoreScreen extends StatelessWidget {
             ),
           ],
         ),
-      )
+      ),
     );
   }
 

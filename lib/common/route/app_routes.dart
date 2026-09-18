@@ -23,4 +23,5 @@ abstract class Routes {
   static const addSale = '/addSale';
   static const addPurchase = '/addPurchase';
   static const addExpense = '/addExpense';
+  static const productDetail = '/productDetail';
 }

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/productItemModel.dart';
 import '../models/category_model.dart';
@@ -82,7 +83,8 @@ class ProductRepository {
 
   Future<ProductItemModel> addProduct(
       ProductItemModel product,
-      ) async {
+      ) async
+  {
     final userId = _supabase.auth.currentUser!.id;
 
     final data = {
@@ -112,7 +114,8 @@ class ProductRepository {
   Future<void> updateProduct(
       String productId,
       Map<String, dynamic> data,
-      ) async {
+      ) async
+  {
     final userId = _supabase.auth.currentUser!.id;
 
     await _supabase
@@ -126,17 +129,48 @@ class ProductRepository {
   }
 
   // =========================
-  // DEACTIVATE PRODUCT
+  // IMAGE UPLOAD
   // =========================
 
-  Future<void> deactivateProduct(String productId) async {
+  Future<String> uploadProductImage(
+      String fileName,
+      List<int> bytes,
+      ) async {
+    final user = _supabase.auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User is not logged in');
+    }
+
+    final path = '${user.id}/products/$fileName';
+
+    await _supabase.storage
+        .from('shop-images')
+        .uploadBinary(
+      path,
+      Uint8List.fromList(bytes),
+      fileOptions: const FileOptions(
+        upsert: true,
+      ),
+    );
+
+    return _supabase.storage
+        .from('shop-images')
+        .getPublicUrl(path);
+  }
+
+  // =========================
+  // DELETE PRODUCT
+  // =========================
+
+  Future<void> deleteProduct(String productId) async {
     await _supabase
-        .from('products')
-        .update({
-      'is_active': false,
-      'updated_by': _supabase.auth.currentUser!.id,
-      'updated_at': DateTime.now().toIso8601String(),
-    })
-        .eq('id', productId);
+        .from('products').delete().eq('id', productId);
+    //     .update({
+    //   'is_active': false,
+    //   'updated_by': _supabase.auth.currentUser!.id,
+    //   'updated_at': DateTime.now().toIso8601String(),
+    // })
+    //     .eq('id', productId);
   }
 }

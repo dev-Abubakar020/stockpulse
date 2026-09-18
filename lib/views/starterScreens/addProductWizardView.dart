@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stockpulse/common/route/app_routes.dart';
 import '../../common/theme/theme_helper.dart';
 import '../../controllers/addProductWizardController.dart';
 import '../../models/category_model.dart';
@@ -29,14 +32,14 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                   }
                 },
               )),
-        title: Text(
-          'Add Product',
+        title: Obx(() => Text(
+          controller.editingProduct.value != null ? 'Edit Product' : 'Add Product',
           style: GoogleFonts.sora(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: theme.textPrimary,
           ),
-        ),
+        )),
         centerTitle: false,
         actions: [
           Obx(() => controller.currentStep.value == 3
@@ -197,40 +200,57 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 20),
 
               // Product Image Box Placeholder container
-              Container(
-                height: 140,
-                decoration: BoxDecoration(
-                  color: theme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.border, width: 1, style: BorderStyle.solid),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: theme.primary.withValues(alpha: 0.1),
-                      child: Icon(Icons.camera_alt_outlined, color: theme.primary, size: 22),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Add Product Image',
-                      style: GoogleFonts.sora(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: theme.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Supports PNG, JPG, or snap photo',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        color: theme.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
+              GestureDetector(
+                onTap: () => controller.pickImage(),
+                child: Obx(() => Container(
+                  height: 140,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: theme.border, width: 1, style: BorderStyle.solid),
+                    image: _buildProductImage(controller),
+                  ),
+                  child: controller.pickedFile.value == null && controller.networkImageUrl.value == null
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor: theme.primary.withValues(alpha: 0.1),
+                              child: Icon(Icons.camera_alt_outlined, color: theme.primary, size: 22),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Add Product Image',
+                              style: GoogleFonts.sora(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: theme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Supports PNG, JPG, or snap photo',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                color: theme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Colors.black.withValues(alpha: 0.5),
+                              child: const Icon(Icons.edit, color: Colors.white, size: 14),
+                            ),
+                          ),
+                        ),
+                )),
               ),
               const SizedBox(height: 24),
 
@@ -246,7 +266,9 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                 children: [
                   _buildFieldLabel('CATEGORY *', theme),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(Routes.addCategories);
+                    },
                     child: Text(
                       '+ New Category',
                       style: GoogleFonts.plusJakartaSans(
@@ -388,14 +410,16 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Continue to Pricing & Stock',
+                Obx(() => Text(
+                  controller.editingProduct.value != null 
+                      ? 'Continue to Pricing & Stock' 
+                      : 'Continue to Pricing & Stock', // Actually same for Step 1
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
-                ),
+                )),
                 const SizedBox(width: 8),
                 const Icon(Icons.arrow_forward, color: Colors.white, size: 18),
               ],
@@ -706,14 +730,16 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 0,
                   ),
-                  child: Text(
-                    'Save & Review →',
+                  child: Obx(() => Text(
+                    controller.editingProduct.value != null 
+                        ? 'Update & Review →' 
+                        : 'Save & Review →',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
-                  ),
+                  )),
                 ),
               ),
             ],
@@ -748,15 +774,17 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 24),
 
               Center(
-                child: Text(
-                  'Product Added Successfully',
+                child: Obx(() => Text(
+                  controller.editingProduct.value != null 
+                      ? 'Product Updated Successfully' 
+                      : 'Product Added Successfully',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.sora(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: theme.textPrimary,
                   ),
-                ),
+                )),
               ),
               const SizedBox(height: 8),
 
@@ -772,7 +800,11 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                           text: controller.nameController.text,
                           style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary),
                         ),
-                        const TextSpan(text: ' has been listed and is now live in store inventory.'),
+                        TextSpan(
+                          text: controller.editingProduct.value != null 
+                              ? ' has been updated in your store inventory.' 
+                              : ' has been listed and is now live in store inventory.',
+                        ),
                       ],
                     ),
                   ),
@@ -798,9 +830,12 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                           decoration: BoxDecoration(
                             color: theme.surfaceMuted,
                             borderRadius: BorderRadius.circular(12),
+                            image: _buildProductImage(controller),
                           ),
                           alignment: Alignment.center,
-                          child: const Text('🥤', style: TextStyle(fontSize: 24)),
+                          child: controller.pickedFile.value == null && controller.networkImageUrl.value == null
+                              ? const Text('🥤', style: TextStyle(fontSize: 24))
+                              : null,
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -1065,5 +1100,21 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
         ),
       ],
     );
+  }
+
+  DecorationImage? _buildProductImage(AddProductWizardController controller) {
+    if (controller.pickedFile.value != null) {
+      return DecorationImage(
+        image: FileImage(File(controller.pickedFile.value!.path)),
+        fit: BoxFit.cover,
+      );
+    }
+    if (controller.networkImageUrl.value != null) {
+      return DecorationImage(
+        image: NetworkImage(controller.networkImageUrl.value!),
+        fit: BoxFit.cover,
+      );
+    }
+    return null;
   }
 }

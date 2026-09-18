@@ -147,12 +147,20 @@ class AllProducts extends GetView<ProductController>  {
                               decoration: BoxDecoration(
                                 color: imgBgColor,
                                 borderRadius: BorderRadius.circular(12),
+                                image: product.imageUrl != null
+                                    ? DecorationImage(
+                                        image: NetworkImage(product.imageUrl!),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
                               ),
                               alignment: Alignment.center,
-                              child: Text(
-                                '📦',
-                                style: const TextStyle(fontSize: 28),
-                              ),
+                              child: product.imageUrl == null
+                                  ? const Text(
+                                      '📦',
+                                      style: TextStyle(fontSize: 28),
+                                    )
+                                  : null,
                             ),
                             const SizedBox(width: 14),
                             // Details central column

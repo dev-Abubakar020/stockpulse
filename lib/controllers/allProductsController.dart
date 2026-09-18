@@ -75,11 +75,11 @@ class ProductController extends GetxController {
   // DELETE / DEACTIVATE
   // =========================
 
-  Future<void> deactivateProduct(
+  Future<void> deleteProduct(
       ProductItemModel product,
       ) async {
     try {
-      await repository.deactivateProduct(product.id);
+      await repository.deleteProduct(product.id);
 
       products.removeWhere(
             (item) => item.id == product.id,

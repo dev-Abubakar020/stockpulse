@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
 import '../../common/widgets/custom_statuschip.dart';
@@ -12,14 +15,13 @@ import '../../models/TransactionItemModel.dart';
 class PurchasePage extends StatelessWidget {
   const PurchasePage({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final transactions = [
       const TransactionItem(
         reference: 'PUR-0024',
-        name:'Muhammad Ali',
+        name: 'Muhammad Ali',
         dateTime: 'Today, 10:42 AM',
         amount: 'Rs. 2,450',
         status: 'Completed',
@@ -28,7 +30,7 @@ class PurchasePage extends StatelessWidget {
 
       const TransactionItem(
         reference: 'PUR-0025',
-        name:'Muhammad Ali',
+        name: 'Muhammad Ali',
         dateTime: 'Today, 10:21 AM',
         amount: 'Rs. 12,960',
         status: 'Processing',
@@ -37,7 +39,7 @@ class PurchasePage extends StatelessWidget {
 
       const TransactionItem(
         reference: 'PUR-0026',
-        name:'Muhammad Ali',
+        name: 'Muhammad Ali',
         dateTime: 'Today, 09:55 AM',
         amount: 'Rs. 3,850',
         status: 'Pending',
@@ -46,7 +48,7 @@ class PurchasePage extends StatelessWidget {
 
       const TransactionItem(
         reference: 'PUR-0027',
-        name:'Muhammad Ali',
+        name: 'Muhammad Ali',
         dateTime: 'Yesterday, 06:30 PM',
         amount: 'Rs. 1,250',
         status: 'Cancelled',
@@ -64,10 +66,15 @@ class PurchasePage extends StatelessWidget {
               CustomAppBar(
                 title: AppConstants.purchaseTitle,
                 actions: [
-                  Expanded(child: AppButton(text: '+ Add', onPressed: () {  },))
+                  Expanded(
+                    child: AppButton(
+                      text: '+ Add',
+                      onPressed: () => Get.toNamed(Routes.addPurchase),
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(height: 15,),
+              SizedBox(height: 15),
               CustomSearchField(
                 // controller: controller.searchController,
                 hintText: AppConstants.searchHint1,
@@ -77,15 +84,11 @@ class PurchasePage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               CustomFilterTabs(
-                items: const [
-                  'All',
-                  'Completed',
-                  'Cancelled',
-                ],
+                items: const ['All', 'Completed', 'Cancelled'],
                 // selectedIndex: controller.selectedFilter.value,
                 // onChanged: controller.changeFilter,
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 10),
 
               _buildCardGroup([
                 ListView.separated(
@@ -107,8 +110,8 @@ class PurchasePage extends StatelessWidget {
                       },
                     );
                   },
-                )
-              ])
+                ),
+              ]),
             ],
           ),
         ),
@@ -127,4 +130,3 @@ class PurchasePage extends StatelessWidget {
     );
   }
 }
-
