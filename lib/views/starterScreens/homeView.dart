@@ -9,6 +9,7 @@ import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../controllers/dashboardController.dart';
+import '../../controllers/allProductsController.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -16,6 +17,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
+    final productController = Get.find<ProductController>();
 
     return Scaffold(
       backgroundColor: theme.background,
@@ -153,14 +155,14 @@ class HomeView extends StatelessWidget {
                             onTap: () {
                               Get.find<DashboardController>().changePage(2);
                             },
-                            child: CardSummary(
-                              title: AppConstants.totalProduct,
-                              value: '284',
-                              subtitle: 'In inventory',
-                              icon: Icons.grid_view_rounded,
-                              iconColor: const Color(0xFF1565C0),
-                              iconBackgroundColor: const Color(0xFFE3F2FD),
-                            ),
+                            child: Obx(() => CardSummary(
+                                  title: AppConstants.totalProduct,
+                                  value: productController.products.length.toString(),
+                                  subtitle: 'In inventory',
+                                  icon: Icons.grid_view_rounded,
+                                  iconColor: const Color(0xFF1565C0),
+                                  iconBackgroundColor: const Color(0xFFE3F2FD),
+                                )),
                           ),
                         ),
                         const SizedBox(width: 14),
@@ -177,7 +179,6 @@ class HomeView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
                     // --- Quick Actions Section ---
                     CustomHeading(
                       title: AppConstants.quickAction,
@@ -190,7 +191,9 @@ class HomeView extends StatelessWidget {
                             title: 'New Sale',
                             icon: Icons.add_shopping_cart_rounded,
                             color: const Color(0xFF2E7D32),
-                            onTap: () {},
+                            onTap: () {
+                              Get.toNamed(Routes.addSale);
+                            },
                           ),
                         ),
                         Expanded(
@@ -199,7 +202,7 @@ class HomeView extends StatelessWidget {
                             icon: Icons.assignment_turned_in_outlined,
                             color: const Color(0xFF00796B),
                             onTap: () {
-                              Get.find<DashboardController>().changePage(3);
+                              Get.toNamed(Routes.addPurchase);
                             },
                           ),
                         ),
@@ -218,7 +221,9 @@ class HomeView extends StatelessWidget {
                             title: 'Add Expense',
                             icon: Icons.account_balance_wallet_outlined,
                             color: const Color(0xFFEF6C00),
-                            onTap: () {},
+                            onTap: () {
+                              Get.toNamed(Routes.addExpense);
+                            },
                           ),
                         ),
                       ],

@@ -11,6 +11,9 @@ import 'package:stockpulse/views/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
 
 import '../../views/addcategories.dart';
+import '../../views/addexpenses.dart';
+import '../../views/addpurchase.dart';
+import '../../views/addsale.dart';
 import '../../views/allcategories.dart';
 import '../../views/starterScreens/Setting.dart';
 import '../../views/starterScreens/allProducts.dart';
@@ -106,6 +109,19 @@ class AppPages {
       name: Routes.addProductWizard,
       page: () => const AddProductWizardView(),
       binding: AddProductWizardBinding(),
+    ),
+
+    GetPage(
+      name: Routes.addSale,
+      page: () => const AddSale(),
+    ),
+    GetPage(
+      name: Routes.addPurchase,
+      page: () => const AddPurchase(),
+    ),
+    GetPage(
+      name: Routes.addExpense,
+      page: () => const AddExpenses(),
     ),
     // GetPage(name: Routes.onboarding, page: () => const OnboardingScreen()),
   ];

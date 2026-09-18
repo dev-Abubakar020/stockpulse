@@ -18,5 +18,9 @@ abstract class Routes {
   static const addCategories = '/addCategory';
   static const allPurchase = '/allPurchase';
   static const settingPage = '/settingPage';
+
   static const addProductWizard = '/addProductWizard';
+  static const addSale = '/addSale';
+  static const addPurchase = '/addPurchase';
+  static const addExpense = '/addExpense';
 }

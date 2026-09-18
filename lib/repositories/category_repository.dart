@@ -50,7 +50,7 @@ class CategoryRepository {
     try {
       final user = _supabase.auth.currentUser;
       if (user != null) {
-        updateData['updated_by'] = user.id;
+        updateData['created_by'] = user.id;
       }
     } catch (_) {}
 
