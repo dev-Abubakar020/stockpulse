@@ -28,13 +28,13 @@ class ProductDetailView extends GetView<ProductController> {
     return Scaffold(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
-        title: 'Product Details',
+        title: AppConstants.detailPTitle,
         showBackButton: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10.0),
             child: AppButton(
-              text: 'Edit',
+              text: AppConstants.edit,
               onPressed: () => Get.toNamed(Routes.addProductWizard, arguments: product),
               fullWidth: false,
               height: 36,
@@ -82,7 +82,7 @@ class ProductDetailView extends GetView<ProductController> {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                'Active',
+                                AppConstants.statusActive,
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 9,
                                   fontWeight: FontWeight.bold,
@@ -101,9 +101,9 @@ class ProductDetailView extends GetView<ProductController> {
                         children: [
                           Row(
                             children: [
-                              _buildSmallBadge(product.categoryName ?? 'Beverages', theme),
+                              _buildSmallBadge(product.categoryName ?? AppConstants.defaultCat, theme),
                               const SizedBox(width: 8),
-                              const CustomStatusChip(textTitle: 'In Stock', type: StatusType.success),
+                              const CustomStatusChip(textTitle: AppConstants.statusInStock, type: StatusType.success),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -117,7 +117,7 @@ class ProductDetailView extends GetView<ProductController> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '1.5 Litre (Family Bottle)', // Placeholder for subtitle/desc
+                            AppConstants.defaultTitle,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 13,
                               color: theme.textSecondary,
@@ -129,7 +129,7 @@ class ProductDetailView extends GetView<ProductController> {
                               Icon(Icons.qr_code_2, size: 16, color: theme.textSecondary),
                               const SizedBox(width: 4),
                               Text(
-                                product.barcode ?? '5449000000996',
+                                product.barcode ?? AppConstants.defaultBarCode,
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -139,13 +139,13 @@ class ProductDetailView extends GetView<ProductController> {
                               const SizedBox(width: 4),
                               IconButton(
                                 onPressed: () async {
-                                  final barcodeToCopy = product.barcode ?? '5449000000996';
+                                  final barcodeToCopy = product.barcode ?? AppConstants.defaultBarCode;
                                   await Clipboard.setData(ClipboardData(text: barcodeToCopy));
 
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text('Barcode copied to clipboard!'),
+                                        content: Text(AppConstants.barcodeCopied),
                                         duration: Duration(seconds: 2),
                                       ),
                                     );
@@ -166,7 +166,7 @@ class ProductDetailView extends GetView<ProductController> {
               // --- Pricing & Margins Section ---
               _buildSectionCard(
                 theme,
-                title: 'Pricing & Margins',
+                title: AppConstants.priceMargin,
                 subtitle: 'Unit: ${product.unit}',
                 icon: Icons.account_balance_wallet_outlined,
                 child: Column(
@@ -175,18 +175,18 @@ class ProductDetailView extends GetView<ProductController> {
                       children: [
                         Expanded(
                           child: _buildPriceBox(
-                            'Retail Sale Price',
+                            AppConstants.retailPrice,
                             'Rs. ${product.salePrice.toInt()}',
-                            'per unit',
+                            'per ${AppConstants.unit}',
                             theme,
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: _buildPriceBox(
-                            'Wholesale Purchase',
+                            AppConstants.wholeSaleP,
                             'Rs. ${product.purchasePrice.toInt()}',
-                            'cost basis',
+                            AppConstants.costBasis,
                             theme,
                           ),
                         ),
@@ -217,7 +217,7 @@ class ProductDetailView extends GetView<ProductController> {
                                     ),
                                   ),
                                   Text(
-                                    'Calculated per piece sold',
+                                    AppConstants.calPerPiece,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 11,
                                       color: const Color(0xFF166534).withValues(alpha: 0.7),
@@ -253,9 +253,9 @@ class ProductDetailView extends GetView<ProductController> {
               // --- Inventory Health Section ---
               _buildSectionCard(
                 theme,
-                title: 'Inventory Health',
+                title: AppConstants.invHealth,
                 icon: Icons.inventory_2_outlined,
-                headerAction: const CustomStatusChip(textTitle: 'Healthy Stock', type: StatusType.success),
+                headerAction: const CustomStatusChip(textTitle: AppConstants.healthyStock, type: StatusType.success),
                 child: Column(
                   children: [
                     Row(
@@ -265,7 +265,7 @@ class ProductDetailView extends GetView<ProductController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Current Available',
+                                AppConstants.currAvailability,
                                 style: GoogleFonts.plusJakartaSans(fontSize: 12, color: theme.textSecondary),
                               ),
                               const SizedBox(height: 4),
@@ -314,39 +314,6 @@ class ProductDetailView extends GetView<ProductController> {
                             ],
                           ),
                         ),
-                        // Expanded(
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.end,
-                        //     children: [
-                        //       Text(
-                        //         'Low Stock Alert',textAlign: .end,
-                        //         style: GoogleFonts.plusJakartaSans(fontSize: 12, color: theme.textSecondary),
-                        //       ),
-                        //       const SizedBox(height: 4),
-                        //       RichText(
-                        //         text: TextSpan(
-                        //           children: [
-                        //             TextSpan(
-                        //               text: '${product.minStockThreshold.toInt()} ',
-                        //               style: GoogleFonts.sora(
-                        //                 fontSize: 18,
-                        //                 fontWeight: FontWeight.bold,
-                        //                 color: theme.textPrimary,
-                        //               ),
-                        //             ),
-                        //             TextSpan(
-                        //               text: 'pcs',
-                        //               style: GoogleFonts.plusJakartaSans(
-                        //                 fontSize: 13,
-                        //                 color: theme.textSecondary,
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                       ],
                     ),
                   ],
@@ -354,39 +321,6 @@ class ProductDetailView extends GetView<ProductController> {
               ),
               const SizedBox(height: 20),
 
-              /// --- Action Buttons ---
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: OutlinedButton.icon(
-              //         onPressed: () {},
-              //         icon: const Icon(Icons.swap_vert_rounded),
-              //         label: const Text('Adjust Stock'),
-              //         style: OutlinedButton.styleFrom(
-              //           padding: const EdgeInsets.symmetric(vertical: 12),
-              //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              //           side: BorderSide(color: theme.border),
-              //         ),
-              //       ),
-              //     ),
-              //     const SizedBox(width: 16),
-              //     Expanded(
-              //       child: OutlinedButton.icon(
-              //         onPressed: () {},
-              //         icon: const Icon(Icons.print_outlined),
-              //         label: const Text('Print Label'),
-              //         style: OutlinedButton.styleFrom(
-              //           padding: const EdgeInsets.symmetric(vertical: 12),
-              //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              //           side: BorderSide(color: theme.border),
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              // const SizedBox(height: 24),
-
-              // --- Danger Zone ---
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -402,7 +336,7 @@ class ProductDetailView extends GetView<ProductController> {
                         const Icon(Icons.warning_amber_rounded, color: Color(0xFFE11D48), size: 20),
                         const SizedBox(width: 8),
                         Text(
-                          'Danger Zone',
+                          AppConstants.dangerZone,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -413,7 +347,7 @@ class ProductDetailView extends GetView<ProductController> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Deleting this product will immediately remove it from the active POS register and transaction quick-picks. Past receipts remain archived.',
+                      AppConstants.dangerZineSubtitle,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
                         height: 1.5,
@@ -422,7 +356,7 @@ class ProductDetailView extends GetView<ProductController> {
                     ),
                     const SizedBox(height: 16),
                     AppButton(
-                      text: 'Delete Product',
+                      text: AppConstants.delProduct,
                       onPressed: () => _confirmDelete(context, product),
                       backgroundColor: Colors.white,
                       foregroundColor: const Color(0xFFE11D48),
@@ -551,12 +485,12 @@ class ProductDetailView extends GetView<ProductController> {
   void _confirmDelete(BuildContext context, ProductItemModel product) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Product?'),
+        title: const Text('${AppConstants.delProduct}?'),
         content: Text('Are you sure you want to delete ${product.article}? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: const Text(AppConstants.cancelTitle),
           ),
           TextButton(
             onPressed: () async {
@@ -565,7 +499,7 @@ class ProductDetailView extends GetView<ProductController> {
               Get.back(); // Return to All Products list
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: const Text(AppConstants.delTitle),
           ),
         ],
       ),

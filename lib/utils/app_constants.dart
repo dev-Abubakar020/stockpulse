@@ -49,14 +49,23 @@ class AppConstants {
   static const String quickAction = "Quick Actions";
   static const String recentSales = "Recent Sales";
   static const String moreTitle = 'More';
+  static const String detailPTitle = 'Product Details';
   static const String purchaseTitle = 'Purchase';
   static const String profitTitle = 'Profit';
   static const String settingTitle = 'Setting';
+  static const String delTitle = 'Delete';
+  static const String cancelTitle = 'Cancel';
+  static const String delProduct = 'Delete Product';
+  static const String invHealth = 'Inventory Health';
+  static const String healthyStock  = 'Healthy Stock';
+  static const String calPerPiece = 'Calculated per piece sold';
+  static const String currAvailability = 'Current Available';
   static const String enterPhoneNumber = "Enter Phone Number";
   static const String signupSubtitle =
       'Enter your details to register your secure zero-knowledge workspace';
   static const String loginWelcomeSubtitle =
       'Sign in to manage your store, sales, and inventory.';
+  static const String dangerZineSubtitle = 'Deleting this product will immediately remove it from the active POS register and transaction quick-picks. Past receipts remain archived.';
   static const String recoveryEmailSubtitle =
       'No worries! Choose your recovery channel and we will send a secure verification code.';
   static const String loginSlug = "Enter your credentials to access your Shop";
@@ -75,6 +84,20 @@ class AppConstants {
   static const String todayCardSummary = "Today's Sales";
   static const String addSale = "+ New Sale";
   static const String add = "+ Add";
+  static const String edit = "Edit";
+  static const String priceMargin = "Pricing & Margins";
+  static const String retailPrice = "Retail Sale Price";
+  static const String wholeSaleP = "Wholesale Purchase";
+  static const String costBasis = "cost basis";
+  static const String statusActive = "Active";
+  static const String statusInActive = "InActive";
+  static const String statusInStock = "In Stock";
+  static const String statusOutOfStock = "Out Of Stock";
+  static const String dangerZone = "Danger Zone";
+  static const String defaultCat = "Beverages";
+  static const String defaultBarCode = '5449000000996';
+  static const String barcodeCopied = 'Barcode copied to clipboard!';
+  static const String defaultTitle = '1.5 Litre (Family Bottle)';
   static const String loginForgotPassword = 'Forgot password?';
   static const String rememberMe = 'Remember me';
   static const String rememberPassword = 'Remember your password?';
