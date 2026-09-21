@@ -5,8 +5,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashController extends GetxController {
   var visible = true.obs;
-  final LocalStorageService storage = Get.find<LocalStorageService>();
   bool _disposed = false;
+  final LocalStorageService storage = Get.find<LocalStorageService>();
+
 
   @override
   void onInit() {

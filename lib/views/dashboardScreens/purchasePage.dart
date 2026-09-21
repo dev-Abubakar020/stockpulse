@@ -12,6 +12,7 @@ import '../../common/widgets/custom_statuschip.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/cutom_TransactionTile.dart';
 
+import '../../common/widgets/emptyfilter.dart';
 import '../../controllers/purchase_controller.dart';
 
 class PurchasePage extends StatelessWidget {
@@ -118,10 +119,13 @@ class PurchasePage extends StatelessWidget {
                         controller.filteredPurchases;
 
                     if (purchases.isEmpty) {
-                      return _EmptyPurchases(
-                        isSearching:
-                        controller.searchQuery.value.isNotEmpty ||
-                            controller.selectedFilter.value != 0,
+                      final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
+                      return EmptyStateWidget(
+                        isSearching: isSearching,
+                        title: isSearching ? 'No purchases found' : 'No purchases yet',
+                        subtitle: isSearching
+                            ? 'Try changing your search or filter.'
+                            : 'Your completed purchases will appear here.',
                       );
                     }
 
@@ -304,84 +308,3 @@ class PurchasePage extends StatelessWidget {
   }
 }
 
-// ================================================================
-// EMPTY STATE
-// ================================================================
-
-class _EmptyPurchases extends StatelessWidget {
-  final bool isSearching;
-
-  const _EmptyPurchases({
-    required this.isSearching,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-
-      margin: const EdgeInsets.only(top: 30),
-
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 50,
-      ),
-
-      decoration: BoxDecoration(
-        color: context.isDark
-            ? const Color(0xFF131D2E)
-            : Colors.white,
-
-        borderRadius: BorderRadius.circular(16),
-
-        border: Border.all(
-          color: context.isDark
-              ? const Color(0xFF1E2D44)
-              : const Color(0xFFE2E8F0),
-        ),
-      ),
-
-      child: Column(
-        children: [
-          Icon(
-            isSearching
-                ? Icons.search_off_rounded
-                : Icons.shopping_cart_outlined,
-
-            size: 55,
-
-            color: Colors.grey.shade400,
-          ),
-
-          const SizedBox(height: 14),
-
-          Text(
-            isSearching
-                ? 'No purchases found'
-                : 'No purchases yet',
-
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
-          Text(
-            isSearching
-                ? 'Try changing your search or filter.'
-                : 'Your completed purchases will appear here.',
-
-            textAlign: TextAlign.center,
-
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

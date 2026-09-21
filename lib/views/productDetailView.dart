@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
@@ -6,9 +7,9 @@ import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import '../../common/route/app_routes.dart';
-import '../../controllers/allProductsController.dart';
-import '../../models/productItemModel.dart';
+import '../common/route/app_routes.dart';
+import '../controllers/allProductsController.dart';
+import '../models/productItemModel.dart';
 
 class ProductDetailView extends GetView<ProductController> {
   const ProductDetailView({super.key});
@@ -136,7 +137,22 @@ class ProductDetailView extends GetView<ProductController> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Icon(Icons.copy_rounded, size: 14, color: theme.textSecondary),
+                              IconButton(
+                                onPressed: () async {
+                                  final barcodeToCopy = product.barcode ?? '5449000000996';
+                                  await Clipboard.setData(ClipboardData(text: barcodeToCopy));
+
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Barcode copied to clipboard!'),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: Icon(Icons.copy_rounded, size: 14, color: theme.textSecondary),
+                              ),
                             ],
                           ),
                         ],
@@ -189,8 +205,6 @@ class ProductDetailView extends GetView<ProductController> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.trending_up, color: Color(0xFF166534), size: 18),
-                              const SizedBox(width: 8),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

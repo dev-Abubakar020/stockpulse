@@ -1,8 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../common/route/app_routes.dart';
+import '../services/local_storage_service.dart';
 
 class AuthRepository {
   final SupabaseClient _supabase;
@@ -92,9 +98,6 @@ class AuthRepository {
     return userCredential;
   }
 
-  Future<void> logout() async {
-    await _supabase.auth.signOut();
-  }
 
   User? get currentUser => _supabase.auth.currentUser;
 

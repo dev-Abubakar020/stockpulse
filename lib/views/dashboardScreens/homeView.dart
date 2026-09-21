@@ -35,7 +35,7 @@ class HomeView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppConstants.greeting,
+                        productController.getGreetingMessage(),
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           color: theme.textSecondary,

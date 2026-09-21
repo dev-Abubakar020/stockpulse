@@ -13,7 +13,7 @@ import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
-import '../common/widgets/themetogglebtn.dart';
+import '../../common/widgets/themetogglebtn.dart';
 
 class PhoneDetailScreen extends StatefulWidget {
   const PhoneDetailScreen({super.key});

@@ -1,0 +1,120 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:stockpulse/common/route/app_routes.dart';
+import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/custom_statuschip.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
+import 'package:stockpulse/controllers/sale_controller.dart';
+import 'package:stockpulse/utils/app_constants.dart';
+
+import '../../common/widgets/CustomSearchField.dart';
+import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/custom_button.dart';
+import '../../common/widgets/cutom_TransactionTile.dart';
+import '../../common/widgets/emptyfilter.dart';
+
+
+class SaleView extends StatelessWidget {
+  SaleView({super.key});
+  final SaleController controller = Get.find<SaleController>();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.appTheme;
+
+    return Scaffold(
+      backgroundColor: theme.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomAppBar(
+                title: AppConstants.saleTitle,
+                actions: [
+                  Expanded(
+                    child: AppButton(
+                      text: AppConstants.addSale,
+                      onPressed: () => Get.toNamed(Routes.addSale),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              CustomSearchField(
+                controller: controller.searchController,
+                hintText: AppConstants.searchHint,
+                showScanner: false,
+                onChanged: controller.searchSales,
+              ),
+              const SizedBox(height: 24),
+              Obx(
+                () => CustomFilterTabs(
+                  items: controller.filters,
+                  selectedIndex: controller.selectedFilter.value,
+                  onChanged: controller.changeFilter,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // --- Dynamic Sales List ---
+              Obx(() {
+                if (controller.isSalesLoading.value) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                final salesList = controller.filteredSales;
+
+                if (salesList.isEmpty) {
+                  final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
+                  return EmptyStateWidget(
+                    isSearching: isSearching,
+                    title: isSearching ? 'No Sale found' : 'No Sale yet',
+                    subtitle: isSearching
+                        ? 'Try changing your search or filter.'
+                        : 'Your completed sale will appear here.',
+                  );
+                }
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: salesList.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final sale = salesList[index];
+
+                    StatusType statusType = StatusType.neutral;
+                    if (sale.status.toLowerCase() == 'completed') {
+                      statusType = StatusType.success;
+                    } else if (sale.status.toLowerCase() == 'void' || sale.status.toLowerCase() == 'cancelled') {
+                      statusType = StatusType.error;
+                    }
+
+                    final dateStr = "${sale.saleDate.day}/${sale.saleDate.month}/${sale.saleDate.year}";
+
+                    return CustomTransactionTile(
+                      reference: sale.saleNo,
+                      dateTime: dateStr,
+                      amount: 'Rs. ${sale.totalAmount.toInt()}',
+                      status: sale.status,
+                      statusType: statusType,
+                      onTap: () {
+                        // Optional: Navigate to detail view
+                      },
+                    );
+                  },
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

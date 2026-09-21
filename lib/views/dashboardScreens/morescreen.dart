@@ -3,11 +3,14 @@ import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/widgets/custom_MenuTile.dart';
 
 class MoreScreen extends StatelessWidget {
-  const MoreScreen({super.key});
+  MoreScreen({super.key});
+  final Uri _url = Uri.parse('https://flutter.dev');
+  final Uri _url2 = Uri.parse('https://flutter.dev');
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +39,6 @@ class MoreScreen extends StatelessWidget {
                       },
                     ),
                     MoreMenuTile(
-                      icon: Icons.people_outline_rounded,
-                      title: 'Customers',
-                      onTap: () {},
-                    ),
-                    MoreMenuTile(
-                      icon: Icons.group_outlined,
-                      title: 'Suppliers',
-                      onTap: () {},
-                    ),
-                    MoreMenuTile(
                       icon: Icons.receipt_long_outlined,
                       title: 'Expenses',
                       onTap: () {
@@ -61,31 +54,21 @@ class MoreScreen extends StatelessWidget {
                       icon: Icons.badge_outlined,
                       title: 'Staff',
                       showDivider: false,
-                      onTap: () {},
+                      onTap: () {
+                        Get.snackbar(
+                          'Feature Unavailable',
+                          'This feature is coming Soon',
+                        );
+                      },
                     ),
                   ]),
 
                   const SizedBox(height: 20),
 
-                  // Section 2: App Options
-                  CustomAppBar(title: 'App Options'),
-                  const SizedBox(height: 20),
+                  // Section 2
+                  CustomAppBar(title: 'Others Options'),
+                  const SizedBox(height: 10),
                   _buildCardGroup([
-                    MoreMenuTile(
-                      icon: Icons.store_outlined,
-                      title: 'Shop Profile',
-                      onTap: () {},
-                    ),
-                    MoreMenuTile(
-                      icon: Icons.notifications_none_rounded,
-                      title: 'Notifications',
-                      onTap: () {},
-                    ),
-                    MoreMenuTile(
-                      icon: Icons.palette_outlined,
-                      title: 'Appearance',
-                      onTap: () {},
-                    ),
                     MoreMenuTile(
                       icon: Icons.settings_outlined,
                       title: 'Settings',
@@ -94,24 +77,20 @@ class MoreScreen extends StatelessWidget {
                         Get.toNamed(Routes.settingPage);
                       },
                     ),
-                  ]),
-
-                  const SizedBox(height: 20),
-
-                  // Section 3: Support
-                  CustomAppBar(title: 'Support'),
-                  const SizedBox(height: 10),
-                  _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.help_outline_rounded,
                       title: 'Help & Support',
-                      onTap: () {},
+                      onTap: () {
+                        _launchUrl();
+                      },
                     ),
                     MoreMenuTile(
                       icon: Icons.info_outline_rounded,
                       title: 'About StockPulse',
                       showDivider: false,
-                      onTap: () {},
+                      onTap: () {
+                        _launchUrl2();
+                      },
                     ),
                   ]),
 
@@ -134,5 +113,16 @@ class MoreScreen extends StatelessWidget {
       ),
       child: Column(children: children),
     );
+  }
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+  Future<void> _launchUrl2() async {
+    if (!await launchUrl(_url2)) {
+      throw Exception('Could not launch $_url2');
+    }
   }
 }

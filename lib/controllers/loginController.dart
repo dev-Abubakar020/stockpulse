@@ -147,6 +147,12 @@ class LoginController extends GetxController {
     obscurePassword.toggle();
   }
 
+  Future<void> logout() async {
+    await Supabase.instance.client.auth.signOut();
+    Get.find<LocalStorageService>().setLoggedIn(false);
+    Get.offAllNamed(Routes.login);
+  }
+
   @override
   void onClose() {
     emailController.dispose();

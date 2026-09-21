@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
-import '../../common/theme/theme_helper.dart';
-import '../../controllers/addProductWizardController.dart';
-import '../../models/category_model.dart';
+import '../common/theme/theme_helper.dart';
+import '../controllers/addProductWizardController.dart';
+import '../models/category_model.dart';
 
 class AddProductWizardView extends GetView<AddProductWizardController> {
   const AddProductWizardView({super.key});

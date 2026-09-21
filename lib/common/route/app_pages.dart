@@ -1,13 +1,13 @@
 import 'package:stockpulse/common/bindings/loginBinding.dart';
 import 'package:stockpulse/common/bindings/signUpBinding.dart';
 import 'package:stockpulse/common/bindings/shopCreateBinding.dart';
-import 'package:stockpulse/views/login.dart';
-import 'package:stockpulse/views/onboarding.dart';
-import 'package:stockpulse/views/signup.dart';
-import 'package:stockpulse/views/forgotPassword.dart';
-import 'package:stockpulse/views/otpverification.dart';
-import 'package:stockpulse/views/phonedetailScreen.dart';
-import 'package:stockpulse/views/dashboard.dart';
+import 'package:stockpulse/views/authScreens/login.dart';
+import 'package:stockpulse/views/starterScreens/onboarding.dart';
+import 'package:stockpulse/views/authScreens/signup.dart';
+import 'package:stockpulse/views/authScreens/forgotPassword.dart';
+import 'package:stockpulse/views/authScreens/otpverification.dart';
+import 'package:stockpulse/views/authScreens/phonedetailScreen.dart';
+import 'package:stockpulse/views/dashboardScreens/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
 
 import '../../views/addcategories.dart';
@@ -15,18 +15,20 @@ import '../../views/addexpenses.dart';
 import '../../views/addpurchase.dart';
 import '../../views/addsale.dart';
 import '../../views/allcategories.dart';
-import '../../views/starterScreens/Setting.dart';
-import '../../views/starterScreens/allProducts.dart';
-import '../../views/starterScreens/homeView.dart';
-import '../../views/starterScreens/morescreen.dart';
-import '../../views/starterScreens/purchasePage.dart';
-import '../../views/starterScreens/saleView.dart';
-import '../../views/starterScreens/addProductWizardView.dart';
-import '../../views/starterScreens/productDetailView.dart';
+import '../../views/dashboardScreens/Setting.dart';
+import '../../views/dashboardScreens/allProducts.dart';
+import '../../views/dashboardScreens/homeView.dart';
+import '../../views/dashboardScreens/morescreen.dart';
+import '../../views/dashboardScreens/purchasePage.dart';
+import '../../views/dashboardScreens/saleView.dart';
+import '../../views/addProductWizardView.dart';
+import '../../views/productDetailView.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
 import '../bindings/dashboardBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
+import '../bindings/saleBinding.dart';
+import '../bindings/settingBinding.dart';
 import 'app_routes.dart';
 
 import 'package:get/get.dart';
@@ -89,6 +91,7 @@ class AppPages {
     GetPage(
       name: Routes.settingPage,
       page: () =>  SettingPage(),
+      binding: SettingBinding(),
     ),
     GetPage(
       name: Routes.allCategories,
@@ -117,7 +120,7 @@ class AppPages {
     GetPage(
       name: Routes.addSale,
       page: () => const AddSale(),
-      binding: AllProductsBinding(),
+      binding: SaleBinding(),
     ),
     GetPage(
       name: Routes.addPurchase,

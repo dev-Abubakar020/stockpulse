@@ -16,12 +16,6 @@ class DashboardController extends GetxController {
     selectedIndex.value = index;
   }
 
-  Future<void> logout() async {
-    await Supabase.instance.client.auth.signOut();
-    Get.find<LocalStorageService>().setLoggedIn(false);
-    Get.offAllNamed(Routes.login);
-  }
-
   bool handleBackPress() {
     final now = DateTime.now();
     if (_lastPressedAt == null ||

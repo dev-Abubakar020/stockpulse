@@ -98,10 +98,6 @@ class _AddPurchaseState extends State<AddPurchase> {
       body: SafeArea(
         child: Column(
           children: [
-            // ==================================================
-            // APP BAR
-            // ==================================================
-
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
@@ -119,9 +115,7 @@ class _AddPurchaseState extends State<AddPurchase> {
               ),
             ),
 
-            // ==================================================
-            // CONTENT
-            // ==================================================
+            // ============= CONTENT
 
             Expanded(
               child: SingleChildScrollView(
@@ -141,7 +135,7 @@ class _AddPurchaseState extends State<AddPurchase> {
 
                       const SizedBox(height: 14),
 
-                      _buildNotes(),
+                      // _buildNotes(),
 
                       const SizedBox(height: 24),
                     ],
@@ -150,9 +144,7 @@ class _AddPurchaseState extends State<AddPurchase> {
               ),
             ),
 
-            // ==================================================
-            // SAVE BAR
-            // ==================================================
+            // ============= SAVE BAR
 
             Obx(
                   () => _BottomSaveBar(
@@ -174,9 +166,7 @@ class _AddPurchaseState extends State<AddPurchase> {
     );
   }
 
-  // ============================================================
-  // PURCHASE ITEMS
-  // ============================================================
+  // ============= PURCHASE ITEMS
 
   Widget _buildPurchaseItems(bool isDark) {
     final selectedProducts =
@@ -278,9 +268,7 @@ class _AddPurchaseState extends State<AddPurchase> {
     );
   }
 
-  // ============================================================
-  // COST SUMMARY
-  // ============================================================
+  // ============= COST SUMMARY
 
   Widget _buildCostSummary() {
     return _SectionCard(
@@ -338,32 +326,6 @@ class _AddPurchaseState extends State<AddPurchase> {
             valueColor: const Color(0xFF2563EB),
           ),
         ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // NOTES
-  // ============================================================
-
-  Widget _buildNotes() {
-    return _SectionCard(
-      icon: Icons.notes_rounded,
-      iconColor: const Color(0xFF64748B),
-      title: 'Notes',
-      child: CustomTextField(
-        controller:
-        purchaseController.noteController,
-        hintText:
-        'Add optional purchase notes...',
-        labelText: 'Notes (Optional)',
-        keyboardType: TextInputType.multiline,
-        textInputAction:
-        TextInputAction.newline,
-        prefixIcon: const Icon(
-          Icons.edit_note_rounded,
-          size: 18,
-        ),
       ),
     );
   }

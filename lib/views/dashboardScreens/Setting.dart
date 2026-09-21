@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/theme/theme_helper.dart';
 import '../../common/widgets/custom_MenuTile.dart';
+import '../../controllers/loginController.dart';
 
 class SettingPage extends StatelessWidget {
-  const SettingPage({super.key});
+   SettingPage({super.key});
+   final controller = Get.find<LoginController>();
+  final Uri _url = Uri.parse('https://flutter.dev');
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +39,20 @@ class SettingPage extends StatelessWidget {
                       MoreMenuTile(
                         icon: Icons.notifications_none_rounded,
                         title: 'Notifications',
-                        onTap: () {},
+                        onTap: () {
+                          Get.snackbar('ⓘ Notification Service', "Coming Soon",snackPosition:SnackPosition.BOTTOM ,
+                            duration: const Duration(seconds: 2),
+                            backgroundColor: const Color(0xE61E293B),
+                            colorText: Colors.white,
+                          );
+                        },
                       ),
                       MoreMenuTile(
                         icon: Icons.palette_outlined,
                         title: 'Appearance',
-                        onTap: () {},
-                      ),
-                      MoreMenuTile(
-                        icon: Icons.language,
-                        title: 'Language',
-                        showDivider: false,
-                        onTap: () {},
+                        onTap: () {
+                          ThemeController.to.toggleTheme();
+                        },
                       ),
                     ]),
 
@@ -57,14 +65,16 @@ class SettingPage extends StatelessWidget {
                       MoreMenuTile(
                         icon: Icons.help_outline_rounded,
                         title: 'Security',
-                        onTap: () {},
+                        onTap: () {
+                          _launchUrl();
+                        },
                       ),
                       MoreMenuTile(
                         icon: Icons.logout,
                         title: 'Logout',
                         color: Colors.red,
                         showDivider: false,
-                        onTap: () {},
+                        onTap: controller.logout,
                       ),
                     ]),
 
@@ -89,5 +99,11 @@ class SettingPage extends StatelessWidget {
       ),
       child: Column(children: children),
     );
+  }
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
   }
 }

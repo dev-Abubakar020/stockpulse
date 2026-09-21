@@ -189,12 +189,6 @@ class _AddExpensesState extends State<AddExpenses> {
               ),
             ),
 
-            // ── Category Quick Selector ──────────────────────────────
-            _CategoryQuickSelector(
-              categories: _categoryMeta,
-              selected: _selectedCategory,
-              onChanged: (c) => setState(() => _selectedCategory = c),
-            ),
 
             // ── Scrollable Content ───────────────────────────────────
             Expanded(
@@ -203,16 +197,6 @@ class _AddExpensesState extends State<AddExpenses> {
                 child: Column(
                   children: [
                     const SizedBox(height: 12),
-
-                    // Expense Amount Hero Card
-                    _AmountHeroCard(
-                      meta: meta,
-                      amount: _amount,
-                      tax: _tax,
-                      total: _total,
-                      isDark: isDark,
-                    ),
-                    const SizedBox(height: 14),
 
                     // Section 1: Basic Info
                     _SectionCard(

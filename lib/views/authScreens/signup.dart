@@ -8,30 +8,63 @@ import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
-import 'package:stockpulse/controllers/loginController.dart';
+import 'package:stockpulse/controllers/signupController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
-import '../common/widgets/themetogglebtn.dart';
+import '../../common/widgets/themetogglebtn.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  bool rememberMe = true;
+class _SignupViewState extends State<SignupView> {
+  bool agreeToTerms = true;
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<LoginController>();
+    final controller = Get.find<SignupController>();
     final theme = context.appTheme;
 
     return Scaffold(
       backgroundColor: theme.background,
       body: Stack(
         children: [
+          // Ambient background orbs
+          Positioned(
+            top: -120,
+            left: -80,
+            child: Container(
+              width: 320,
+              height: 320,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [theme.glow, theme.glow.withValues(alpha: 0.0)],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -100,
+            right: -80,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    theme.glow.withValues(alpha: 0.6),
+                    theme.glow.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -46,7 +79,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Top bar with optional theme toggle
                       Align(
                         alignment: Alignment.topRight,
                         child: const ThemeToggleButton(),
@@ -54,11 +86,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 8),
                       const _BrandHeader(),
                       const SizedBox(height: 24),
-                      _LoginCard(
+                      _SignupCard(
                         controller: controller,
-                        rememberMe: rememberMe,
-                        onRememberChanged: (val) {
-                          setState(() => rememberMe = val ?? false);
+                        agreeToTerms: agreeToTerms,
+                        onTermsChanged: (val) {
+                          setState(() => agreeToTerms = val ?? false);
                         },
                       ),
                       const SizedBox(height: 20),
@@ -66,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            AppConstants.loginNoAccount,
+                            AppConstants.signupSignIn,
                             style: GoogleFonts.plusJakartaSans(
                               color: theme.textSecondary,
                               fontSize: 13.5,
@@ -74,10 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           CustomTextButton(
-                            text: 'Sign Up',
+                            text: 'Sign In',
                             fontSize: 14,
                             color: theme.primary,
-                            onPressed: () => Get.toNamed(Routes.register),
+                            onPressed: () => Get.toNamed(Routes.login),
                           ),
                         ],
                       ),
@@ -141,7 +173,7 @@ class _BrandHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'STOCKPULSE WORKSPACE',
+              'NEW VENDOR REGISTRATION',
               style: GoogleFonts.sora(
                 color: theme.primary,
                 fontSize: 11,
@@ -153,7 +185,7 @@ class _BrandHeader extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          AppConstants.loginWelcomeTitle,
+          AppConstants.signupTitle,
           textAlign: TextAlign.center,
           style: GoogleFonts.sora(
             color: theme.textPrimary,
@@ -164,7 +196,7 @@ class _BrandHeader extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          AppConstants.loginSlug,
+          'Create your secure account to manage inventory & sales',
           textAlign: TextAlign.center,
           style: GoogleFonts.plusJakartaSans(
             color: theme.textSecondary,
@@ -177,16 +209,16 @@ class _BrandHeader extends StatelessWidget {
   }
 }
 
-class _LoginCard extends StatelessWidget {
-  const _LoginCard({
+class _SignupCard extends StatelessWidget {
+  const _SignupCard({
     required this.controller,
-    required this.rememberMe,
-    required this.onRememberChanged,
+    required this.agreeToTerms,
+    required this.onTermsChanged,
   });
 
-  final LoginController controller;
-  final bool rememberMe;
-  final ValueChanged<bool?> onRememberChanged;
+  final SignupController controller;
+  final bool agreeToTerms;
+  final ValueChanged<bool?> onTermsChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +242,20 @@ class _LoginCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomTextField(
+            controller: controller.nameController,
+            labelText: AppConstants.nameLabel,
+            hintText: AppConstants.nameHint,
+            prefixIcon: Icon(
+              Icons.person_outline_rounded,
+              color: theme.primary,
+              size: 20,
+            ),
+            keyboardType: TextInputType.name,
+            autofillHints: const [AutofillHints.name],
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
             controller: controller.emailController,
             labelText: AppConstants.loginEmailLabel,
             hintText: AppConstants.loginEmailHint,
@@ -222,12 +268,12 @@ class _LoginCard extends StatelessWidget {
             autofillHints: const [AutofillHints.email],
             textInputAction: TextInputAction.next,
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           Obx(
             () => CustomTextField(
               controller: controller.passwordController,
               labelText: AppConstants.loginPasswordLabel,
-              hintText: '••••••••••••',
+              hintText: 'At least 8 characters',
               obscureText: controller.obscurePassword.value,
               prefixIcon: Icon(
                 Icons.lock_outline_rounded,
@@ -244,50 +290,36 @@ class _LoginCard extends StatelessWidget {
                   size: 20,
                 ),
               ),
-              autofillHints: const [AutofillHints.password],
+              autofillHints: const [AutofillHints.newPassword],
               textInputAction: TextInputAction.done,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: Checkbox(
-                      value: rememberMe,
-                      onChanged: onRememberChanged,
-                      activeColor: theme.primary,
-                      checkColor: Colors.white,
-                      side: BorderSide(color: theme.border, width: 1.5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
+              SizedBox(
+                width: 22,
+                height: 22,
+                child: Checkbox(
+                  value: agreeToTerms,
+                  onChanged: onTermsChanged,
+                  activeColor: theme.primary,
+                  checkColor: Colors.white,
+                  side: BorderSide(color: theme.border, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    AppConstants.rememberMe,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: theme.textSecondary,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+                ),
               ),
-              GestureDetector(
-                onTap: () => Get.toNamed(Routes.forgotPassword),
+              const SizedBox(width: 8),
+              Expanded(
                 child: Text(
-                  AppConstants.loginForgotPassword,
+                  'I agree to the Terms of Service and Privacy Policy.',
                   style: GoogleFonts.plusJakartaSans(
-                    color: theme.primary,
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
+                    color: theme.textSecondary,
+                    fontSize: 12,
+                    height: 1.4,
                   ),
                 ),
               ),
@@ -296,8 +328,8 @@ class _LoginCard extends StatelessWidget {
           const SizedBox(height: 22),
           Obx(
             () => AppButton(
-              text: AppConstants.loginButton,
-              onPressed: controller.login,
+              text: 'Create Account',
+              onPressed: agreeToTerms ? controller.signup : null,
               isLoading: controller.isLoading.value,
               suffixIcon: const Icon(
                 Icons.arrow_forward_rounded,
@@ -398,7 +430,7 @@ class _OrDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            AppConstants.loginContinueWith,
+            'OR CONTINUE WITH',
             style: GoogleFonts.sora(
               color: theme.textHint,
               fontSize: 10.5,

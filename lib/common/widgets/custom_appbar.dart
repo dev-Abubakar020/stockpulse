@@ -17,9 +17,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
+      child: SizedBox(
         height: kToolbarHeight,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
           children: [
             if (showBackButton) ...[

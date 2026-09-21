@@ -11,6 +11,7 @@ import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/emptyfilter.dart';
 import '../../controllers/allProductsController.dart';
 
 
@@ -92,11 +93,18 @@ class AllProducts extends GetView<ProductController>  {
                 final products = controller.filteredProducts;
 
                 if (products.isEmpty) {
-                  return const Center(
-                    child: Text('No products found'),
+                  final bool isSearching = products.isNotEmpty || products != 0;
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8,right: 8,bottom: 100),
+                    child: EmptyStateWidget(
+                      isSearching: isSearching,
+                      title: isSearching ? 'Query Not found' : 'No Sale yet',
+                      subtitle: isSearching
+                          ? 'Try changing your search or filter.'
+                          : 'Your completed sale will appear here.',
+                    ),
                   );
                 }
-
                 return RefreshIndicator(
                   onRefresh: controller.fetchProducts,
                   child: ListView.separated(

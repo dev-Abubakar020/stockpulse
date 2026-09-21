@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:stockpulse/views/starterScreens/allProducts.dart';
-import 'package:stockpulse/views/starterScreens/homeView.dart';
-import 'package:stockpulse/views/starterScreens/purchasePage.dart';
-import 'package:stockpulse/views/starterScreens/saleView.dart';
-import 'package:stockpulse/views/starterScreens/morescreen.dart';
-import '../controllers/dashboardController.dart';
+import 'package:stockpulse/views/dashboardScreens/allProducts.dart';
+import 'package:stockpulse/views/dashboardScreens/homeView.dart';
+import 'package:stockpulse/views/dashboardScreens/purchasePage.dart';
+import 'package:stockpulse/views/dashboardScreens/saleView.dart';
+import 'package:stockpulse/views/dashboardScreens/morescreen.dart';
+import '../../controllers/dashboardController.dart';
 
 
 class DashboardScreen extends GetView<DashboardController> {

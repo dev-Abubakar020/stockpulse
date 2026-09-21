@@ -247,17 +247,6 @@ class AddCategories extends StatelessWidget {
                                                 color: Color(0xFF0F172A),
                                               ),
                                             ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              isActive
-                                                  ? 'Visible in POS register, catalog, and product filters.'
-                                                  : 'Hidden from POS register, catalog, and product filters.',
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                                color: Color(0xFF334155),
-                                                height: 1.3,
-                                              ),
-                                            ),
                                           ],
                                         ),
                                       ),
