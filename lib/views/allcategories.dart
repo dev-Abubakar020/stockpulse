@@ -5,6 +5,7 @@ import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/models/category_model.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import '../common/widgets/Custom_filter.dart';
 
 class AllCategories extends StatelessWidget {
@@ -21,10 +22,10 @@ class AllCategories extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
           child: Column(
             children: [
-              const CustomAppBar(title: 'All Categories', showBackButton: true),
+              const CustomAppBar(title: AppConstants.addCat, showBackButton: true),
               const SizedBox(height: 10),
               CustomSearchField(
-                hintText: 'Search Categories',
+                hintText: AppConstants.searchCat,
                 showScanner: false,
                 onChanged: (value) {
                   controller.searchQuery.value = value;
@@ -33,7 +34,7 @@ class AllCategories extends StatelessWidget {
               const SizedBox(height: 12),
               Obx(
                 () => CustomFilterTabs(
-                  items: const ['All', 'Active', 'Inactive'],
+                  items: const [AppConstants.all, AppConstants.statusActive, AppConstants.statusInActive],
                   selectedIndex: controller.selectedFilterIndex.value,
                   onChanged: controller.changeFilter,
                 ),
@@ -50,7 +51,7 @@ class AllCategories extends StatelessWidget {
                   if (categories.isEmpty) {
                     return const Center(
                       child: Text(
-                        'No categories found.',
+                        AppConstants.noCatFound,
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     );
@@ -89,7 +90,7 @@ class AllCategories extends StatelessWidget {
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         icon: const Icon(Icons.add),
         label: const Text(
-          'Add Category',
+        AppConstants.addCat,
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
@@ -168,7 +169,7 @@ class CategoryCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          category.isActive ? 'Active' : 'Inactive',
+                          category.isActive ? AppConstants.statusActive : AppConstants.statusInActive ,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -210,7 +211,7 @@ class CategoryCard extends StatelessWidget {
                         size: 20,
                       ),
                       const SizedBox(width: 8),
-                      const Text('Mark Active'),
+                      const Text(AppConstants.markActive),
                     ],
                   ),
                 ),
@@ -224,7 +225,7 @@ class CategoryCard extends StatelessWidget {
                         size: 20,
                       ),
                       const SizedBox(width: 8),
-                      const Text('Mark Inactive'),
+                      const Text(AppConstants.markInActive),
                     ],
                   ),
                 ),

@@ -89,8 +89,15 @@ class AppConstants {
   static const String retailPrice = "Retail Sale Price";
   static const String wholeSaleP = "Wholesale Purchase";
   static const String costBasis = "cost basis";
+  static const String addCat = 'Add Category';
+  static const String searchCat = 'Search Categories';
+  static const String allCat = 'All Categories';
+  static const String noCatFound = 'No categories found.';
+  static const String all = "All";
   static const String statusActive = "Active";
   static const String statusInActive = "InActive";
+  static const String markActive = "Mark Active";
+  static const String markInActive = "Mark InActive";
   static const String statusInStock = "In Stock";
   static const String statusOutOfStock = "Out Of Stock";
   static const String dangerZone = "Danger Zone";
