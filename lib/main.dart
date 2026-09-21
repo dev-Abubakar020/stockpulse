@@ -10,6 +10,7 @@ import 'package:stockpulse/common/theme/app_theme.dart';
 import 'package:stockpulse/controllers/splashController.dart';
 import 'package:stockpulse/firebase_options.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
+import 'package:stockpulse/services/networkManager.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,6 +29,7 @@ Future<void> main() async {
   await LocalStorageService.init();
   Get.put(LocalStorageService(), permanent: true);
   FlutterNativeSplash.remove();
+  Get.put(NetworkManager());
   runApp(const MyApp());
 }
 
