@@ -1,71 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CustomSnackBar{
-  static void hideSnackBar() => ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar();
+class CustomSnackBar {
+  CustomSnackBar._();
 
-  static void customToast({required message}){
-    ScaffoldMessenger.of(Get.context!).showSnackBar(
-        SnackBar(
-            elevation: 0,
-            duration: const Duration(seconds: 3),
-            backgroundColor: Colors.transparent,
-            content: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                // ignore: deprecated_member_use
-                color: Colors.white.withOpacity(0.9),
-              ),
-              child: Center(
-                child: Text(message,style: Theme.of(Get.context!).textTheme.labelLarge,),
-              ),
-            ))
+  // Hide current snackbar
+  static void hideSnackBar() {
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
+  }
+
+  // Custom Toast
+  static void customToast({
+    required String message,
+  }) {
+    final context = Get.context;
+    if (context == null) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        elevation: 0,
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.transparent,
+        behavior: SnackBarBehavior.floating,
+        content: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
+          child: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ),
+      ),
     );
   }
 
-  static void successSnackBar({required title, message='', duration=3}){
+  // Success
+  static void successSnackBar({
+    required String title,
+    String message = '',
+    int duration = 3,
+  }) {
     Get.snackbar(
       title,
       message,
       isDismissible: true,
-      shouldIconPulse: true,
       colorText: Colors.white,
-      backgroundColor: Color(0xFF4b68ff),
+      backgroundColor: const Color(0xFF4B68FF),
       snackPosition: SnackPosition.BOTTOM,
       duration: Duration(seconds: duration),
-      margin: const EdgeInsets.all(30),
-      icon: const Icon(Icons.check, color: Colors.white,),
-
+      margin: const EdgeInsets.all(20),
+      borderRadius: 12,
+      icon: const Icon(
+        Icons.check_circle_outline,
+        color: Colors.white,
+      ),
     );
   }
-  static void warningSnackBar({required title, message=''}){
+
+  // Warning
+  static void warningSnackBar({
+    required String title,
+    String message = '',
+    int duration = 3,
+  }) {
     Get.snackbar(
       title,
       message,
       isDismissible: true,
-      shouldIconPulse: true,
       colorText: Colors.white,
       backgroundColor: Colors.orange,
       snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(30),
-      icon: const Icon(Icons.warning, color: Colors.white,),
+      duration: Duration(seconds: duration),
+      margin: const EdgeInsets.all(20),
+      borderRadius: 12,
+      icon: const Icon(
+        Icons.warning_amber_rounded,
+        color: Colors.white,
+      ),
     );
   }
 
-  static void errorSnackBar({required title, message=''}){
+  // Error
+  static void errorSnackBar({
+    required String title,
+    String message = '',
+    int duration = 3,
+  }) {
     Get.snackbar(
       title,
       message,
       isDismissible: true,
-      shouldIconPulse: true,
       colorText: Colors.white,
       backgroundColor: Colors.red.shade600,
       snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 3),
+      duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(20),
-      icon: const Icon(Icons.warning, color: Colors.white,),
+      borderRadius: 12,
+      icon: const Icon(
+        Icons.error_outline,
+        color: Colors.white,
+      ),
     );
   }
 }
