@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stockpulse/common/widgets/custom_TextField.dart';
+import 'package:stockpulse/common/widgets/custom_appbar.dart';
+import '../models/productItemModel.dart';
+import '../controllers/allProductsController.dart';
 
 class AddSale extends StatefulWidget {
   const AddSale({super.key});
@@ -9,35 +13,19 @@ class AddSale extends StatefulWidget {
   State<AddSale> createState() => _AddSaleState();
 }
 
-// ─── Models ───────────────────────────────────────────────────────────────────
-
-class _Product {
-  final String id;
-  final String name;
-  final double price;
-  final String imageType; // For placeholder icon/color
-  final Color badgeColor;
-
-  const _Product({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.imageType,
-    required this.badgeColor,
-  });
-}
 
 class _CartItem {
-  final _Product product;
+  final ProductItemModel product;
   int quantity;
 
   _CartItem({required this.product, this.quantity = 1});
 
-  double get subtotal => product.price * quantity;
+  double get subtotal => product.salePrice * quantity;
 }
 
 class _AddSaleState extends State<AddSale> {
-  // Current step: 0 = Select Products, 1 = Review Cart, 2 = Payment, 3 = Success
+  final ProductController controller = Get.find<ProductController>();
+
   int _currentStep = 0;
 
   // Colors matching the design
@@ -48,74 +36,7 @@ class _AddSaleState extends State<AddSale> {
   static const Color textDark = Color(0xFF111827);
   static const Color textMuted = Color(0xFF6B7280);
 
-  // Mock Products list matching the image
-  final List<_Product> _products = const [
-    _Product(
-      id: '1',
-      name: 'Coca Cola 1.5L',
-      price: 180,
-      imageType: 'drink',
-      badgeColor: Color(0xFFEF4444),
-    ),
-    _Product(
-      id: '2',
-      name: 'Surf Excel 1kg',
-      price: 520,
-      imageType: 'detergent',
-      badgeColor: Color(0xFF2563EB),
-    ),
-    _Product(
-      id: '3',
-      name: 'Lays Masala',
-      price: 80,
-      imageType: 'snack',
-      badgeColor: Color(0xFFF59E0B),
-    ),
-    _Product(
-      id: '4',
-      name: 'Dalda Cooking Oil 1L',
-      price: 450,
-      imageType: 'oil',
-      badgeColor: Color(0xFF10B981),
-    ),
-    _Product(
-      id: '5',
-      name: 'Nestle Milk Pack',
-      price: 220,
-      imageType: 'dairy',
-      badgeColor: Color(0xFF0284C7),
-    ),
-    _Product(
-      id: '6',
-      name: 'Tapal Danedar Tea 450g',
-      price: 650,
-      imageType: 'tea',
-      badgeColor: Color(0xFFB45309),
-    ),
-    _Product(
-      id: '7',
-      name: 'National Salt 800g',
-      price: 60,
-      imageType: 'grocery',
-      badgeColor: Color(0xFF64748B),
-    ),
-  ];
-
-  // Cart state: Pre-populate with initial items from mockup
-  final Map<String, int> _cart = {
-    '1': 2, // Coca Cola: 2
-    '2': 1, // Surf Excel: 1
-  };
-
-  // Customers mock list
-  final List<String> _customers = [
-    'Walk-in Customer',
-    'Ali Ahmed',
-    'Sara Khan',
-    'Muhammad Usman',
-    'Bilal Raza',
-  ];
-  String _selectedCustomer = 'Walk-in Customer';
+  final Map<String, int> _cart = {};
 
   // Note Controller
   final TextEditingController _noteController = TextEditingController();
@@ -133,8 +54,13 @@ class _AddSaleState extends State<AddSale> {
   double get _subtotal {
     double total = 0;
     _cart.forEach((productId, qty) {
-      final p = _products.firstWhere((item) => item.id == productId);
-      total += p.price * qty;
+      final p = controller.products.firstWhere(
+        (item) => item.id == productId,
+        orElse: () => const ProductItemModel(id: '', article: '', unit: '', purchasePrice: 0, salePrice: 0, currentStock: 0, minStockThreshold: 0, isActive: false),
+      );
+      if (p.id.isNotEmpty) {
+        total += p.salePrice * qty;
+      }
     });
     return total;
   }
@@ -226,7 +152,7 @@ class _AddSaleState extends State<AddSale> {
 
               // Step Content
               Expanded(
-                child: _buildCurrentStepContent(),
+                child: Obx(() => _buildCurrentStepContent()),
               ),
 
               // Bottom Bar (if not on success screen)
@@ -255,36 +181,37 @@ class _AddSaleState extends State<AddSale> {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: textDark),
-            onPressed: _handleBack,
-          ),
-          Text(
-            'New Sale',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: textDark,
-            ),
-          ),
-          if (_currentStep == 0)
-            IconButton(
-              icon: const Icon(Icons.qr_code_scanner_rounded, size: 22, color: primaryGreen),
-              onPressed: () {
-                Get.snackbar('Barcode Scanner', 'Ready to scan barcode',
-                    backgroundColor: Colors.white, colorText: primaryGreen);
-              },
-            )
-          else
-            const SizedBox(width: 48), // Balancing spacer
-        ],
-      ),
-    );
+    return CustomAppBar(title: 'New Sale',showBackButton: true,);
+    //   Padding(
+    //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //     children: [
+    //       IconButton(
+    //         icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: textDark),
+    //         onPressed: _handleBack,
+    //       ),
+    //       Text(
+    //         'New Sale',
+    //         style: GoogleFonts.plusJakartaSans(
+    //           fontSize: 18,
+    //           fontWeight: FontWeight.w700,
+    //           color: textDark,
+    //         ),
+    //       ),
+    //       if (_currentStep == 0)
+    //         IconButton(
+    //           icon: const Icon(Icons.qr_code_scanner_rounded, size: 22, color: primaryGreen),
+    //           onPressed: () {
+    //             Get.snackbar('Barcode Scanner', 'Ready to scan barcode',
+    //                 backgroundColor: Colors.white, colorText: primaryGreen);
+    //           },
+    //         )
+    //       else
+    //         const SizedBox(width: 48), // Balancing spacer
+    //     ],
+    //   ),
+    // )
   }
 
   Widget _buildCurrentStepContent() {
@@ -304,8 +231,8 @@ class _AddSaleState extends State<AddSale> {
 
   // ─── Step 1: Select / Add Products ──────────────────────────────────────────
   Widget _buildStep1SelectProducts() {
-    final filtered = _products
-        .where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+    final filtered = controller.products
+        .where((p) => p.article.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
 
     return Column(
@@ -361,7 +288,10 @@ class _AddSaleState extends State<AddSale> {
                 child: Row(
                   children: [
                     // Product Thumbnail Badge
-                    _buildProductIcon(product),
+                    const Text(
+                      '📦',
+                      style: TextStyle(fontSize: 28),
+                    ),
                     const SizedBox(width: 14),
 
                     // Title & Price
@@ -370,7 +300,7 @@ class _AddSaleState extends State<AddSale> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            product.name,
+                            product.article,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -379,7 +309,7 @@ class _AddSaleState extends State<AddSale> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Rs. ${product.price.toInt()}',
+                            'Rs. ${product.salePrice.toInt()}',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 13,
                               color: textMuted,
@@ -433,7 +363,7 @@ class _AddSaleState extends State<AddSale> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Rs. ${(product.price * qty).toInt()}',
+                            'Rs. ${(product.salePrice * qty).toInt()}',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -468,7 +398,10 @@ class _AddSaleState extends State<AddSale> {
   // ─── Step 2: Review Cart & Customer ─────────────────────────────────────────
   Widget _buildStep2ReviewCart() {
     final cartItems = _cart.entries.map((entry) {
-      final p = _products.firstWhere((prod) => prod.id == entry.key);
+      final p = controller.products.firstWhere(
+        (prod) => prod.id == entry.key,
+        orElse: () => const ProductItemModel(id: '', article: 'Unknown', unit: '', purchasePrice: 0, salePrice: 0, currentStock: 0, minStockThreshold: 0, isActive: false),
+      );
       return _CartItem(product: p, quantity: entry.value);
     }).toList();
 
@@ -487,41 +420,37 @@ class _AddSaleState extends State<AddSale> {
             ),
           ),
           const SizedBox(height: 8),
-          InkWell(
-            onTap: _showCustomerPicker,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: borderColor),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: lightGreenBg,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.person_outline_rounded, color: primaryGreen, size: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: lightGreenBg,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _selectedCustomer,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: textDark,
-                      ),
+                  child: const Icon(Icons.person_outline_rounded, color: primaryGreen, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Walk-in Customer',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: textDark,
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded, color: textMuted),
-                ],
-              ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: textMuted),
+              ],
             ),
           ),
           const SizedBox(height: 22),
@@ -565,6 +494,7 @@ class _AddSaleState extends State<AddSale> {
             )
           else
             ListView.separated(
+
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: cartItems.length,
@@ -573,14 +503,38 @@ class _AddSaleState extends State<AddSale> {
                 final item = cartItems[i];
                 return Row(
                   children: [
-                    _buildProductIcon(item.product),
+                    const Text(
+                      '📦',
+                      style: TextStyle(fontSize: 28),
+                    ),
+                    // Container(
+                    //   width: 60,
+                    //   height: 60,
+                    //   decoration: BoxDecoration(
+                    //     color: AppColors.darkTextPrimary,
+                    //     borderRadius: BorderRadius.circular(12),
+                    //     image: ProductItemModel != null
+                    //         ? DecorationImage(
+                    //       image: NetworkImage(product.imageUrl!),
+                    //       fit: BoxFit.cover,
+                    //     )
+                    //         : null,
+                    //   ),
+                    //   alignment: Alignment.center,
+                    //   child: product.imageUrl == null
+                    //       ? const Text(
+                    //     '📦',
+                    //     style: TextStyle(fontSize: 28),
+                    //   )
+                    //       : null,
+                    // ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.product.name,
+                            item.product.article,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -589,7 +543,7 @@ class _AddSaleState extends State<AddSale> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            'Rs. ${item.product.price.toInt()} x ${item.quantity}',
+                            'Rs. ${item.product.salePrice.toInt()} x ${item.quantity}',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               color: textMuted,
@@ -627,22 +581,23 @@ class _AddSaleState extends State<AddSale> {
             ),
           ),
           const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor),
-            ),
-            child: TextField(
-              controller: _noteController,
-              decoration: InputDecoration(
-                hintText: 'Write a note...',
-                hintStyle: GoogleFonts.plusJakartaSans(color: textMuted, fontSize: 13),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              ),
-            ),
-          ),
+          CustomTextField(controller: _noteController, hintText: 'Write a note...'),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(12),
+          //     border: Border.all(color: borderColor),
+          //   ),
+          //   child: TextField(
+          //     controller: _noteController,
+          //     decoration: InputDecoration(
+          //       hintText: 'Write a note...',
+          //       hintStyle: GoogleFonts.plusJakartaSans(color: textMuted, fontSize: 13),
+          //       border: InputBorder.none,
+          //       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          //     ),
+          //   ),
+          // ),
           const SizedBox(height: 22),
 
           // Pricing Summary
@@ -682,9 +637,6 @@ class _AddSaleState extends State<AddSale> {
     final paymentMethods = [
       {'id': 'Cash', 'icon': Icons.payments_outlined},
       {'id': 'Card', 'icon': Icons.credit_card_rounded},
-      {'id': 'JazzCash', 'icon': Icons.phone_android_rounded},
-      {'id': 'Bank Transfer', 'icon': Icons.account_balance_rounded},
-      {'id': 'Other', 'icon': Icons.more_horiz_rounded},
     ];
 
     return SingleChildScrollView(
@@ -906,7 +858,7 @@ class _AddSaleState extends State<AddSale> {
                 children: [
                   _buildReceiptRow('Invoice No.', 'INV-${DateTime.now().millisecondsSinceEpoch % 10000}'),
                   const SizedBox(height: 10),
-                  _buildReceiptRow('Customer', _selectedCustomer),
+                  _buildReceiptRow('Customer', 'Walk-in Customer'),
                   const SizedBox(height: 10),
                   _buildReceiptRow('Payment Method', _selectedPaymentMethod),
                   const Divider(height: 20, color: borderColor),
@@ -1115,42 +1067,6 @@ class _AddSaleState extends State<AddSale> {
 
   // ─── Helper UI Components ───────────────────────────────────────────────────
 
-  Widget _buildProductIcon(_Product product) {
-    IconData icon;
-    switch (product.imageType) {
-      case 'drink':
-        icon = Icons.local_drink_rounded;
-        break;
-      case 'detergent':
-        icon = Icons.cleaning_services_rounded;
-        break;
-      case 'snack':
-        icon = Icons.fastfood_rounded;
-        break;
-      case 'oil':
-        icon = Icons.water_drop_rounded;
-        break;
-      case 'dairy':
-        icon = Icons.icecream_rounded;
-        break;
-      case 'tea':
-        icon = Icons.coffee_rounded;
-        break;
-      default:
-        icon = Icons.inventory_2_rounded;
-    }
-
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: product.badgeColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Icon(icon, color: product.badgeColor, size: 22),
-    );
-  }
-
   Widget _buildSummaryLine(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1233,53 +1149,4 @@ class _AddSaleState extends State<AddSale> {
     );
   }
 
-  void _showCustomerPicker() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Select Customer',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: textDark,
-                ),
-              ),
-              const SizedBox(height: 12),
-              ..._customers.map((c) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(
-                      Icons.person_outline_rounded,
-                      color: c == _selectedCustomer ? primaryGreen : textMuted,
-                    ),
-                    title: Text(
-                      c,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontWeight: c == _selectedCustomer ? FontWeight.w700 : FontWeight.w500,
-                        color: c == _selectedCustomer ? primaryGreen : textDark,
-                      ),
-                    ),
-                    trailing: c == _selectedCustomer
-                        ? const Icon(Icons.check_circle_rounded, color: primaryGreen)
-                        : null,
-                    onTap: () {
-                      setState(() => _selectedCustomer = c);
-                      Navigator.of(context).pop();
-                    },
-                  )),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

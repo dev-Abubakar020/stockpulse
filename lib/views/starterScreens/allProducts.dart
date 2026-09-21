@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
+import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
@@ -31,6 +32,7 @@ class AllProducts extends GetView<ProductController>  {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  //AppBar
                   CustomAppBar(
                     title: AppConstants.productTitle,
                     actions: [
@@ -55,11 +57,15 @@ class AllProducts extends GetView<ProductController>  {
                     ],
                   ),
                   const SizedBox(height: 12),
+
+                  //Search field
                   CustomSearchField(
                     hintText: AppConstants.searchHint,
-                    showScanner: true,
+                    showScanner: false,
                   ),
                   const SizedBox(height: 14),
+
+                  //filters
                   Obx(
                         () => CustomFilterTabs(
                       items: const [
@@ -106,20 +112,20 @@ class AllProducts extends GetView<ProductController>  {
                     itemBuilder: (context, index) {
                       final product = products[index];
                       Color cardBorderColor = theme.border;
-                      Color qtyBgColor = const Color(0xFFF1F5F9);
-                      Color qtyTextColor = const Color(0xFF475569);
-                      Color imgBgColor = const Color(0xFFF8FAFC);
+                      Color qtyBgColor = AppColors.surfaceMuted;
+                      Color qtyTextColor = AppColors.defaultQtyTextColor;
+                      Color imgBgColor = AppColors.darkTextPrimary;
 
                       if (product.stockStatus == 'Low Stock') {
-                        cardBorderColor = const Color(0xFFFDE68A);
-                        qtyBgColor = const Color(0xFFFEF3C7);
-                        qtyTextColor = const Color(0xFFD97706);
-                        imgBgColor = const Color(0xFFFFFBEB);
-                      } else if (product.stockStatus == 'Restock needed' || product.stockStatus == 0) {
-                        cardBorderColor = const Color(0xFFFECACA); // Soft Red
-                        qtyBgColor = const Color(0xFFFEE2E2);
-                        qtyTextColor = const Color(0xFFDC2626);
-                        imgBgColor = const Color(0xFFFFF5F5);
+                        cardBorderColor = AppColors.lowStockCardBorderColor;
+                        qtyBgColor = AppColors.lowStockQtyBgColor;
+                        qtyTextColor = AppColors.warning;
+                        imgBgColor = AppColors.lowStockImgBgColor;
+                      } else if (product.stockStatus == 'Out of Stock') {
+                        cardBorderColor = AppColors.outOfStockCardBorderColor;
+                        qtyBgColor = AppColors.outOfStockQtyBgColor;
+                        qtyTextColor = AppColors.expense;
+                        imgBgColor = AppColors.outOfStockImgBgColor;
                       }
                       return InkWell(
                         onTap: () => Get.toNamed(Routes.productDetail, arguments: product),
@@ -238,22 +244,31 @@ class AllProducts extends GetView<ProductController>  {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                if (product.stockStatus != null) ...[
-                                  Text(
-                                    product.stockStatus!,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      color: qtyTextColor,
-                                    ),
+                                Text(
+                                  product.stockStatus ?? 'In Stock',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: qtyTextColor,
                                   ),
-                                ] else ...[
-                                  Icon(
-                                    Icons.more_vert_rounded,
-                                    size: 18,
-                                    color: theme.textSecondary,
-                                  ),
-                                ],
+                                ),
+
+                                // if (product.stockStatus != null) ...[
+                                //   Text(
+                                //     product.stockStatus!,
+                                //     style: GoogleFonts.plusJakartaSans(
+                                //       fontSize: 11,
+                                //       fontWeight: FontWeight.w700,
+                                //       color: qtyTextColor,
+                                //     ),
+                                //   ),
+                                // ] else ...[
+                                //   Icon(
+                                //     Icons.more_vert_rounded,
+                                //     size: 18,
+                                //     color: theme.textSecondary,
+                                //   ),
+                                // ],
                               ],
                             ),
                           ],

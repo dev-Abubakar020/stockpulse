@@ -340,37 +340,37 @@ class ProductDetailView extends GetView<ProductController> {
               ),
               const SizedBox(height: 20),
 
-              // --- Action Buttons ---
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.swap_vert_rounded),
-                      label: const Text('Adjust Stock'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        side: BorderSide(color: theme.border),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.print_outlined),
-                      label: const Text('Print Label'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        side: BorderSide(color: theme.border),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+              /// --- Action Buttons ---
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: OutlinedButton.icon(
+              //         onPressed: () {},
+              //         icon: const Icon(Icons.swap_vert_rounded),
+              //         label: const Text('Adjust Stock'),
+              //         style: OutlinedButton.styleFrom(
+              //           padding: const EdgeInsets.symmetric(vertical: 12),
+              //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              //           side: BorderSide(color: theme.border),
+              //         ),
+              //       ),
+              //     ),
+              //     const SizedBox(width: 16),
+              //     Expanded(
+              //       child: OutlinedButton.icon(
+              //         onPressed: () {},
+              //         icon: const Icon(Icons.print_outlined),
+              //         label: const Text('Print Label'),
+              //         style: OutlinedButton.styleFrom(
+              //           padding: const EdgeInsets.symmetric(vertical: 12),
+              //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              //           side: BorderSide(color: theme.border),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              // const SizedBox(height: 24),
 
               // --- Danger Zone ---
               Container(

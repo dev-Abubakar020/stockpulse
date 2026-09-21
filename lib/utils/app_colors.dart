@@ -13,9 +13,7 @@ class AppColors {
   // ==================== LIGHT THEME COLORS ====================
   static const Color background = Color(0xFFF8FAFB);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceMuted = Color(
-    0xFFF1F5F9,
-  ); // Field & card background
+  static const Color surfaceMuted = Color(0xFFF1F5F9,);
   static const Color card = Color(0xFFFFFFFF);
   static const Color cardShadow = Color(0x140F2A35);
 
@@ -58,6 +56,15 @@ class AppColors {
   static const Color error = Color(0xFFDC2626);
   static const Color warning = Color(0xFFD97706);
   static const Color lowStock = warning;
+
+  // ==================== Custom Colors =================
+  static const Color defaultQtyTextColor = Color(0xFF475569);
+  static const Color lowStockQtyBgColor = Color(0xFFFEF3C7);
+  static const Color lowStockImgBgColor = Color(0xFFFFFBEB);
+  static const Color lowStockCardBorderColor = Color(0xFFFDE68A);
+  static const Color outOfStockCardBorderColor = Color(0xFFFECACA);
+  static const Color outOfStockQtyBgColor = Color(0xFFFEE2E2);
+  static const Color outOfStockImgBgColor = Color(0xFFFFF5F5);
 
   // ==================== ONBOARDING ====================
   static const Color onboardingLight = Color(0xFFEAF7F5);
