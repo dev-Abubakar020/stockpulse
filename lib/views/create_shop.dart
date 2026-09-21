@@ -8,6 +8,7 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/controllers/shopCreateController.dart';
 import 'package:stockpulse/models/country_model.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 class CreateShop extends GetView<ShopCreateController> {
   const CreateShop({super.key});
@@ -19,12 +20,12 @@ class CreateShop extends GetView<ShopCreateController> {
       backgroundColor: theme.background,
       appBar: AppBar(
         title: Text(
-          'Create your shop',
+          AppConstants.createYourShop,
           style: GoogleFonts.sora(fontWeight: FontWeight.w700),
         ),
         actions: [
           IconButton(
-            tooltip: 'Toggle theme',
+            tooltip: AppConstants.toggleTheme,
             onPressed: () => ThemeController.to.toggleTheme(),
             icon: Icon(
               theme.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
@@ -42,7 +43,7 @@ class CreateShop extends GetView<ShopCreateController> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Set up your workspace before entering the dashboard.',
+                    AppConstants.workspaceSubtitle,
                     style: GoogleFonts.plusJakartaSans(
                       color: theme.textSecondary,
                       fontSize: 13,
@@ -55,14 +56,14 @@ class CreateShop extends GetView<ShopCreateController> {
                       children: [
                         _SectionTitle(
                           icon: Icons.storefront_outlined,
-                          title: 'Shop details',
+                          title: AppConstants.shopDetails,
                           theme: theme,
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
                           controller: controller.ownerController,
-                          labelText: 'Owner name',
-                          hintText: 'Your name',
+                          labelText: AppConstants.ownerName,
+                          hintText: AppConstants.nameHint,
                           prefixIcon: Icon(
                             Icons.person_outline,
                             color: theme.primary,
@@ -72,8 +73,8 @@ class CreateShop extends GetView<ShopCreateController> {
                         const SizedBox(height: 14),
                         CustomTextField(
                           controller: controller.shopController,
-                          labelText: 'Shop name',
-                          hintText: 'Enter your shop name',
+                          labelText: AppConstants.shopName,
+                          hintText: AppConstants.enterShopName,
                           prefixIcon: Icon(
                             Icons.store_outlined,
                             color: theme.primary,
@@ -82,8 +83,8 @@ class CreateShop extends GetView<ShopCreateController> {
                         const SizedBox(height: 14),
                         CustomTextField(
                           controller: controller.phoneController,
-                          labelText: 'Phone (optional)',
-                          hintText: 'Enter shop phone number',
+                          labelText: AppConstants.phoneOptional,
+                          hintText: AppConstants.enterPhoneNumber,
                           prefixIcon: Icon(
                             Icons.phone_outlined,
                             color: theme.primary,
@@ -93,8 +94,8 @@ class CreateShop extends GetView<ShopCreateController> {
                         const SizedBox(height: 14),
                         CustomTextField(
                           controller: controller.addressController,
-                          labelText: 'Complete address',
-                          hintText: 'Street, area, city, and country',
+                          labelText: AppConstants.completeAddress,
+                          hintText: AppConstants.addressHint,
                           prefixIcon: Icon(
                             Icons.location_on_outlined,
                             color: theme.primary,
@@ -104,7 +105,7 @@ class CreateShop extends GetView<ShopCreateController> {
                         const SizedBox(height: 18),
                         _SectionTitle(
                           icon: Icons.payments_outlined,
-                          title: 'Currency',
+                          title: AppConstants.currency,
                           theme: theme,
                         ),
                         const SizedBox(height: 12),
@@ -113,7 +114,7 @@ class CreateShop extends GetView<ShopCreateController> {
                               value: controller.selectedCountry.value,
                               isExpanded: true,
                               decoration: InputDecoration(
-                                labelText: 'Country',
+                                labelText: AppConstants.country,
                                 prefixIcon: const Icon(Icons.public),
                                 filled: true,
                                 fillColor: theme.surfaceMuted,
@@ -157,7 +158,7 @@ class CreateShop extends GetView<ShopCreateController> {
                               children: [
                                 Expanded(
                                   child: _ReadOnlyValue(
-                                    label: 'Symbol',
+                                    label: AppConstants.symbol,
                                     value: controller.currency.symbol,
                                     theme: theme,
                                   ),
@@ -165,7 +166,7 @@ class CreateShop extends GetView<ShopCreateController> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: _ReadOnlyValue(
-                                    label: 'Currency code',
+                                    label: AppConstants.currencyCode,
                                     value: controller.currency.code,
                                     theme: theme,
                                   ),
@@ -180,7 +181,7 @@ class CreateShop extends GetView<ShopCreateController> {
                             )),
                         const SizedBox(height: 22),
                         Obx(() => AppButton(
-                              text: 'Save and continue',
+                              text: AppConstants.saveAndContinue,
                               onPressed: controller.saveShop,
                               isLoading: controller.isSaving.value,
                               suffixIcon: const Icon(
@@ -317,7 +318,7 @@ class _ImagePickerTile extends StatelessWidget {
               ),
             ),
       label: Text(
-        imageBytes == null ? 'Add shop image (optional)' : 'Change shop image',
+        imageBytes == null ? AppConstants.addShopImage : AppConstants.changeShopImage,
       ),
       style: OutlinedButton.styleFrom(
         foregroundColor: theme.primary,

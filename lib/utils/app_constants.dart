@@ -119,4 +119,24 @@ class AppConstants {
 
   static const String exitAppTitle = 'Exit App';
   static const String exitAppSnackBarMsg = 'Press back again to exit the app';
+
+
+  static const String createYourShop = 'Create your shop';
+  static const String toggleTheme = 'Toggle theme';
+  static const String workspaceSubtitle =
+      'Set up your workspace before entering the dashboard.';
+  static const String shopDetails = 'Shop details';
+  static const String ownerName = 'Owner name';
+  static const String shopName = 'Shop name';
+  static const String enterShopName = 'Enter your shop name';
+  static const String phoneOptional = 'Phone (optional)';
+  static const String completeAddress = 'Complete address';
+  static const String addressHint = 'Street, area, city, and country';
+  static const String currency = 'Currency';
+  static const String country = 'Country';
+  static const String symbol = 'Symbol';
+  static const String currencyCode = 'Currency code';
+  static const String saveAndContinue = 'Save and continue';
+  static const String addShopImage = 'Add shop image (optional)';
+  static const String changeShopImage = 'Change shop image';
 }
