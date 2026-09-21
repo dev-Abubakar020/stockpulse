@@ -28,12 +28,6 @@ class CategoryController extends GetxController {
     fetchCategories();
   }
 
-  @override
-  void onClose() {
-    nameController.dispose();
-    super.onClose();
-  }
-
   // Fetch categories from database
   Future<void> fetchCategories() async {
     try {

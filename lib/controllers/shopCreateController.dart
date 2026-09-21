@@ -83,13 +83,4 @@ class ShopCreateController extends GetxController {
       isSaving.value = false;
     }
   }
-
-  @override
-  void onClose() {
-    ownerController.dispose();
-    shopController.dispose();
-    phoneController.dispose();
-    addressController.dispose();
-    super.onClose();
-  }
 }

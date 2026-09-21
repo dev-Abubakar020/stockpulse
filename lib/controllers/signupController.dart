@@ -94,12 +94,4 @@ class SignupController extends GetxController {
   void toggleConfirmPassword() {
     obscureConfirmPassword.toggle();
   }
-
-  @override
-  void onClose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
 }

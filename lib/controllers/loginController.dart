@@ -152,13 +152,4 @@ class LoginController extends GetxController {
     Get.find<LocalStorageService>().setLoggedIn(false);
     Get.offAllNamed(Routes.login);
   }
-
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    phoneController.dispose();
-    otpController.dispose();
-    super.onClose();
-  }
 }

@@ -344,12 +344,4 @@ class PurchaseController extends GetxController {
     super.onInit();
     fetchPurchases();
   }
-
-  @override
-  void onClose() {
-    noteController.dispose();
-    discountController.dispose();
-    searchController.dispose();
-    super.onClose();
-  }
 }

@@ -276,10 +276,6 @@ class AddProductWizardController extends GetxController {
   void onClose() {
     purchasePriceController.removeListener(calculateMargin);
     salePriceController.removeListener(calculateMargin);
-    nameController.dispose();
-    skuController.dispose();
-    purchasePriceController.dispose();
-    salePriceController.dispose();
     super.onClose();
   }
 
