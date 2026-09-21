@@ -90,10 +90,21 @@ class AppConstants {
   static const String wholeSaleP = "Wholesale Purchase";
   static const String costBasis = "cost basis";
   static const String addCat = 'Add Category';
+  static const String reset = 'Reset';
+  static const String categoryName = 'Category Name ';
+  static const String requiredAsterisk = '*';
   static const String searchCat = 'Search Categories';
   static const String allCat = 'All Categories';
   static const String noCatFound = 'No categories found.';
+  static const String customer = "Customer";
+  static const String addNote = "Add Note (Optional)";
+  static const String noteHint = "Write a note...";
+  static const String disTitle = "'Discount (Rs.)'";
+  static const String walkInCustomer = "Walk In Customer";
   static const String all = "All";
+  static const String cartItem = "Cart Items";
+  static const String cartEmpty = "Your Cart is Empty";
+  static const String clrAll = "Clear All";
   static const String statusActive = "Active";
   static const String statusInActive = "InActive";
   static const String markActive = "Mark Active";
@@ -142,8 +153,44 @@ class AppConstants {
   static const String currency = 'Currency';
   static const String country = 'Country';
   static const String symbol = 'Symbol';
+  static const String total = 'Total';
   static const String currencyCode = 'Currency code';
   static const String saveAndContinue = 'Save and continue';
   static const String addShopImage = 'Add shop image (optional)';
   static const String changeShopImage = 'Change shop image';
+
+  static const String insufficientAmount = 'Insufficient Amount';
+  static const String receivedAmountError =
+      'Received amount cannot be less than the total amount.';
+
+  /// Add Sale Screen Constants
+  static const String stockLabel = 'Stock: ';
+  static const String barcodeLabel = 'Barcode: ';
+  static const String subtotal = 'Subtotal';
+  static const String discountLabel = 'Discount';
+  static const String totalAmountLabel = 'Total Amount';
+  static const String selectPaymentMethod = 'Select Payment Method';
+  static const String receivedAmountLabel = 'Received Amount';
+  static const String changeLabel = 'Change';
+  static const String invoiceOptions = 'Invoice Options';
+  static const String printInvoice = 'Print Invoice';
+  static const String shareWhatsApp = 'Share via WhatsApp';
+  static const String saleCompletedSuccess = 'Sale Completed\nSuccessfully!';
+  static const String stockUpdatedAuto = 'Stock has been updated automatically.';
+  static const String statusLabel = 'Status';
+  static const String completedLabel = 'Completed';
+  static const String paymentMethodLabel = 'Payment Method';
+  static const String cashLabel = 'Cash';
+  static const String cardLabel = 'Card';
+  static const String saleIdLabel = 'Sale ID';
+  static const String viewSales = 'View Sales';
+  static const String addAnotherSale = 'Add Another Sale';
+  static const String itemsLabel = 'items';
+  static const String proceedToPayment = 'Proceed to Payment';
+  static const String completeSaleLabel = 'Complete Sale';
+  static const String noProductsAvailable = 'No products available';
+  static const String noProductsFound = 'No products found';
+  static const String addProductsBeforeSale = 'Add products before creating a sale.';
+  static const String tryAnotherProductName = 'Try another product name or barcode.';
+  static const String viewCart = 'View Cart';
 }

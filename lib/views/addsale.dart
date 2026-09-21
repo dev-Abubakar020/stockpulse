@@ -1,1162 +1,10 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:stockpulse/common/widgets/custom_TextField.dart';
-// import 'package:stockpulse/common/widgets/custom_appbar.dart';
-// import '../models/productItemModel.dart';
-// import '../controllers/allProductsController.dart';
-//
-// class AddSale extends StatefulWidget {
-//   const AddSale({super.key});
-//
-//   @override
-//   State<AddSale> createState() => _AddSaleState();
-// }
-//
-//
-// class _CartItem {
-//   final ProductItemModel product;
-//   int quantity;
-//
-//   _CartItem({required this.product, this.quantity = 1});
-//
-//   double get subtotal => product.salePrice * quantity;
-// }
-//
-// class _AddSaleState extends State<AddSale> {
-//   final ProductController controller = Get.find<ProductController>();
-//
-//   int _currentStep = 0;
-//
-//   // Colors matching the design
-//   static const Color primaryGreen = Color(0xFF0D5E3A);
-//   static const Color lightGreenBg = Color(0xFFE8F5E9);
-//   static const Color surfaceColor = Color(0xFFF9FAFB);
-//   static const Color borderColor = Color(0xFFE5E7EB);
-//   static const Color textDark = Color(0xFF111827);
-//   static const Color textMuted = Color(0xFF6B7280);
-//
-//   final Map<String, int> _cart = {};
-//
-//   // Note Controller
-//   final TextEditingController _noteController = TextEditingController();
-//   final TextEditingController _searchController = TextEditingController();
-//   final TextEditingController _receivedAmountController = TextEditingController();
-//
-//   String _searchQuery = '';
-//   String _selectedPaymentMethod = 'Cash';
-//   bool _printInvoice = true;
-//   bool _shareWhatsApp = false;
-//
-//   // Computed properties
-//   int get _totalItemsCount => _cart.values.fold(0, (sum, count) => sum + count);
-//
-//   double get _subtotal {
-//     double total = 0;
-//     _cart.forEach((productId, qty) {
-//       final p = controller.products.firstWhere(
-//         (item) => item.id == productId,
-//         orElse: () => const ProductItemModel(id: '', article: '', unit: '', purchasePrice: 0, salePrice: 0, currentStock: 0, minStockThreshold: 0, isActive: false),
-//       );
-//       if (p.id.isNotEmpty) {
-//         total += p.salePrice * qty;
-//       }
-//     });
-//     return total;
-//   }
-//
-//   double get _discount => 0.0;
-//   double get _grandTotal => _subtotal - _discount;
-//
-//   double get _receivedAmount {
-//     if (_receivedAmountController.text.isEmpty) return _grandTotal;
-//     return double.tryParse(_receivedAmountController.text) ?? _grandTotal;
-//   }
-//
-//   double get _changeAmount {
-//     final diff = _receivedAmount - _grandTotal;
-//     return diff > 0 ? diff : 0.0;
-//   }
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _receivedAmountController.text = _grandTotal.toInt().toString();
-//   }
-//
-//   @override
-//   void dispose() {
-//     _noteController.dispose();
-//     _searchController.dispose();
-//     _receivedAmountController.dispose();
-//     super.dispose();
-//   }
-//
-//   void _handleBack() {
-//     if (_currentStep > 0) {
-//       setState(() {
-//         _currentStep--;
-//       });
-//     } else {
-//       Navigator.of(context).pop();
-//     }
-//   }
-//
-//   void _addToCart(String productId) {
-//     setState(() {
-//       _cart[productId] = (_cart[productId] ?? 0) + 1;
-//       _receivedAmountController.text = _grandTotal.toInt().toString();
-//     });
-//   }
-//
-//   void _decrementCart(String productId) {
-//     setState(() {
-//       if ((_cart[productId] ?? 0) > 1) {
-//         _cart[productId] = _cart[productId]! - 1;
-//       } else {
-//         _cart.remove(productId);
-//       }
-//       _receivedAmountController.text = _grandTotal.toInt().toString();
-//     });
-//   }
-//
-//   void _removeFromCart(String productId) {
-//     setState(() {
-//       _cart.remove(productId);
-//       _receivedAmountController.text = _grandTotal.toInt().toString();
-//     });
-//   }
-//
-//   void _clearCart() {
-//     setState(() {
-//       _cart.clear();
-//       _receivedAmountController.text = '0';
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return PopScope(
-//       canPop: _currentStep == 0,
-//       onPopInvoked: (didPop) {
-//         if (didPop) return;
-//         _handleBack();
-//       },
-//       child: Scaffold(
-//         backgroundColor: surfaceColor,
-//         body: SafeArea(
-//           child: Column(
-//             children: [
-//               // Top Bar
-//               _buildTopBar(),
-//
-//               // Step Content
-//               Expanded(
-//                 child: Obx(() => _buildCurrentStepContent()),
-//               ),
-//
-//               // Bottom Bar (if not on success screen)
-//               if (_currentStep != 3) _buildBottomBar(),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   // ─── Top Bar ────────────────────────────────────────────────────────────────
-//   Widget _buildTopBar() {
-//     if (_currentStep == 3) {
-//       // Success screen top bar
-//       return Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-//         child: Row(
-//           children: [
-//             IconButton(
-//               icon: const Icon(Icons.close_rounded, color: textDark),
-//               onPressed: () => Navigator.of(context).pop(),
-//             ),
-//           ],
-//         ),
-//       );
-//     }
-//
-//     return CustomAppBar(title: 'New Sale',showBackButton: true,);
-//     //   Padding(
-//     //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//     //   child: Row(
-//     //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//     //     children: [
-//     //       IconButton(
-//     //         icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: textDark),
-//     //         onPressed: _handleBack,
-//     //       ),
-//     //       Text(
-//     //         'New Sale',
-//     //         style: GoogleFonts.plusJakartaSans(
-//     //           fontSize: 18,
-//     //           fontWeight: FontWeight.w700,
-//     //           color: textDark,
-//     //         ),
-//     //       ),
-//     //       if (_currentStep == 0)
-//     //         IconButton(
-//     //           icon: const Icon(Icons.qr_code_scanner_rounded, size: 22, color: primaryGreen),
-//     //           onPressed: () {
-//     //             Get.snackbar('Barcode Scanner', 'Ready to scan barcode',
-//     //                 backgroundColor: Colors.white, colorText: primaryGreen);
-//     //           },
-//     //         )
-//     //       else
-//     //         const SizedBox(width: 48), // Balancing spacer
-//     //     ],
-//     //   ),
-//     // )
-//   }
-//
-//   Widget _buildCurrentStepContent() {
-//     switch (_currentStep) {
-//       case 0:
-//         return _buildStep1SelectProducts();
-//       case 1:
-//         return _buildStep2ReviewCart();
-//       case 2:
-//         return _buildStep3Payment();
-//       case 3:
-//         return _buildStep4Success();
-//       default:
-//         return const SizedBox();
-//     }
-//   }
-//
-//   // ─── Step 1: Select / Add Products ──────────────────────────────────────────
-//   Widget _buildStep1SelectProducts() {
-//     final filtered = controller.products
-//         .where((p) => p.article.toLowerCase().contains(_searchQuery.toLowerCase()))
-//         .toList();
-//
-//     return Column(
-//       children: [
-//         // Search field
-//         Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-//           child: Container(
-//             decoration: BoxDecoration(
-//               color: Colors.white,
-//               borderRadius: BorderRadius.circular(12),
-//               border: Border.all(color: borderColor),
-//             ),
-//             child: TextField(
-//               controller: _searchController,
-//               onChanged: (val) => setState(() => _searchQuery = val),
-//               decoration: InputDecoration(
-//                 hintText: 'Search product, barcode...',
-//                 hintStyle: GoogleFonts.plusJakartaSans(
-//                   fontSize: 14,
-//                   color: textMuted,
-//                 ),
-//                 prefixIcon: const Icon(Icons.search_rounded, color: textMuted, size: 20),
-//                 suffixIcon: _searchQuery.isNotEmpty
-//                     ? IconButton(
-//                         icon: const Icon(Icons.close_rounded, size: 18, color: textMuted),
-//                         onPressed: () {
-//                           _searchController.clear();
-//                           setState(() => _searchQuery = '');
-//                         },
-//                       )
-//                     : null,
-//                 border: InputBorder.none,
-//                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
-//               ),
-//             ),
-//           ),
-//         ),
-//
-//         // Products List
-//         Expanded(
-//           child: ListView.separated(
-//             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-//             itemCount: filtered.length,
-//             separatorBuilder: (_, __) => const Divider(height: 16, color: borderColor),
-//             itemBuilder: (context, index) {
-//               final product = filtered[index];
-//               final qty = _cart[product.id] ?? 0;
-//               final isInCart = qty > 0;
-//
-//               return Padding(
-//                 padding: const EdgeInsets.symmetric(vertical: 6),
-//                 child: Row(
-//                   children: [
-//                     // Product Thumbnail Badge
-//                     const Text(
-//                       '📦',
-//                       style: TextStyle(fontSize: 28),
-//                     ),
-//                     const SizedBox(width: 14),
-//
-//                     // Title & Price
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             product.article,
-//                             style: GoogleFonts.plusJakartaSans(
-//                               fontSize: 14,
-//                               fontWeight: FontWeight.w600,
-//                               color: textDark,
-//                             ),
-//                           ),
-//                           const SizedBox(height: 4),
-//                           Text(
-//                             'Rs. ${product.salePrice.toInt()}',
-//                             style: GoogleFonts.plusJakartaSans(
-//                               fontSize: 13,
-//                               color: textMuted,
-//                               fontWeight: FontWeight.w500,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//
-//                     // Action: Stepper or Plus Button
-//                     if (isInCart)
-//                       Column(
-//                         crossAxisAlignment: CrossAxisAlignment.end,
-//                         children: [
-//                           Container(
-//                             height: 34,
-//                             decoration: BoxDecoration(
-//                               color: const Color(0xFFF3F4F6),
-//                               borderRadius: BorderRadius.circular(8),
-//                             ),
-//                             child: Row(
-//                               mainAxisSize: MainAxisSize.min,
-//                               children: [
-//                                 InkWell(
-//                                   onTap: () => _decrementCart(product.id),
-//                                   borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
-//                                   child: const Padding(
-//                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-//                                     child: Icon(Icons.remove, size: 16, color: textDark),
-//                                   ),
-//                                 ),
-//                                 Text(
-//                                   '$qty',
-//                                   style: GoogleFonts.plusJakartaSans(
-//                                     fontSize: 14,
-//                                     fontWeight: FontWeight.w700,
-//                                     color: textDark,
-//                                   ),
-//                                 ),
-//                                 InkWell(
-//                                   onTap: () => _addToCart(product.id),
-//                                   borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
-//                                   child: const Padding(
-//                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-//                                     child: Icon(Icons.add, size: 16, color: textDark),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           const SizedBox(height: 4),
-//                           Text(
-//                             'Rs. ${(product.salePrice * qty).toInt()}',
-//                             style: GoogleFonts.plusJakartaSans(
-//                               fontSize: 12,
-//                               fontWeight: FontWeight.w700,
-//                               color: textDark,
-//                             ),
-//                           ),
-//                         ],
-//                       )
-//                     else
-//                       GestureDetector(
-//                         onTap: () => _addToCart(product.id),
-//                         child: Container(
-//                           width: 34,
-//                           height: 34,
-//                           decoration: const BoxDecoration(
-//                             color: primaryGreen,
-//                             shape: BoxShape.circle,
-//                           ),
-//                           child: const Icon(Icons.add, color: Colors.white, size: 20),
-//                         ),
-//                       ),
-//                   ],
-//                 ),
-//               );
-//             },
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   // ─── Step 2: Review Cart & Customer ─────────────────────────────────────────
-//   Widget _buildStep2ReviewCart() {
-//     final cartItems = _cart.entries.map((entry) {
-//       final p = controller.products.firstWhere(
-//         (prod) => prod.id == entry.key,
-//         orElse: () => const ProductItemModel(id: '', article: 'Unknown', unit: '', purchasePrice: 0, salePrice: 0, currentStock: 0, minStockThreshold: 0, isActive: false),
-//       );
-//       return _CartItem(product: p, quantity: entry.value);
-//     }).toList();
-//
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           // Customer Section
-//           Text(
-//             'Customer',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 14,
-//               fontWeight: FontWeight.w700,
-//               color: textDark,
-//             ),
-//           ),
-//           const SizedBox(height: 8),
-//           Container(
-//             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-//             decoration: BoxDecoration(
-//               color: Colors.white,
-//               borderRadius: BorderRadius.circular(12),
-//               border: Border.all(color: borderColor),
-//             ),
-//             child: Row(
-//               children: [
-//                 Container(
-//                   width: 36,
-//                   height: 36,
-//                   decoration: BoxDecoration(
-//                     color: lightGreenBg,
-//                     borderRadius: BorderRadius.circular(8),
-//                   ),
-//                   child: const Icon(Icons.person_outline_rounded, color: primaryGreen, size: 20),
-//                 ),
-//                 const SizedBox(width: 12),
-//                 Expanded(
-//                   child: Text(
-//                     'Walk-in Customer',
-//                     style: GoogleFonts.plusJakartaSans(
-//                       fontSize: 14,
-//                       fontWeight: FontWeight.w600,
-//                       color: textDark,
-//                     ),
-//                   ),
-//                 ),
-//                 const Icon(Icons.chevron_right_rounded, color: textMuted),
-//               ],
-//             ),
-//           ),
-//           const SizedBox(height: 22),
-//
-//           // Cart Items Header
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text(
-//                 'Cart Items',
-//                 style: GoogleFonts.plusJakartaSans(
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.w700,
-//                   color: textDark,
-//                 ),
-//               ),
-//               GestureDetector(
-//                 onTap: _clearCart,
-//                 child: Text(
-//                   'Clear All',
-//                   style: GoogleFonts.plusJakartaSans(
-//                     fontSize: 13,
-//                     fontWeight: FontWeight.w600,
-//                     color: primaryGreen,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 12),
-//
-//           // Cart Items List
-//           if (cartItems.isEmpty)
-//             Container(
-//               padding: const EdgeInsets.all(24),
-//               alignment: Alignment.center,
-//               child: Text(
-//                 'Your cart is empty',
-//                 style: GoogleFonts.plusJakartaSans(color: textMuted, fontSize: 14),
-//               ),
-//             )
-//           else
-//             ListView.separated(
-//
-//               shrinkWrap: true,
-//               physics: const NeverScrollableScrollPhysics(),
-//               itemCount: cartItems.length,
-//               separatorBuilder: (_, __) => const Divider(height: 18, color: borderColor),
-//               itemBuilder: (context, i) {
-//                 final item = cartItems[i];
-//                 return Row(
-//                   children: [
-//                     const Text(
-//                       '📦',
-//                       style: TextStyle(fontSize: 28),
-//                     ),
-//                     // Container(
-//                     //   width: 60,
-//                     //   height: 60,
-//                     //   decoration: BoxDecoration(
-//                     //     color: AppColors.darkTextPrimary,
-//                     //     borderRadius: BorderRadius.circular(12),
-//                     //     image: ProductItemModel != null
-//                     //         ? DecorationImage(
-//                     //       image: NetworkImage(product.imageUrl!),
-//                     //       fit: BoxFit.cover,
-//                     //     )
-//                     //         : null,
-//                     //   ),
-//                     //   alignment: Alignment.center,
-//                     //   child: product.imageUrl == null
-//                     //       ? const Text(
-//                     //     '📦',
-//                     //     style: TextStyle(fontSize: 28),
-//                     //   )
-//                     //       : null,
-//                     // ),
-//                     const SizedBox(width: 12),
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             item.product.article,
-//                             style: GoogleFonts.plusJakartaSans(
-//                               fontSize: 14,
-//                               fontWeight: FontWeight.w600,
-//                               color: textDark,
-//                             ),
-//                           ),
-//                           const SizedBox(height: 3),
-//                           Text(
-//                             'Rs. ${item.product.salePrice.toInt()} x ${item.quantity}',
-//                             style: GoogleFonts.plusJakartaSans(
-//                               fontSize: 12,
-//                               color: textMuted,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     Text(
-//                       'Rs. ${item.subtotal.toInt()}',
-//                       style: GoogleFonts.plusJakartaSans(
-//                         fontSize: 14,
-//                         fontWeight: FontWeight.w700,
-//                         color: textDark,
-//                       ),
-//                     ),
-//                     const SizedBox(width: 12),
-//                     GestureDetector(
-//                       onTap: () => _removeFromCart(item.product.id),
-//                       child: const Icon(Icons.delete_outline_rounded, color: textMuted, size: 20),
-//                     ),
-//                   ],
-//                 );
-//               },
-//             ),
-//           const SizedBox(height: 22),
-//
-//           // Add Note
-//           Text(
-//             'Add Note (Optional)',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 13,
-//               fontWeight: FontWeight.w600,
-//               color: textDark,
-//             ),
-//           ),
-//           const SizedBox(height: 8),
-//           CustomTextField(controller: _noteController, hintText: 'Write a note...'),
-//           // Container(
-//           //   decoration: BoxDecoration(
-//           //     color: Colors.white,
-//           //     borderRadius: BorderRadius.circular(12),
-//           //     border: Border.all(color: borderColor),
-//           //   ),
-//           //   child: TextField(
-//           //     controller: _noteController,
-//           //     decoration: InputDecoration(
-//           //       hintText: 'Write a note...',
-//           //       hintStyle: GoogleFonts.plusJakartaSans(color: textMuted, fontSize: 13),
-//           //       border: InputBorder.none,
-//           //       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-//           //     ),
-//           //   ),
-//           // ),
-//           const SizedBox(height: 22),
-//
-//           // Pricing Summary
-//           _buildSummaryLine('Subtotal', 'Rs. ${_subtotal.toInt()}'),
-//           const SizedBox(height: 8),
-//           _buildSummaryLine('Discount', 'Rs. ${_discount.toInt()}'),
-//           const Divider(height: 24, color: borderColor),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text(
-//                 'Total',
-//                 style: GoogleFonts.plusJakartaSans(
-//                   fontSize: 16,
-//                   fontWeight: FontWeight.w800,
-//                   color: textDark,
-//                 ),
-//               ),
-//               Text(
-//                 'Rs. ${_grandTotal.toInt()}',
-//                 style: GoogleFonts.plusJakartaSans(
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.w800,
-//                   color: textDark,
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 24),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   // ─── Step 3: Payment & Complete ─────────────────────────────────────────────
-//   Widget _buildStep3Payment() {
-//     final paymentMethods = [
-//       {'id': 'Cash', 'icon': Icons.payments_outlined},
-//       {'id': 'Card', 'icon': Icons.credit_card_rounded},
-//     ];
-//
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           // Total Amount Hero Card
-//           Container(
-//             width: double.infinity,
-//             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-//             decoration: BoxDecoration(
-//               color: const Color(0xFFF3F4F6),
-//               borderRadius: BorderRadius.circular(16),
-//             ),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Text(
-//                   'Total Amount',
-//                   style: GoogleFonts.plusJakartaSans(
-//                     fontSize: 13,
-//                     color: textMuted,
-//                     fontWeight: FontWeight.w500,
-//                   ),
-//                 ),
-//                 const SizedBox(height: 4),
-//                 Text(
-//                   'Rs. ${_grandTotal.toInt()}',
-//                   style: GoogleFonts.plusJakartaSans(
-//                     fontSize: 28,
-//                     fontWeight: FontWeight.w800,
-//                     color: textDark,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           const SizedBox(height: 22),
-//
-//           // Payment Methods
-//           Text(
-//             'Select Payment Method',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 14,
-//               fontWeight: FontWeight.w700,
-//               color: textDark,
-//             ),
-//           ),
-//           const SizedBox(height: 12),
-//           Wrap(
-//             spacing: 10,
-//             runSpacing: 10,
-//             children: paymentMethods.map((pm) {
-//               final isSelected = _selectedPaymentMethod == pm['id'];
-//               return GestureDetector(
-//                 onTap: () => setState(() => _selectedPaymentMethod = pm['id'] as String),
-//                 child: Container(
-//                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-//                   decoration: BoxDecoration(
-//                     color: isSelected ? primaryGreen : Colors.white,
-//                     borderRadius: BorderRadius.circular(10),
-//                     border: Border.all(
-//                       color: isSelected ? primaryGreen : borderColor,
-//                     ),
-//                   ),
-//                   child: Row(
-//                     mainAxisSize: MainAxisSize.min,
-//                     children: [
-//                       Icon(
-//                         pm['icon'] as IconData,
-//                         size: 18,
-//                         color: isSelected ? Colors.white : textDark,
-//                       ),
-//                       const SizedBox(width: 8),
-//                       Text(
-//                         pm['id'] as String,
-//                         style: GoogleFonts.plusJakartaSans(
-//                           fontSize: 13,
-//                           fontWeight: FontWeight.w600,
-//                           color: isSelected ? Colors.white : textDark,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               );
-//             }).toList(),
-//           ),
-//           const SizedBox(height: 22),
-//
-//           // Received Amount
-//           Text(
-//             'Received Amount',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 13,
-//               fontWeight: FontWeight.w600,
-//               color: textDark,
-//             ),
-//           ),
-//           const SizedBox(height: 8),
-//           Container(
-//             decoration: BoxDecoration(
-//               color: Colors.white,
-//               borderRadius: BorderRadius.circular(12),
-//               border: Border.all(color: borderColor),
-//             ),
-//             child: TextField(
-//               controller: _receivedAmountController,
-//               keyboardType: TextInputType.number,
-//               onChanged: (_) => setState(() {}),
-//               style: GoogleFonts.plusJakartaSans(
-//                 fontSize: 16,
-//                 fontWeight: FontWeight.w600,
-//                 color: textDark,
-//               ),
-//               decoration: const InputDecoration(
-//                 border: InputBorder.none,
-//                 contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-//               ),
-//             ),
-//           ),
-//           const SizedBox(height: 16),
-//
-//           // Change
-//           Text(
-//             'Change',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 13,
-//               color: textMuted,
-//               fontWeight: FontWeight.w500,
-//             ),
-//           ),
-//           const SizedBox(height: 4),
-//           Text(
-//             'Rs. ${_changeAmount.toInt()}',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 18,
-//               fontWeight: FontWeight.w700,
-//               color: textDark,
-//             ),
-//           ),
-//           const SizedBox(height: 24),
-//
-//           // Invoice Options
-//           Text(
-//             'Invoice Options',
-//             style: GoogleFonts.plusJakartaSans(
-//               fontSize: 14,
-//               fontWeight: FontWeight.w700,
-//               color: textDark,
-//             ),
-//           ),
-//           const SizedBox(height: 12),
-//           _buildInvoiceOptionRow(
-//             icon: Icons.print_outlined,
-//             title: 'Print Invoice',
-//             value: _printInvoice,
-//             onChanged: (val) => setState(() => _printInvoice = val),
-//           ),
-//           const SizedBox(height: 10),
-//           _buildInvoiceOptionRow(
-//             icon: Icons.chat_outlined,
-//             title: 'Share via WhatsApp',
-//             value: _shareWhatsApp,
-//             onChanged: (val) => setState(() => _shareWhatsApp = val),
-//           ),
-//           const SizedBox(height: 24),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   // ─── Step 4: Success View ───────────────────────────────────────────────────
-//   Widget _buildStep4Success() {
-//     return Center(
-//       child: SingleChildScrollView(
-//         padding: const EdgeInsets.all(24),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             // Green Checkmark Circle
-//             Container(
-//               width: 80,
-//               height: 80,
-//               decoration: const BoxDecoration(
-//                 color: primaryGreen,
-//                 shape: BoxShape.circle,
-//               ),
-//               child: const Icon(
-//                 Icons.check,
-//                 color: Colors.white,
-//                 size: 48,
-//               ),
-//             ),
-//             const SizedBox(height: 24),
-//
-//             Text(
-//               'Sale Completed\nSuccessfully!',
-//               textAlign: TextAlign.center,
-//               style: GoogleFonts.plusJakartaSans(
-//                 fontSize: 22,
-//                 fontWeight: FontWeight.w800,
-//                 color: textDark,
-//                 height: 1.25,
-//               ),
-//             ),
-//             const SizedBox(height: 24),
-//
-//             // Summary Info Card
-//             Container(
-//               padding: const EdgeInsets.all(18),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(16),
-//                 border: Border.all(color: borderColor),
-//               ),
-//               child: Column(
-//                 children: [
-//                   _buildReceiptRow('Invoice No.', 'INV-${DateTime.now().millisecondsSinceEpoch % 10000}'),
-//                   const SizedBox(height: 10),
-//                   _buildReceiptRow('Customer', 'Walk-in Customer'),
-//                   const SizedBox(height: 10),
-//                   _buildReceiptRow('Payment Method', _selectedPaymentMethod),
-//                   const Divider(height: 20, color: borderColor),
-//                   _buildReceiptRow('Total Amount', 'Rs. ${_grandTotal.toInt()}', isBold: true),
-//                 ],
-//               ),
-//             ),
-//             const SizedBox(height: 32),
-//
-//             // Buttons
-//             SizedBox(
-//               width: double.infinity,
-//               height: 50,
-//               child: ElevatedButton(
-//                 onPressed: () {
-//                   Navigator.of(context).pop();
-//                 },
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: primaryGreen,
-//                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                   elevation: 0,
-//                 ),
-//                 child: Text(
-//                   'View Sale',
-//                   style: GoogleFonts.plusJakartaSans(
-//                     fontSize: 15,
-//                     fontWeight: FontWeight.w700,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//             const SizedBox(height: 12),
-//             SizedBox(
-//               width: double.infinity,
-//               height: 50,
-//               child: ElevatedButton(
-//                 onPressed: () {
-//                   setState(() {
-//                     _cart.clear();
-//                     _currentStep = 0;
-//                     _noteController.clear();
-//                     _receivedAmountController.text = '0';
-//                   });
-//                 },
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: const Color(0xFFF3F4F6),
-//                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                   elevation: 0,
-//                 ),
-//                 child: Text(
-//                   'Add Another Sale',
-//                   style: GoogleFonts.plusJakartaSans(
-//                     fontSize: 15,
-//                     fontWeight: FontWeight.w700,
-//                     color: textDark,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-//
-//   // ─── Bottom Action Bar ──────────────────────────────────────────────────────
-//   Widget _buildBottomBar() {
-//     if (_currentStep == 0) {
-//       if (_cart.isEmpty) return const SizedBox();
-//
-//       return Container(
-//         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-//         decoration: const BoxDecoration(
-//           color: Colors.white,
-//           border: Border(top: BorderSide(color: borderColor)),
-//         ),
-//         child: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Row(
-//                   children: [
-//                     const Icon(Icons.shopping_cart_outlined, color: textDark, size: 20),
-//                     const SizedBox(width: 8),
-//                     Text(
-//                       '$_totalItemsCount items',
-//                       style: GoogleFonts.plusJakartaSans(
-//                         fontSize: 14,
-//                         fontWeight: FontWeight.w600,
-//                         color: textDark,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 Text(
-//                   'Rs. ${_grandTotal.toInt()}',
-//                   style: GoogleFonts.plusJakartaSans(
-//                     fontSize: 16,
-//                     fontWeight: FontWeight.w800,
-//                     color: textDark,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 12),
-//             SizedBox(
-//               width: double.infinity,
-//               height: 48,
-//               child: ElevatedButton(
-//                 onPressed: () => setState(() => _currentStep = 1),
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: primaryGreen,
-//                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                   elevation: 0,
-//                 ),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     Text(
-//                       'View Cart',
-//                       style: GoogleFonts.plusJakartaSans(
-//                         fontSize: 15,
-//                         fontWeight: FontWeight.w700,
-//                         color: Colors.white,
-//                       ),
-//                     ),
-//                     const SizedBox(width: 6),
-//                     const Icon(Icons.arrow_forward_rounded, size: 18, color: Colors.white),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     } else if (_currentStep == 1) {
-//       return Container(
-//         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-//         decoration: const BoxDecoration(
-//           color: Colors.white,
-//           border: Border(top: BorderSide(color: borderColor)),
-//         ),
-//         child: SizedBox(
-//           width: double.infinity,
-//           height: 48,
-//           child: ElevatedButton(
-//             onPressed: _cart.isEmpty
-//                 ? null
-//                 : () => setState(() {
-//                       _receivedAmountController.text = _grandTotal.toInt().toString();
-//                       _currentStep = 2;
-//                     }),
-//             style: ElevatedButton.styleFrom(
-//               backgroundColor: primaryGreen,
-//               disabledBackgroundColor: Colors.grey.shade300,
-//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//               elevation: 0,
-//             ),
-//             child: Text(
-//               'Proceed to Payment',
-//               style: GoogleFonts.plusJakartaSans(
-//                 fontSize: 15,
-//                 fontWeight: FontWeight.w700,
-//                 color: Colors.white,
-//               ),
-//             ),
-//           ),
-//         ),
-//       );
-//     } else if (_currentStep == 2) {
-//       return Container(
-//         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-//         decoration: const BoxDecoration(
-//           color: Colors.white,
-//           border: Border(top: BorderSide(color: borderColor)),
-//         ),
-//         child: SizedBox(
-//           width: double.infinity,
-//           height: 48,
-//           child: ElevatedButton(
-//             onPressed: () {
-//               setState(() => _currentStep = 3);
-//             },
-//             style: ElevatedButton.styleFrom(
-//               backgroundColor: primaryGreen,
-//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//               elevation: 0,
-//             ),
-//             child: Text(
-//               'Complete Sale',
-//               style: GoogleFonts.plusJakartaSans(
-//                 fontSize: 15,
-//                 fontWeight: FontWeight.w700,
-//                 color: Colors.white,
-//               ),
-//             ),
-//           ),
-//         ),
-//       );
-//     }
-//     return const SizedBox();
-//   }
-//
-//   // ─── Helper UI Components ───────────────────────────────────────────────────
-//
-//   Widget _buildSummaryLine(String label, String value) {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//       children: [
-//         Text(
-//           label,
-//           style: GoogleFonts.plusJakartaSans(fontSize: 13, color: textMuted),
-//         ),
-//         Text(
-//           value,
-//           style: GoogleFonts.plusJakartaSans(
-//             fontSize: 13,
-//             fontWeight: FontWeight.w600,
-//             color: textDark,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   Widget _buildInvoiceOptionRow({
-//     required IconData icon,
-//     required String title,
-//     required bool value,
-//     required ValueChanged<bool> onChanged,
-//   }) {
-//     return Container(
-//       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         borderRadius: BorderRadius.circular(12),
-//         border: Border.all(color: borderColor),
-//       ),
-//       child: Row(
-//         children: [
-//           Icon(icon, size: 20, color: textDark),
-//           const SizedBox(width: 12),
-//           Expanded(
-//             child: Text(
-//               title,
-//               style: GoogleFonts.plusJakartaSans(
-//                 fontSize: 13,
-//                 fontWeight: FontWeight.w600,
-//                 color: textDark,
-//               ),
-//             ),
-//           ),
-//           Switch(
-//             value: value,
-//             onChanged: onChanged,
-//             activeColor: primaryGreen,
-//             activeTrackColor: lightGreenBg,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _buildReceiptRow(String label, String value, {bool isBold = false}) {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//       children: [
-//         Text(
-//           label,
-//           style: GoogleFonts.plusJakartaSans(
-//             fontSize: isBold ? 14 : 13,
-//             fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
-//             color: isBold ? textDark : textMuted,
-//           ),
-//         ),
-//         Text(
-//           value,
-//           style: GoogleFonts.plusJakartaSans(
-//             fontSize: isBold ? 16 : 13,
-//             fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
-//             color: textDark,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-//
-// }
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 import '../controllers/sale_controller.dart';
 import '../models/productItemModel.dart';
@@ -1169,60 +17,33 @@ class AddSale extends StatefulWidget {
 }
 
 class _AddSaleState extends State<AddSale> {
-  // ============================================================
-  // CONTROLLER
-  // ============================================================
-
-  final SaleController saleController =
-  Get.find<SaleController>();
-
-  // ============================================================
-  // UI STATE
-  // ============================================================
+  final SaleController saleController = Get.find<SaleController>();
 
   int _currentStep = 0;
-
-  final TextEditingController _searchController =
-  TextEditingController();
-
   String _searchQuery = '';
-
   bool _printInvoice = true;
   bool _shareWhatsApp = false;
-
   String? _createdSaleId;
+  final TextEditingController _searchController = TextEditingController();
 
-  // ============================================================
-  // COLORS
-  // ============================================================
 
-  static const Color primaryGreen =
-  Color(0xFF0D5E3A);
+  static const Color primaryGreen = Color(0xFF0D5E3A);
 
-  static const Color lightGreenBg =
-  Color(0xFFE8F5E9);
+  static const Color lightGreenBg = Color(0xFFE8F5E9);
 
-  static const Color surfaceColor =
-  Color(0xFFF9FAFB);
+  static const Color surfaceColor = Color(0xFFF9FAFB);
 
-  static const Color borderColor =
-  Color(0xFFE5E7EB);
+  static const Color borderColor = Color(0xFFE5E7EB);
 
-  static const Color textDark =
-  Color(0xFF111827);
+  static const Color textDark = Color(0xFF111827);
 
-  static const Color textMuted =
-  Color(0xFF6B7280);
+  static const Color textMuted = Color(0xFF6B7280);
 
-  // ============================================================
-  // LIFECYCLE
-  // ============================================================
 
   @override
   void initState() {
     super.initState();
 
-    // Start Add Sale with a clean cart.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       saleController.clearCart();
     });
@@ -1234,10 +55,6 @@ class _AddSaleState extends State<AddSale> {
     super.dispose();
   }
 
-  // ============================================================
-  // BACK
-  // ============================================================
-
   void _handleBack() {
     if (_currentStep > 0 && _currentStep < 3) {
       setState(() {
@@ -1248,13 +65,9 @@ class _AddSaleState extends State<AddSale> {
     }
   }
 
-  // ============================================================
-  // RESET SALE
-  // ============================================================
 
   void _resetSale() {
     saleController.clearCart();
-
     _searchController.clear();
 
     setState(() {
@@ -1266,20 +79,15 @@ class _AddSaleState extends State<AddSale> {
     });
   }
 
-  // ============================================================
-  // COMPLETE SALE
-  // ============================================================
 
   Future<void> _completeSale() async {
-    // Cash payment validation.
     if (saleController.paymentMethod.value == 'cash') {
-      final received =
-          saleController.receivedAmount;
+      final received = saleController.receivedAmount;
 
       if (received < saleController.totalAmount) {
         Get.snackbar(
-          'Insufficient Amount',
-          'Received amount cannot be less than the total amount.',
+          AppConstants.insufficientAmount,
+          AppConstants.receivedAmountError,
           snackPosition: SnackPosition.BOTTOM,
         );
 
@@ -1287,8 +95,7 @@ class _AddSaleState extends State<AddSale> {
       }
     }
 
-    final saleId =
-    await saleController.createSale();
+    final saleId = await saleController.createSale();
 
     if (saleId == null) {
       return;
@@ -1302,9 +109,6 @@ class _AddSaleState extends State<AddSale> {
     });
   }
 
-  // ============================================================
-  // BUILD
-  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -1323,30 +127,9 @@ class _AddSaleState extends State<AddSale> {
         body: SafeArea(
           child: Column(
             children: [
-              // ==========================
-              // TOP BAR
-              // ==========================
-
               _buildTopBar(),
-
-              // ==========================
-              // CONTENT
-              // ==========================
-
-              Expanded(
-                child: Obx(
-                      () => _buildCurrentStepContent(),
-                ),
-              ),
-
-              // ==========================
-              // BOTTOM BAR
-              // ==========================
-
-              if (_currentStep != 3)
-                Obx(
-                      () => _buildBottomBar(),
-                ),
+              Expanded(child: Obx(() => _buildCurrentStepContent())),
+              if (_currentStep != 3) Obx(() => _buildBottomBar()),
             ],
           ),
         ),
@@ -1354,25 +137,16 @@ class _AddSaleState extends State<AddSale> {
     );
   }
 
-  // ============================================================
-  // TOP BAR
-  // ============================================================
 
   Widget _buildTopBar() {
     if (_currentStep == 3) {
       return Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(
-                Icons.close_rounded,
-                color: textDark,
-              ),
+              icon: const Icon(Icons.close_rounded, color: textDark),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -1382,15 +156,9 @@ class _AddSaleState extends State<AddSale> {
       );
     }
 
-    return const CustomAppBar(
-      title: 'New Sale',
-      showBackButton: true,
-    );
+    return const CustomAppBar(title: 'New ${AppConstants.saleTitle}', showBackButton: true);
   }
 
-  // ============================================================
-  // CURRENT STEP
-  // ============================================================
 
   Widget _buildCurrentStepContent() {
     switch (_currentStep) {
@@ -1411,522 +179,296 @@ class _AddSaleState extends State<AddSale> {
     }
   }
 
-  // ============================================================
-  // STEP 1
-  // SELECT PRODUCTS
-  // ============================================================
 
   Widget _buildStep1SelectProducts() {
-    final query =
-    _searchQuery.trim().toLowerCase();
+    final query = _searchQuery.trim().toLowerCase();
 
-    final filtered =
-    saleController.products.where(
-          (product) {
-        if (!product.isActive) {
-          return false;
-        }
+    final filtered = saleController.products.where((product) {
+      if (!product.isActive) {
+        return false;
+      }
 
-        if (query.isEmpty) {
-          return true;
-        }
+      if (query.isEmpty) {
+        return true;
+      }
 
-        return product.article
-            .toLowerCase()
-            .contains(query) ||
-            (product.barcode ?? '')
-                .toLowerCase()
-                .contains(query) ||
-            (product.color ?? '')
-                .toLowerCase()
-                .contains(query) ||
-            (product.size ?? '')
-                .toLowerCase()
-                .contains(query);
-      },
-    ).toList();
+      return product.article.toLowerCase().contains(query) ||
+          (product.barcode ?? '').toLowerCase().contains(query) ||
+          (product.color ?? '').toLowerCase().contains(query) ||
+          (product.size ?? '').toLowerCase().contains(query);
+    }).toList();
 
     return Column(
       children: [
-        // ======================================================
-        // SEARCH
-        // ======================================================
 
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 8,
-          ),
-
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
-
-              borderRadius:
-              BorderRadius.circular(12),
-
-              border: Border.all(
-                color: borderColor,
-              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor),
             ),
-
             child: TextField(
               controller: _searchController,
-
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value;
                 });
               },
-
               decoration: InputDecoration(
-                hintText:
-                'Search product, barcode...',
-
-                hintStyle:
-                GoogleFonts.plusJakartaSans(
+                hintText: AppConstants.searchHint,
+                hintStyle: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   color: textMuted,
                 ),
-
                 prefixIcon: const Icon(
                   Icons.search_rounded,
                   color: textMuted,
                   size: 20,
                 ),
-
-                suffixIcon:
-                _searchQuery.isNotEmpty
+                suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                  icon: const Icon(
-                    Icons.close_rounded,
-                    size: 18,
-                    color: textMuted,
-                  ),
-                  onPressed: () {
-                    _searchController
-                        .clear();
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: textMuted,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
 
-                    setState(() {
-                      _searchQuery = '';
-                    });
-                  },
-                )
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
                     : null,
-
                 border: InputBorder.none,
-
-                contentPadding:
-                const EdgeInsets.symmetric(
-                  vertical: 14,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
           ),
         ),
 
-        // ======================================================
-        // PRODUCTS
-        // ======================================================
-
         Expanded(
           child: filtered.isEmpty
               ? _buildNoProducts()
               : ListView.separated(
-            padding:
-            const EdgeInsets.fromLTRB(
-              20,
-              8,
-              20,
-              20,
-            ),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
 
-            itemCount: filtered.length,
+                  itemCount: filtered.length,
+                  separatorBuilder: (_, _) =>
+                      const Divider(height: 16, color: borderColor),
+                  itemBuilder: (context, index) {
+                    final product = filtered[index];
+                    final qty = saleController.quantityOf(product.id);
+                    final isInCart = saleController.isSelected(product.id);
+                    final outOfStock = product.currentStock <= 0;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
 
-            separatorBuilder: (_, __) =>
-            const Divider(
-              height: 16,
-              color: borderColor,
-            ),
-
-            itemBuilder:
-                (context, index) {
-              final product =
-              filtered[index];
-
-              final qty =
-              saleController
-                  .quantityOf(
-                product.id,
-              );
-
-              final isInCart =
-              saleController
-                  .isSelected(
-                product.id,
-              );
-
-              final outOfStock =
-                  product.currentStock <= 0;
-
-              return Padding(
-                padding:
-                const EdgeInsets.symmetric(
-                  vertical: 6,
-                ),
-
-                child: Row(
-                  children: [
-                    // ================================
-                    // IMAGE
-                    // ================================
-
-                    const Text(
-                      '📦',
-                      style: TextStyle(
-                        fontSize: 28,
-                      ),
-                    ),
-
-                    const SizedBox(
-                      width: 14,
-                    ),
-
-                    // ================================
-                    // PRODUCT INFO
-                    // ================================
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
-
+                      child: Row(
                         children: [
-                          Text(
-                            product.article,
-
-                            style: GoogleFonts
-                                .plusJakartaSans(
-                              fontSize: 14,
-
-                              fontWeight:
-                              FontWeight
-                                  .w600,
-
-                              color:
-                              textDark,
-                            ),
-                          ),
-
-                          const SizedBox(
-                            height: 4,
-                          ),
-
-                          Text(
-                            'Rs. ${product.salePrice.toStringAsFixed(2)}',
-
-                            style: GoogleFonts
-                                .plusJakartaSans(
-                              fontSize: 13,
-
-                              color:
-                              textMuted,
-
-                              fontWeight:
-                              FontWeight
-                                  .w500,
-                            ),
-                          ),
-
-                          const SizedBox(
-                            height: 3,
-                          ),
-
-                          Text(
-                            'Stock: ${_formatQuantity(product.currentStock)} ${product.unit}',
-
-                            style: GoogleFonts
-                                .plusJakartaSans(
-                              fontSize: 11,
-
-                              color:
-                              outOfStock
-                                  ? Colors
-                                  .red
-                                  : textMuted,
-
-                              fontWeight:
-                              FontWeight
-                                  .w500,
-                            ),
-                          ),
-
-                          if (product.barcode !=
-                              null &&
-                              product
-                                  .barcode!
-                                  .isNotEmpty) ...[
-                            const SizedBox(
-                              height: 2,
-                            ),
-
-                            Text(
-                              'Barcode: ${product.barcode}',
-
-                              style: GoogleFonts
-                                  .plusJakartaSans(
-                                fontSize: 10,
-                                color:
-                                textMuted,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-
-                    // ================================
-                    // QUANTITY
-                    // ================================
-
-                    if (isInCart)
-                      Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment
-                            .end,
-
-                        children: [
-                          Container(
-                            height: 34,
-
-                            decoration:
-                            BoxDecoration(
-                              color:
-                              const Color(
-                                0xFFF3F4F6,
-                              ),
-
-                              borderRadius:
-                              BorderRadius
-                                  .circular(
-                                8,
-                              ),
-                            ),
-
-                            child: Row(
-                              mainAxisSize:
-                              MainAxisSize
-                                  .min,
-
+                          const Text('📦', style: TextStyle(fontSize: 28)),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    saleController
-                                        .decrementProduct(
-                                      product,
-                                    );
-                                  },
-
-                                  borderRadius:
-                                  const BorderRadius
-                                      .horizontal(
-                                    left: Radius
-                                        .circular(
-                                      8,
-                                    ),
-                                  ),
-
-                                  child:
-                                  const Padding(
-                                    padding:
-                                    EdgeInsets
-                                        .symmetric(
-                                      horizontal:
-                                      10,
-                                      vertical:
-                                      6,
-                                    ),
-
-                                    child: Icon(
-                                      Icons
-                                          .remove,
-                                      size: 16,
-                                      color:
-                                      textDark,
-                                    ),
-                                  ),
-                                ),
-
                                 Text(
-                                  _formatQuantity(
-                                    qty,
-                                  ),
-
-                                  style: GoogleFonts
-                                      .plusJakartaSans(
-                                    fontSize:
-                                    14,
-
-                                    fontWeight:
-                                    FontWeight
-                                        .w700,
-
-                                    color:
-                                    textDark,
+                                  product.article,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: textDark,
                                   ),
                                 ),
-
-                                InkWell(
-                                  onTap: () {
-                                    saleController
-                                        .addProduct(
-                                      product,
-                                    );
-                                  },
-
-                                  borderRadius:
-                                  const BorderRadius
-                                      .horizontal(
-                                    right: Radius
-                                        .circular(
-                                      8,
-                                    ),
-                                  ),
-
-                                  child:
-                                  const Padding(
-                                    padding:
-                                    EdgeInsets
-                                        .symmetric(
-                                      horizontal:
-                                      10,
-                                      vertical:
-                                      6,
-                                    ),
-
-                                    child: Icon(
-                                      Icons.add,
-                                      size: 16,
-                                      color:
-                                      textDark,
-                                    ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Rs. ${product.salePrice.toStringAsFixed(2)}',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    color: textMuted,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  '${AppConstants.stockLabel}${_formatQuantity(product.currentStock)} ${product.unit}',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: outOfStock ? Colors.red : textMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                if (product.barcode != null &&
+                                    product.barcode!.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${AppConstants.barcodeLabel}${product.barcode}',
+
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10,
+                                      color: textMuted,
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
 
-                          const SizedBox(
-                            height: 4,
-                          ),
+                          if (isInCart)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Container(
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF3F4F6),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
 
-                          Text(
-                            'Rs. ${saleController.lineTotal(product).toStringAsFixed(2)}',
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          saleController.decrementProduct(
+                                            product,
+                                          );
+                                        },
+                                        borderRadius:
+                                            const BorderRadius.horizontal(
+                                              left: Radius.circular(8),
+                                            ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          child: Icon(
+                                            Icons.remove,
+                                            size: 16,
+                                            color: textDark,
+                                          ),
+                                        ),
+                                      ),
 
-                            style: GoogleFonts
-                                .plusJakartaSans(
-                              fontSize: 12,
+                                      Text(
+                                        _formatQuantity(qty),
 
-                              fontWeight:
-                              FontWeight
-                                  .w700,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 14,
 
-                              color:
-                              textDark,
+                                          fontWeight: FontWeight.w700,
+
+                                          color: textDark,
+                                        ),
+                                      ),
+
+                                      InkWell(
+                                        onTap: () {
+                                          saleController.addProduct(product);
+                                        },
+
+                                        borderRadius:
+                                            const BorderRadius.horizontal(
+                                              right: Radius.circular(8),
+                                            ),
+
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+
+                                          child: Icon(
+                                            Icons.add,
+                                            size: 16,
+                                            color: textDark,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 4),
+
+                                Text(
+                                  'Rs. ${saleController.lineTotal(product).toStringAsFixed(2)}',
+
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+
+                                    fontWeight: FontWeight.w700,
+
+                                    color: textDark,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else if (outOfStock)
+                            Text(
+                              AppConstants.statusOutOfStock,
+
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+
+                                fontWeight: FontWeight.w600,
+
+                                color: Colors.red,
+                              ),
+                            )
+                          else
+                            GestureDetector(
+                              onTap: () {
+                                saleController.addProduct(product);
+                              },
+
+                              child: Container(
+                                width: 34,
+                                height: 34,
+
+                                decoration: const BoxDecoration(
+                                  color: primaryGreen,
+
+                                  shape: BoxShape.circle,
+                                ),
+
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
                             ),
-                          ),
                         ],
-                      )
-                    else if (outOfStock)
-                      Text(
-                        'Out of Stock',
-
-                        style: GoogleFonts
-                            .plusJakartaSans(
-                          fontSize: 11,
-
-                          fontWeight:
-                          FontWeight.w600,
-
-                          color: Colors.red,
-                        ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: () {
-                          saleController
-                              .addProduct(
-                            product,
-                          );
-                        },
-
-                        child: Container(
-                          width: 34,
-                          height: 34,
-
-                          decoration:
-                          const BoxDecoration(
-                            color:
-                            primaryGreen,
-
-                            shape:
-                            BoxShape.circle,
-                          ),
-
-                          child:
-                          const Icon(
-                            Icons.add,
-                            color:
-                            Colors.white,
-                            size: 20,
-                          ),
-                        ),
                       ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );
   }
 
-  // ============================================================
-  // STEP 2
-  // REVIEW CART
-  // ============================================================
 
   Widget _buildStep2ReviewCart() {
-    final cartItems =
-    saleController.products.where(
-          (product) =>
-          saleController.isSelected(
-            product.id,
-          ),
-    ).toList();
+    final cartItems = saleController.products
+        .where((product) => saleController.isSelected(product.id))
+        .toList();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
 
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          // ====================================================
-          // CUSTOMER
-          // ====================================================
-
           Text(
-            'Customer',
-
-            style:
-            GoogleFonts.plusJakartaSans(
+            AppConstants.customer,
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: textDark,
@@ -1936,21 +478,14 @@ class _AddSaleState extends State<AddSale> {
           const SizedBox(height: 8),
 
           Container(
-            padding:
-            const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 14,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
 
             decoration: BoxDecoration(
               color: Colors.white,
 
-              borderRadius:
-              BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12),
 
-              border: Border.all(
-                color: borderColor,
-              ),
+              border: Border.all(color: borderColor),
             ),
 
             child: Row(
@@ -1962,15 +497,11 @@ class _AddSaleState extends State<AddSale> {
                   decoration: BoxDecoration(
                     color: lightGreenBg,
 
-                    borderRadius:
-                    BorderRadius.circular(
-                      8,
-                    ),
+                    borderRadius: BorderRadius.circular(8),
                   ),
 
                   child: const Icon(
-                    Icons
-                        .person_outline_rounded,
+                    Icons.person_outline_rounded,
                     color: primaryGreen,
                     size: 20,
                   ),
@@ -1980,14 +511,12 @@ class _AddSaleState extends State<AddSale> {
 
                 Expanded(
                   child: Text(
-                    'Walk-in Customer',
+                    AppConstants.walkInCustomer,
 
-                    style: GoogleFonts
-                        .plusJakartaSans(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
 
-                      fontWeight:
-                      FontWeight.w600,
+                      fontWeight: FontWeight.w600,
 
                       color: textDark,
                     ),
@@ -1999,41 +528,30 @@ class _AddSaleState extends State<AddSale> {
 
           const SizedBox(height: 22),
 
-          // ====================================================
-          // CART HEADER
-          // ====================================================
-
           Row(
-            mainAxisAlignment:
-            MainAxisAlignment
-                .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
               Text(
-                'Cart Items',
+                AppConstants.cartItem,
 
-                style: GoogleFonts
-                    .plusJakartaSans(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
-                  fontWeight:
-                  FontWeight.w700,
+                  fontWeight: FontWeight.w700,
                   color: textDark,
                 ),
               ),
 
               GestureDetector(
-                onTap:
-                saleController.clearCart,
+                onTap: saleController.clearCart,
 
                 child: Text(
-                  'Clear All',
+                  AppConstants.clrAll,
 
-                  style: GoogleFonts
-                      .plusJakartaSans(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
 
-                    fontWeight:
-                    FontWeight.w600,
+                    fontWeight: FontWeight.w600,
 
                     color: primaryGreen,
                   ),
@@ -2044,22 +562,15 @@ class _AddSaleState extends State<AddSale> {
 
           const SizedBox(height: 12),
 
-          // ====================================================
-          // CART ITEMS
-          // ====================================================
-
           if (cartItems.isEmpty)
             Container(
-              padding:
-              const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
 
               alignment: Alignment.center,
 
               child: Text(
-                'Your cart is empty',
-
-                style: GoogleFonts
-                    .plusJakartaSans(
+                AppConstants.cartEmpty,
+                style: GoogleFonts.plusJakartaSans(
                   color: textMuted,
                   fontSize: 14,
                 ),
@@ -2069,88 +580,53 @@ class _AddSaleState extends State<AddSale> {
             ListView.separated(
               shrinkWrap: true,
 
-              physics:
-              const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
 
               itemCount: cartItems.length,
 
               separatorBuilder: (_, __) =>
-              const Divider(
-                height: 18,
-                color: borderColor,
-              ),
+                  const Divider(height: 18, color: borderColor),
 
-              itemBuilder:
-                  (context, index) {
-                final product =
-                cartItems[index];
+              itemBuilder: (context, index) {
+                final product = cartItems[index];
 
-                final quantity =
-                saleController
-                    .quantityOf(
-                  product.id,
-                );
+                final quantity = saleController.quantityOf(product.id);
 
-                final salePrice =
-                saleController
-                    .salePriceOf(
-                  product,
-                );
+                final salePrice = saleController.salePriceOf(product);
 
-                final lineTotal =
-                saleController
-                    .lineTotal(
-                  product,
-                );
+                final lineTotal = saleController.lineTotal(product);
 
                 return Row(
                   children: [
-                    const Text(
-                      '📦',
-                      style: TextStyle(
-                        fontSize: 28,
-                      ),
-                    ),
+                    const Text('📦', style: TextStyle(fontSize: 28)),
 
-                    const SizedBox(
-                      width: 12,
-                    ),
+                    const SizedBox(width: 12),
 
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
                           Text(
                             product.article,
 
-                            style: GoogleFonts
-                                .plusJakartaSans(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
 
-                              fontWeight:
-                              FontWeight
-                                  .w600,
+                              fontWeight: FontWeight.w600,
 
-                              color:
-                              textDark,
+                              color: textDark,
                             ),
                           ),
 
-                          const SizedBox(
-                            height: 3,
-                          ),
+                          const SizedBox(height: 3),
 
                           Text(
                             'Rs. ${salePrice.toStringAsFixed(2)} × ${_formatQuantity(quantity)}',
 
-                            style: GoogleFonts
-                                .plusJakartaSans(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              color:
-                              textMuted,
+                              color: textMuted,
                             ),
                           ),
                         ],
@@ -2160,32 +636,24 @@ class _AddSaleState extends State<AddSale> {
                     Text(
                       'Rs. ${lineTotal.toStringAsFixed(2)}',
 
-                      style: GoogleFonts
-                          .plusJakartaSans(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
 
-                        fontWeight:
-                        FontWeight.w700,
+                        fontWeight: FontWeight.w700,
 
                         color: textDark,
                       ),
                     ),
 
-                    const SizedBox(
-                      width: 12,
-                    ),
+                    const SizedBox(width: 12),
 
                     GestureDetector(
                       onTap: () {
-                        saleController
-                            .removeProduct(
-                          product.id,
-                        );
+                        saleController.removeProduct(product.id);
                       },
 
                       child: const Icon(
-                        Icons
-                            .delete_outline_rounded,
+                        Icons.delete_outline_rounded,
                         color: textMuted,
                         size: 20,
                       ),
@@ -2200,12 +668,10 @@ class _AddSaleState extends State<AddSale> {
           // ====================================================
           // NOTE
           // ====================================================
-
           Text(
-            'Add Note (Optional)',
+            AppConstants.addNote,
 
-            style:
-            GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
 
               fontWeight: FontWeight.w600,
@@ -2217,11 +683,9 @@ class _AddSaleState extends State<AddSale> {
           const SizedBox(height: 8),
 
           CustomTextField(
-            controller:
-            saleController.noteController,
+            controller: saleController.noteController,
 
-            hintText:
-            'Write a note...',
+            hintText: AppConstants.noteHint,
           ),
 
           const SizedBox(height: 18),
@@ -2229,12 +693,10 @@ class _AddSaleState extends State<AddSale> {
           // ====================================================
           // DISCOUNT
           // ====================================================
-
           Text(
-            'Discount (Rs.)',
+    AppConstants.disTitle,
 
-            style:
-            GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
 
               fontWeight: FontWeight.w600,
@@ -2246,20 +708,13 @@ class _AddSaleState extends State<AddSale> {
           const SizedBox(height: 8),
 
           CustomTextField(
-            controller: saleController
-                .discountController,
+            controller: saleController.discountController,
 
             hintText: '0',
 
-            keyboardType:
-            const TextInputType
-                .numberWithOptions(
-              decimal: true,
-            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
 
-            onChanged:
-            saleController
-                .updateDiscount,
+            onChanged: saleController.updateDiscount,
           ),
 
           const SizedBox(height: 22),
@@ -2267,39 +722,31 @@ class _AddSaleState extends State<AddSale> {
           // ====================================================
           // SUMMARY
           // ====================================================
-
           _buildSummaryLine(
-            'Subtotal',
+            AppConstants.subtotal,
             'Rs. ${saleController.subtotal.toStringAsFixed(2)}',
           ),
 
           const SizedBox(height: 8),
 
           _buildSummaryLine(
-            'Discount',
+            AppConstants.discountLabel,
             '- Rs. ${saleController.discount.value.toStringAsFixed(2)}',
           ),
 
-          const Divider(
-            height: 24,
-            color: borderColor,
-          ),
+          const Divider(height: 24, color: borderColor),
 
           Row(
-            mainAxisAlignment:
-            MainAxisAlignment
-                .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
               Text(
-                'Total',
+                AppConstants.total,
 
-                style: GoogleFonts
-                    .plusJakartaSans(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
 
-                  fontWeight:
-                  FontWeight.w800,
+                  fontWeight: FontWeight.w800,
 
                   color: textDark,
                 ),
@@ -2308,12 +755,10 @@ class _AddSaleState extends State<AddSale> {
               Text(
                 'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
 
-                style: GoogleFonts
-                    .plusJakartaSans(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 18,
 
-                  fontWeight:
-                  FontWeight.w800,
+                  fontWeight: FontWeight.w800,
 
                   color: textDark,
                 ),
@@ -2334,25 +779,15 @@ class _AddSaleState extends State<AddSale> {
 
   Widget _buildStep3Payment() {
     final paymentMethods = [
-      {
-        'id': 'Cash',
-        'icon': Icons.payments_outlined,
-      },
-      {
-        'id': 'Card',
-        'icon': Icons.credit_card_rounded,
-      },
+      {'id': 'Cash', 'icon': Icons.payments_outlined},
+      {'id': 'Card', 'icon': Icons.credit_card_rounded},
     ];
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
 
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
           // ====================================================
@@ -2362,36 +797,27 @@ class _AddSaleState extends State<AddSale> {
           Container(
             width: double.infinity,
 
-            padding:
-            const EdgeInsets.symmetric(
-              vertical: 20,
-              horizontal: 16,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
 
             decoration: BoxDecoration(
-              color:
-              const Color(0xFFF3F4F6),
+              color: const Color(0xFFF3F4F6),
 
-              borderRadius:
-              BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16),
             ),
 
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
                 Text(
-                  'Total Amount',
+                  AppConstants.totalAmountLabel,
 
-                  style: GoogleFonts
-                      .plusJakartaSans(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
 
                     color: textMuted,
 
-                    fontWeight:
-                    FontWeight.w500,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
 
@@ -2400,12 +826,10 @@ class _AddSaleState extends State<AddSale> {
                 Text(
                   'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
 
-                  style: GoogleFonts
-                      .plusJakartaSans(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 28,
 
-                    fontWeight:
-                    FontWeight.w800,
+                    fontWeight: FontWeight.w800,
 
                     color: textDark,
                   ),
@@ -2419,12 +843,10 @@ class _AddSaleState extends State<AddSale> {
           // ====================================================
           // PAYMENT METHOD
           // ====================================================
-
           Text(
-            'Select Payment Method',
+            AppConstants.selectPaymentMethod,
 
-            style:
-            GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
 
               fontWeight: FontWeight.w700,
@@ -2439,100 +861,62 @@ class _AddSaleState extends State<AddSale> {
             spacing: 10,
             runSpacing: 10,
 
-            children:
-            paymentMethods.map((pm) {
-              final method =
-              (pm['id'] as String)
-                  .toLowerCase();
+            children: paymentMethods.map((pm) {
+              final method = (pm['id'] as String).toLowerCase();
 
-              final isSelected =
-                  saleController
-                      .paymentMethod
-                      .value ==
-                      method;
+              final isSelected = saleController.paymentMethod.value == method;
 
               return GestureDetector(
                 onTap: () {
-                  saleController
-                      .changePaymentMethod(
-                    pm['id'] as String,
-                  );
+                  saleController.changePaymentMethod(pm['id'] as String);
 
                   // For Card, received/change
                   // are not required.
                   if (method == 'card') {
-                    saleController
-                        .receivedAmountController
-                        .text = saleController
-                        .totalAmount
-                        .toStringAsFixed(
-                      2,
-                    );
+                    saleController.receivedAmountController.text =
+                        saleController.totalAmount.toStringAsFixed(2);
                   }
                 },
 
                 child: Container(
-                  padding:
-                  const EdgeInsets
-                      .symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
 
-                  decoration:
-                  BoxDecoration(
-                    color: isSelected
-                        ? primaryGreen
-                        : Colors.white,
+                  decoration: BoxDecoration(
+                    color: isSelected ? primaryGreen : Colors.white,
 
-                    borderRadius:
-                    BorderRadius
-                        .circular(10),
+                    borderRadius: BorderRadius.circular(10),
 
-                    border:
-                    Border.all(
-                      color: isSelected
-                          ? primaryGreen
-                          : borderColor,
+                    border: Border.all(
+                      color: isSelected ? primaryGreen : borderColor,
                     ),
                   ),
 
                   child: Row(
-                    mainAxisSize:
-                    MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.min,
 
                     children: [
                       Icon(
-                        pm['icon']
-                        as IconData,
+                        pm['icon'] as IconData,
 
                         size: 18,
 
-                        color: isSelected
-                            ? Colors.white
-                            : textDark,
+                        color: isSelected ? Colors.white : textDark,
                       ),
 
-                      const SizedBox(
-                        width: 8,
-                      ),
+                      const SizedBox(width: 8),
 
                       Text(
-                        pm['id']
-                        as String,
+                        pm['id'] as String,
 
-                        style: GoogleFonts
-                            .plusJakartaSans(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
 
-                          fontWeight:
-                          FontWeight
-                              .w600,
+                          fontWeight: FontWeight.w600,
 
-                          color: isSelected
-                              ? Colors
-                              .white
-                              : textDark,
+                          color: isSelected ? Colors.white : textDark,
                         ),
                       ),
                     ],
@@ -2547,19 +931,14 @@ class _AddSaleState extends State<AddSale> {
           // ====================================================
           // RECEIVED AMOUNT
           // ====================================================
-
-          if (saleController
-              .paymentMethod.value ==
-              'cash') ...[
+          if (saleController.paymentMethod.value == 'cash') ...[
             Text(
-              'Received Amount',
+              AppConstants.receivedAmountLabel,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
 
-                fontWeight:
-                FontWeight.w600,
+                fontWeight: FontWeight.w600,
 
                 color: textDark,
               ),
@@ -2571,53 +950,37 @@ class _AddSaleState extends State<AddSale> {
               decoration: BoxDecoration(
                 color: Colors.white,
 
-                borderRadius:
-                BorderRadius.circular(
-                  12,
-                ),
+                borderRadius: BorderRadius.circular(12),
 
-                border: Border.all(
-                  color: borderColor,
-                ),
+                border: Border.all(color: borderColor),
               ),
 
               child: TextField(
-                controller: saleController
-                    .receivedAmountController,
+                controller: saleController.receivedAmountController,
 
-                keyboardType:
-                const TextInputType
-                    .numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
 
                 onChanged: (_) {
                   // Needed to refresh change.
-                  saleController
-                      .paymentMethod
-                      .refresh();
+                  saleController.paymentMethod.refresh();
                 },
 
-                style: GoogleFonts
-                    .plusJakartaSans(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
 
-                  fontWeight:
-                  FontWeight.w600,
+                  fontWeight: FontWeight.w600,
 
                   color: textDark,
                 ),
 
-                decoration:
-                const InputDecoration(
-                  border:
-                  InputBorder.none,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
 
                   prefixText: 'Rs. ',
 
-                  contentPadding:
-                  EdgeInsets
-                      .symmetric(
+                  contentPadding: EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 14,
                   ),
@@ -2628,16 +991,14 @@ class _AddSaleState extends State<AddSale> {
             const SizedBox(height: 16),
 
             Text(
-              'Change',
+              AppConstants.changeLabel,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
 
                 color: textMuted,
 
-                fontWeight:
-                FontWeight.w500,
+                fontWeight: FontWeight.w500,
               ),
             ),
 
@@ -2646,12 +1007,10 @@ class _AddSaleState extends State<AddSale> {
             Text(
               'Rs. ${saleController.changeAmount.toStringAsFixed(2)}',
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 18,
 
-                fontWeight:
-                FontWeight.w700,
+                fontWeight: FontWeight.w700,
 
                 color: textDark,
               ),
@@ -2663,12 +1022,10 @@ class _AddSaleState extends State<AddSale> {
           // ====================================================
           // INVOICE OPTIONS
           // ====================================================
-
           Text(
-            'Invoice Options',
+            AppConstants.invoiceOptions,
 
-            style:
-            GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
 
               fontWeight: FontWeight.w700,
@@ -2682,7 +1039,7 @@ class _AddSaleState extends State<AddSale> {
           _buildInvoiceOptionRow(
             icon: Icons.print_outlined,
 
-            title: 'Print Invoice',
+            title: AppConstants.printInvoice,
 
             value: _printInvoice,
 
@@ -2698,7 +1055,7 @@ class _AddSaleState extends State<AddSale> {
           _buildInvoiceOptionRow(
             icon: Icons.chat_outlined,
 
-            title: 'Share via WhatsApp',
+            title: AppConstants.shareWhatsApp,
 
             value: _shareWhatsApp,
 
@@ -2723,12 +1080,10 @@ class _AddSaleState extends State<AddSale> {
   Widget _buildStep4Success() {
     return Center(
       child: SingleChildScrollView(
-        padding:
-        const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
 
         child: Column(
-          mainAxisAlignment:
-          MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
             // ==================================================
@@ -2739,33 +1094,26 @@ class _AddSaleState extends State<AddSale> {
               width: 80,
               height: 80,
 
-              decoration:
-              const BoxDecoration(
+              decoration: const BoxDecoration(
                 color: primaryGreen,
 
                 shape: BoxShape.circle,
               ),
 
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 48,
-              ),
+              child: const Icon(Icons.check, color: Colors.white, size: 48),
             ),
 
             const SizedBox(height: 24),
 
             Text(
-              'Sale Completed\nSuccessfully!',
+              AppConstants.saleCompletedSuccess,
 
               textAlign: TextAlign.center,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 22,
 
-                fontWeight:
-                FontWeight.w800,
+                fontWeight: FontWeight.w800,
 
                 color: textDark,
 
@@ -2776,12 +1124,11 @@ class _AddSaleState extends State<AddSale> {
             const SizedBox(height: 10),
 
             Text(
-              'Stock has been updated automatically.',
+              AppConstants.stockUpdatedAuto,
 
               textAlign: TextAlign.center,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 color: textMuted,
               ),
@@ -2792,75 +1139,44 @@ class _AddSaleState extends State<AddSale> {
             // ==================================================
             // RECEIPT SUMMARY
             // ==================================================
-
             Container(
-              padding:
-              const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(18),
 
               decoration: BoxDecoration(
                 color: Colors.white,
 
-                borderRadius:
-                BorderRadius.circular(
-                  16,
-                ),
+                borderRadius: BorderRadius.circular(16),
 
-                border: Border.all(
-                  color: borderColor,
-                ),
+                border: Border.all(color: borderColor),
               ),
 
               child: Column(
                 children: [
-                  _buildReceiptRow(
-                    'Status',
-                    'Completed',
-                  ),
+                  _buildReceiptRow(AppConstants.statusLabel, AppConstants.completedLabel),
 
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
 
-                  _buildReceiptRow(
-                    'Customer',
-                    'Walk-in Customer',
-                  ),
+                  _buildReceiptRow(AppConstants.customer, AppConstants.walkInCustomer),
 
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
 
                   _buildReceiptRow(
-                    'Payment Method',
-                    saleController
-                        .paymentMethod
-                        .value ==
-                        'cash'
-                        ? 'Cash'
-                        : 'Card',
+                    AppConstants.paymentMethodLabel,
+                    saleController.paymentMethod.value == 'cash'
+                        ? AppConstants.cashLabel
+                        : AppConstants.cardLabel,
                   ),
 
-                  if (_createdSaleId !=
-                      null) ...[
-                    const SizedBox(
-                      height: 10,
-                    ),
+                  if (_createdSaleId != null) ...[
+                    const SizedBox(height: 10),
 
-                    _buildReceiptRow(
-                      'Sale ID',
-                      _shortId(
-                        _createdSaleId!,
-                      ),
-                    ),
+                    _buildReceiptRow(AppConstants.saleIdLabel, _shortId(_createdSaleId!)),
                   ],
 
-                  const Divider(
-                    height: 20,
-                    color: borderColor,
-                  ),
+                  const Divider(height: 20, color: borderColor),
 
                   _buildReceiptRow(
-                    'Total Amount',
+                    AppConstants.totalAmountLabel,
                     'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
                     isBold: true,
                   ),
@@ -2873,7 +1189,6 @@ class _AddSaleState extends State<AddSale> {
             // ==================================================
             // VIEW SALE
             // ==================================================
-
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -2885,31 +1200,23 @@ class _AddSaleState extends State<AddSale> {
                   Navigator.of(context).pop();
                 },
 
-                style:
-                ElevatedButton.styleFrom(
-                  backgroundColor:
-                  primaryGreen,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryGreen,
 
-                  shape:
-                  RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(
-                      12,
-                    ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
 
                   elevation: 0,
                 ),
 
                 child: Text(
-                  'View Sales',
+                  AppConstants.viewSales,
 
-                  style: GoogleFonts
-                      .plusJakartaSans(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
 
-                    fontWeight:
-                    FontWeight.w700,
+                    fontWeight: FontWeight.w700,
 
                     color: Colors.white,
                   ),
@@ -2922,7 +1229,6 @@ class _AddSaleState extends State<AddSale> {
             // ==================================================
             // ADD ANOTHER
             // ==================================================
-
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -2930,33 +1236,23 @@ class _AddSaleState extends State<AddSale> {
               child: ElevatedButton(
                 onPressed: _resetSale,
 
-                style:
-                ElevatedButton.styleFrom(
-                  backgroundColor:
-                  const Color(
-                    0xFFF3F4F6,
-                  ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF3F4F6),
 
-                  shape:
-                  RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(
-                      12,
-                    ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
 
                   elevation: 0,
                 ),
 
                 child: Text(
-                  'Add Another Sale',
+                  AppConstants.addAnotherSale,
 
-                  style: GoogleFonts
-                      .plusJakartaSans(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
 
-                    fontWeight:
-                    FontWeight.w700,
+                    fontWeight: FontWeight.w700,
 
                     color: textDark,
                   ),
@@ -2979,65 +1275,44 @@ class _AddSaleState extends State<AddSale> {
     // ==========================================================
 
     if (_currentStep == 0) {
-      if (saleController
-          .quantities.isEmpty) {
+      if (saleController.quantities.isEmpty) {
         return const SizedBox();
       }
 
       return Container(
-        padding:
-        const EdgeInsets.fromLTRB(
-          20,
-          12,
-          20,
-          16,
-        ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
 
-        decoration:
-        const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
 
-          border: Border(
-            top: BorderSide(
-              color: borderColor,
-            ),
-          ),
+          border: Border(top: BorderSide(color: borderColor)),
         ),
 
         child: Column(
-          mainAxisSize:
-          MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
 
           children: [
             Row(
-              mainAxisAlignment:
-              MainAxisAlignment
-                  .spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
               children: [
                 Row(
                   children: [
                     const Icon(
-                      Icons
-                          .shopping_cart_outlined,
+                      Icons.shopping_cart_outlined,
                       color: textDark,
                       size: 20,
                     ),
 
-                    const SizedBox(
-                      width: 8,
-                    ),
+                    const SizedBox(width: 8),
 
                     Text(
-                      '${saleController.totalItemsCount} items',
+                      '${saleController.totalItemsCount} ${AppConstants.itemsLabel}',
 
-                      style: GoogleFonts
-                          .plusJakartaSans(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
 
-                        fontWeight:
-                        FontWeight
-                            .w600,
+                        fontWeight: FontWeight.w600,
 
                         color: textDark,
                       ),
@@ -3048,12 +1323,10 @@ class _AddSaleState extends State<AddSale> {
                 Text(
                   'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
 
-                  style: GoogleFonts
-                      .plusJakartaSans(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
 
-                    fontWeight:
-                    FontWeight.w800,
+                    fontWeight: FontWeight.w800,
 
                     color: textDark,
                   ),
@@ -3074,51 +1347,36 @@ class _AddSaleState extends State<AddSale> {
                   });
                 },
 
-                style:
-                ElevatedButton.styleFrom(
-                  backgroundColor:
-                  primaryGreen,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryGreen,
 
-                  shape:
-                  RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(
-                      12,
-                    ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
 
                   elevation: 0,
                 ),
 
                 child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment
-                      .center,
+                  mainAxisAlignment: MainAxisAlignment.center,
 
                   children: [
                     Text(
-                      'View Cart',
+                      AppConstants.viewCart,
 
-                      style: GoogleFonts
-                          .plusJakartaSans(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 15,
 
-                        fontWeight:
-                        FontWeight
-                            .w700,
+                        fontWeight: FontWeight.w700,
 
-                        color:
-                        Colors.white,
+                        color: Colors.white,
                       ),
                     ),
 
-                    const SizedBox(
-                      width: 6,
-                    ),
+                    const SizedBox(width: 6),
 
                     const Icon(
-                      Icons
-                          .arrow_forward_rounded,
+                      Icons.arrow_forward_rounded,
                       size: 18,
                       color: Colors.white,
                     ),
@@ -3137,23 +1395,12 @@ class _AddSaleState extends State<AddSale> {
 
     if (_currentStep == 1) {
       return Container(
-        padding:
-        const EdgeInsets.fromLTRB(
-          20,
-          12,
-          20,
-          16,
-        ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
 
-        decoration:
-        const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
 
-          border: Border(
-            top: BorderSide(
-              color: borderColor,
-            ),
-          ),
+          border: Border(top: BorderSide(color: borderColor)),
         ),
 
         child: SizedBox(
@@ -3161,65 +1408,46 @@ class _AddSaleState extends State<AddSale> {
           height: 48,
 
           child: ElevatedButton(
-            onPressed: saleController
-                .quantities.isEmpty
+            onPressed: saleController.quantities.isEmpty
                 ? null
                 : () {
-              if (saleController
-                  .discount
-                  .value >
-                  saleController
-                      .subtotal) {
-                Get.snackbar(
-                  'Invalid Discount',
-                  'Discount cannot exceed subtotal.',
-                );
+                    if (saleController.discount.value >
+                        saleController.subtotal) {
+                      Get.snackbar(
+                        'Invalid Discount',
+                        'Discount cannot exceed subtotal.',
+                      );
 
-                return;
-              }
+                      return;
+                    }
 
-              saleController
-                  .receivedAmountController
-                  .text =
-                  saleController
-                      .totalAmount
-                      .toStringAsFixed(
-                    2,
-                  );
+                    saleController.receivedAmountController.text =
+                        saleController.totalAmount.toStringAsFixed(2);
 
-              setState(() {
-                _currentStep = 2;
-              });
-            },
+                    setState(() {
+                      _currentStep = 2;
+                    });
+                  },
 
-            style:
-            ElevatedButton.styleFrom(
-              backgroundColor:
-              primaryGreen,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryGreen,
 
-              disabledBackgroundColor:
-              Colors.grey.shade300,
+              disabledBackgroundColor: Colors.grey.shade300,
 
-              shape:
-              RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(
-                  12,
-                ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
 
               elevation: 0,
             ),
 
             child: Text(
-              'Proceed to Payment',
+              AppConstants.proceedToPayment,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 15,
 
-                fontWeight:
-                FontWeight.w700,
+                fontWeight: FontWeight.w700,
 
                 color: Colors.white,
               ),
@@ -3235,23 +1463,12 @@ class _AddSaleState extends State<AddSale> {
 
     if (_currentStep == 2) {
       return Container(
-        padding:
-        const EdgeInsets.fromLTRB(
-          20,
-          12,
-          20,
-          16,
-        ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
 
-        decoration:
-        const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
 
-          border: Border(
-            top: BorderSide(
-              color: borderColor,
-            ),
-          ),
+          border: Border(top: BorderSide(color: borderColor)),
         ),
 
         child: SizedBox(
@@ -3259,66 +1476,42 @@ class _AddSaleState extends State<AddSale> {
           height: 48,
 
           child: ElevatedButton(
-            onPressed:
-            saleController
-                .isLoading.value
-                ? null
-                : _completeSale,
+            onPressed: saleController.isLoading.value ? null : _completeSale,
 
-            style:
-            ElevatedButton.styleFrom(
-              backgroundColor:
-              primaryGreen,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryGreen,
 
-              disabledBackgroundColor:
-              primaryGreen
-                  .withValues(
-                alpha: 0.6,
-              ),
+              disabledBackgroundColor: primaryGreen.withValues(alpha: 0.6),
 
-              shape:
-              RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(
-                  12,
-                ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
 
               elevation: 0,
             ),
 
-            child: saleController
-                .isLoading.value
+            child: saleController.isLoading.value
                 ? const SizedBox(
-              width: 22,
-              height: 22,
+                    width: 22,
+                    height: 22,
 
-              child:
-              CircularProgressIndicator(
-                strokeWidth: 2.5,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
 
-                valueColor:
-                AlwaysStoppedAnimation<
-                    Color>(
-                  Colors.white,
-                ),
-              ),
-            )
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
                 : Text(
-              'Complete Sale',
+                    AppConstants.completeSaleLabel,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
-                fontSize: 15,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
 
-                fontWeight:
-                FontWeight
-                    .w700,
+                      fontWeight: FontWeight.w700,
 
-                color:
-                Colors.white,
-              ),
-            ),
+                      color: Colors.white,
+                    ),
+                  ),
           ),
         ),
       );
@@ -3334,34 +1527,29 @@ class _AddSaleState extends State<AddSale> {
   Widget _buildNoProducts() {
     return Center(
       child: Padding(
-        padding:
-        const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(30),
 
         child: Column(
-          mainAxisAlignment:
-          MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
             Icon(
               Icons.inventory_2_outlined,
               size: 52,
-              color:
-              Colors.grey.shade400,
+              color: Colors.grey.shade400,
             ),
 
             const SizedBox(height: 12),
 
             Text(
               _searchQuery.isEmpty
-                  ? 'No products available'
-                  : 'No products found',
+                  ? AppConstants.noProductsAvailable
+                  : AppConstants.noProductsFound,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 15,
 
-                fontWeight:
-                FontWeight.w600,
+                fontWeight: FontWeight.w600,
 
                 color: textDark,
               ),
@@ -3371,14 +1559,12 @@ class _AddSaleState extends State<AddSale> {
 
             Text(
               _searchQuery.isEmpty
-                  ? 'Add products before creating a sale.'
-                  : 'Try another product name or barcode.',
+                  ? AppConstants.addProductsBeforeSale
+                  : AppConstants.tryAnotherProductName,
 
-              textAlign:
-              TextAlign.center,
+              textAlign: TextAlign.center,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 color: textMuted,
               ),
@@ -3393,34 +1579,24 @@ class _AddSaleState extends State<AddSale> {
   // SUMMARY ROW
   // ============================================================
 
-  Widget _buildSummaryLine(
-      String label,
-      String value,
-      ) {
+  Widget _buildSummaryLine(String label, String value) {
     return Row(
-      mainAxisAlignment:
-      MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
       children: [
         Text(
           label,
 
-          style:
-          GoogleFonts.plusJakartaSans(
-            fontSize: 13,
-            color: textMuted,
-          ),
+          style: GoogleFonts.plusJakartaSans(fontSize: 13, color: textMuted),
         ),
 
         Text(
           value,
 
-          style:
-          GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 13,
 
-            fontWeight:
-            FontWeight.w600,
+            fontWeight: FontWeight.w600,
 
             color: textDark,
           ),
@@ -3437,34 +1613,22 @@ class _AddSaleState extends State<AddSale> {
     required IconData icon,
     required String title,
     required bool value,
-    required ValueChanged<bool>
-    onChanged,
+    required ValueChanged<bool> onChanged,
   }) {
     return Container(
-      padding:
-      const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
 
       decoration: BoxDecoration(
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
 
-        border: Border.all(
-          color: borderColor,
-        ),
+        border: Border.all(color: borderColor),
       ),
 
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: textDark,
-          ),
+          Icon(icon, size: 20, color: textDark),
 
           const SizedBox(width: 12),
 
@@ -3472,12 +1636,10 @@ class _AddSaleState extends State<AddSale> {
             child: Text(
               title,
 
-              style: GoogleFonts
-                  .plusJakartaSans(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
 
-                fontWeight:
-                FontWeight.w600,
+                fontWeight: FontWeight.w600,
 
                 color: textDark,
               ),
@@ -3489,11 +1651,9 @@ class _AddSaleState extends State<AddSale> {
 
             onChanged: onChanged,
 
-            activeColor:
-            primaryGreen,
+            activeColor: primaryGreen,
 
-            activeTrackColor:
-            lightGreenBg,
+            activeTrackColor: lightGreenBg,
           ),
         ],
       ),
@@ -3504,31 +1664,20 @@ class _AddSaleState extends State<AddSale> {
   // RECEIPT ROW
   // ============================================================
 
-  Widget _buildReceiptRow(
-      String label,
-      String value, {
-        bool isBold = false,
-      }) {
+  Widget _buildReceiptRow(String label, String value, {bool isBold = false}) {
     return Row(
-      mainAxisAlignment:
-      MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
       children: [
         Text(
           label,
 
-          style:
-          GoogleFonts.plusJakartaSans(
-            fontSize:
-            isBold ? 14 : 13,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: isBold ? 14 : 13,
 
-            fontWeight: isBold
-                ? FontWeight.w700
-                : FontWeight.w500,
+            fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
 
-            color: isBold
-                ? textDark
-                : textMuted,
+            color: isBold ? textDark : textMuted,
           ),
         ),
 
@@ -3540,14 +1689,10 @@ class _AddSaleState extends State<AddSale> {
 
             textAlign: TextAlign.right,
 
-            style: GoogleFonts
-                .plusJakartaSans(
-              fontSize:
-              isBold ? 16 : 13,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: isBold ? 16 : 13,
 
-              fontWeight: isBold
-                  ? FontWeight.w800
-                  : FontWeight.w600,
+              fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
 
               color: textDark,
             ),
@@ -3561,14 +1706,9 @@ class _AddSaleState extends State<AddSale> {
   // QUANTITY FORMAT
   // ============================================================
 
-  String _formatQuantity(
-      double value,
-      ) {
-    if (value ==
-        value.roundToDouble()) {
-      return value
-          .toInt()
-          .toString();
+  String _formatQuantity(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
     }
 
     return value.toStringAsFixed(2);
@@ -3583,7 +1723,6 @@ class _AddSaleState extends State<AddSale> {
       return id;
     }
 
-    return id.substring(0, 8)
-        .toUpperCase();
+    return id.substring(0, 8).toUpperCase();
   }
 }
