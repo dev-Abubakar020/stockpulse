@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 class AddCategories extends StatelessWidget {
   const AddCategories({super.key});
@@ -19,11 +20,11 @@ class AddCategories extends StatelessWidget {
           child: Column(
             children: [
               CustomAppBar(
-                title: 'Add Category',
+                title: AppConstants.addCat,
                 showBackButton: true,
                 actions: [
                   CustomTextButton(
-                    text: 'Reset',
+                    text: AppConstants.reset,
                     onPressed: () {
                       controller.clearForm();
                     },
@@ -47,7 +48,7 @@ class AddCategories extends StatelessWidget {
                                 children: [
                                   RichText(
                                     text: const TextSpan(
-                                      text: 'Category Name ',
+                                      text: AppConstants.categoryName,
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
@@ -55,7 +56,7 @@ class AddCategories extends StatelessWidget {
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: '*',
+                                          text: AppConstants.requiredAsterisk,
                                           style: TextStyle(
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold,
@@ -65,7 +66,7 @@ class AddCategories extends StatelessWidget {
                                     ),
                                   ),
                                   const Text(
-                                    'Required',
+                                    AppConstants.required,
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Color(0xFF64748B),
@@ -87,7 +88,7 @@ class AddCategories extends StatelessWidget {
                                 ),
                                 decoration: InputDecoration(
                                   filled: true,
-                                  fillColor: const Color(0xFFF1F5F9), // Light grey fill matching design
+                                  fillColor: const Color(0xFFF1F5F9),
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                     vertical: 16,
@@ -111,7 +112,7 @@ class AddCategories extends StatelessWidget {
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Enter a unique and descriptive category name for your catalog.',
+                                      AppConstants.categoryNameHint,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Color(0xFF475569),
@@ -143,7 +144,7 @@ class AddCategories extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         const Text(
-                                          'Category Status',
+                                          AppConstants.categoryStatus,
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600,
@@ -153,13 +154,13 @@ class AddCategories extends StatelessWidget {
                                         const SizedBox(height: 4),
                                         RichText(
                                           text: const TextSpan(
-                                            text: 'Database key: ',
+                                            text: AppConstants.databaseKeyPrefix,
                                             style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
                                             children: [
                                               TextSpan(
-                                                text: 'is_active',
+                                                text: AppConstants.databaseKey,
                                                 style: TextStyle(
-                                                  fontFamily: 'monospace',
+                                                  fontFamily: AppConstants.fontMonospace,
                                                   fontWeight: FontWeight.w600,
                                                   color: Color(0xFF0F766E),
                                                 ),
@@ -222,7 +223,7 @@ class AddCategories extends StatelessWidget {
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
-                                              isActive ? 'Active' : 'Inactive',
+                                              isActive ? AppConstants.statusActive : AppConstants.statusInActive,
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w600,
@@ -240,7 +241,7 @@ class AddCategories extends StatelessWidget {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              isActive ? 'Visible across Merchant Channels' : 'Hidden across Merchant Channels',
+                                              isActive ? AppConstants.visibleChannels : AppConstants.hiddenChannels,
                                               style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w600,
@@ -268,7 +269,7 @@ class AddCategories extends StatelessWidget {
                                     SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        'Inactive categories will hide associated items from quick customer checkout.',
+                                        AppConstants.categoryStatusHint,
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: Color(0xFF64748B),
@@ -311,7 +312,7 @@ class AddCategories extends StatelessWidget {
                     child: controller.isSaving.value
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
-                            'Save Category',
+                      AppConstants.saveCategory,
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),

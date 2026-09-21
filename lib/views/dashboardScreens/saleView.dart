@@ -75,10 +75,10 @@ class SaleView extends StatelessWidget {
                   final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
                   return EmptyStateWidget(
                     isSearching: isSearching,
-                    title: isSearching ? 'No Sale found' : 'No Sale yet',
+                    title: isSearching ? AppConstants.noSalesFound : AppConstants.noSalesYet,
                     subtitle: isSearching
-                        ? 'Try changing your search or filter.'
-                        : 'Your completed sale will appear here.',
+                        ? AppConstants.changeSearchOrFilter
+                        : AppConstants.completedSalesAppearHere,
                   );
                 }
                 return ListView.separated(

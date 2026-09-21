@@ -93,6 +93,19 @@ class AppConstants {
   static const String reset = 'Reset';
   static const String categoryName = 'Category Name ';
   static const String requiredAsterisk = '*';
+  static const String required = 'Required';
+  static const String categoryNameHint =
+      'Enter a unique and descriptive category name for your catalog.';
+  static const String categoryStatus = 'Category Status';
+  static const String databaseKeyPrefix = 'Database key: ';
+  static const String databaseKey = 'is_active';
+  static const String fontMonospace = 'monospace';
+  static const String visibleChannels = 'Visible across Merchant Channels';
+  static const String hiddenChannels = 'Hidden across Merchant Channels';
+  static const String categoryStatusHint =
+      'Inactive categories will hide associated items from quick customer checkout.';
+  static const String saveCategory = 'Save Category';
+
   static const String searchCat = 'Search Categories';
   static const String allCat = 'All Categories';
   static const String noCatFound = 'No categories found.';
@@ -193,4 +206,10 @@ class AppConstants {
   static const String addProductsBeforeSale = 'Add products before creating a sale.';
   static const String tryAnotherProductName = 'Try another product name or barcode.';
   static const String viewCart = 'View Cart';
+
+  /// Sale View Screen Constants
+  static const String noSalesFound = 'No sales found';
+  static const String noSalesYet = 'No sales yet';
+  static const String changeSearchOrFilter = 'Try changing your search or filter.';
+  static const String completedSalesAppearHere = 'Your completed sales will appear here.';
 }
