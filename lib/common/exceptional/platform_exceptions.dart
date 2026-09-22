@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppException implements Exception {
   final String message;
 
-  const AppException([
-    this.message = 'Something went wrong. Please try again.',
-  ]);
+  const AppException([this.message = AppConstants.defaultErrorMessage]);
 
   /// Converts known error codes into user-friendly messages.
   factory AppException.fromCode(String code) {
@@ -22,74 +21,50 @@ class AppException implements Exception {
 
       case 'user_already_exists':
       case 'email_exists':
-        return const AppException(
-          'An account already exists with this email address.',
-        );
+        return const AppException(AppConstants.accountAlreadyExists);
 
       case 'email_address_invalid':
-        return const AppException('Please enter a valid email address.');
+        return const AppException(AppConstants.invalidEmailAddress);
 
       case 'weak_password':
-        return const AppException(
-          'The password is too weak. Please choose a stronger password.',
-        );
+        return const AppException(AppConstants.weakPassword);
 
       case 'invalid_credentials':
-        return const AppException('Invalid email or password.');
+        return const AppException(AppConstants.invalidEmailOrPassword);
 
       case 'user_not_found':
-        return const AppException(
-          'No account was found with these credentials.',
-        );
+        return const AppException(AppConstants.userNotFound);
 
       case 'user_banned':
-        return const AppException(
-          'This account has been disabled. Please contact support.',
-        );
+        return const AppException(AppConstants.userBanned);
 
       case 'email_not_confirmed':
-        return const AppException(
-          'Please verify your email address before signing in.',
-        );
+        return const AppException(AppConstants.emailNotConfirmed);
 
       case 'phone_not_confirmed':
-        return const AppException(
-          'Please verify your phone number before signing in.',
-        );
+        return const AppException(AppConstants.phoneNotConfirmed);
 
       case 'signup_disabled':
-        return const AppException(
-          'New account registration is currently disabled.',
-        );
+        return const AppException(AppConstants.signupDisabled);
 
       case 'email_provider_disabled':
-        return const AppException(
-          'Email authentication is currently disabled.',
-        );
+        return const AppException(AppConstants.emailProviderDisabled);
 
       case 'phone_provider_disabled':
-        return const AppException(
-          'Phone authentication is currently disabled.',
-        );
+        return const AppException(AppConstants.phoneProviderDisabled);
 
       // =========================
       // OTP
       // =========================
 
       case 'otp_expired':
-        return const AppException(
-          'The verification code has expired. Please request a new one.',
-        );
+        return const AppException(AppConstants.otpExpired);
 
       case 'otp_disabled':
-        return const AppException(
-          'OTP authentication is currently unavailable.',
-        );
+        return const AppException(AppConstants.otpDisabled);
 
       case 'captcha_failed':
-        return const AppException(
-          'Security verification failed. Please try again.',
-        );
+        return const AppException(AppConstants.captchaFailed);
 
       // =========================
       // SESSION
@@ -99,9 +74,7 @@ class AppException implements Exception {
       case 'session_expired':
       case 'refresh_token_not_found':
       case 'refresh_token_already_used':
-        return const AppException(
-          'Your session has expired. Please sign in again.',
-        );
+        return const AppException(AppConstants.sessionExpired);
 
       // =========================
       // RATE LIMIT
@@ -110,9 +83,7 @@ class AppException implements Exception {
       case 'over_request_rate_limit':
       case 'over_email_send_rate_limit':
       case 'over_sms_send_rate_limit':
-        return const AppException(
-          'Too many requests. Please wait and try again.',
-        );
+        return const AppException(AppConstants.rateLimitExceeded);
 
       // =========================
       // POSTGRES / DATABASE
@@ -120,27 +91,23 @@ class AppException implements Exception {
 
       /// Unique constraint violation
       case '23505':
-        return const AppException('This record already exists.');
+        return const AppException(AppConstants.recordAlreadyExists);
 
       /// Foreign key violation
       case '23503':
-        return const AppException(
-          'This operation cannot be completed because related data exists.',
-        );
+        return const AppException(AppConstants.foreignKeyViolation);
 
       /// NOT NULL violation
       case '23502':
-        return const AppException('Required information is missing.');
+        return const AppException(AppConstants.notNullViolation);
 
       /// Permission / RLS
       case '42501':
-        return const AppException(
-          'You do not have permission to perform this action.',
-        );
+        return const AppException(AppConstants.permissionDeniedAction);
 
       /// PostgREST single record not found
       case 'pgrst116':
-        return const AppException('The requested record was not found.');
+        return const AppException(AppConstants.recordNotFound);
 
       default:
         return const AppException();
@@ -168,7 +135,7 @@ class AppException implements Exception {
         }
       }
 
-      return const AppException('Authentication failed. Please try again.');
+      return const AppException(AppConstants.authFailed);
     }
 
     // =========================
@@ -183,20 +150,18 @@ class AppException implements Exception {
         }
       }
 
-      return const AppException('A database error occurred. Please try again.');
+      return const AppException(AppConstants.databaseError);
     }
 
     // =========================
     // NETWORK
     // =========================
     if (exception is SocketException) {
-      return const AppException(
-        'No internet connection. Please check your network.',
-      );
+      return const AppException(AppConstants.noInternetError);
     }
 
     if (exception is TimeoutException) {
-      return const AppException('The request timed out. Please try again.');
+      return const AppException(AppConstants.requestTimeout);
     }
 
     // =========================
@@ -210,7 +175,7 @@ class AppException implements Exception {
     // FORMAT
     // =========================
     if (exception is FormatException) {
-      return const AppException('Invalid data format received.');
+      return const AppException(AppConstants.invalidDataFormat);
     }
 
     // =========================
@@ -237,28 +202,24 @@ class AppException implements Exception {
   static AppException _fromPlatformException(PlatformException exception) {
     switch (exception.code.toLowerCase()) {
       case 'permission_denied':
-        return const AppException(
-          'Permission denied. Please allow the required permission.',
-        );
+        return const AppException(AppConstants.permissionDeniedDevice);
 
       case 'camera_access_denied':
-        return const AppException(
-          'Camera permission is required to use this feature.',
-        );
+        return const AppException(AppConstants.cameraPermissionDenied);
 
       case 'camera_unavailable':
-        return const AppException('Camera is currently unavailable.');
+        return const AppException(AppConstants.cameraUnavailable);
 
       case 'storage_permission_denied':
-        return const AppException('Storage permission is required.');
+        return const AppException(AppConstants.storagePermissionDenied);
 
       default:
-        return const AppException('A device error occurred. Please try again.');
+        return const AppException(AppConstants.deviceError);
     }
   }
 
   static bool _isDefaultMessage(String message) {
-    return message == 'Something went wrong. Please try again.';
+    return message == AppConstants.defaultErrorMessage;
   }
 
   @override

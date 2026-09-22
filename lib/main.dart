@@ -16,32 +16,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/route/app_routes.dart';
 
-// Future<void> main() async {
-//   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-//   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-//
-//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-//
-//   await Supabase.initialize(
-//     url: AppConstants.supabaseUrl,
-//     // ignore: deprecated_member_use
-//     anonKey: AppConstants.supabaseAnonKey,
-//   );
-//
-//   await LocalStorageService.init();
-//   Get.put(LocalStorageService(), permanent: true);
-//   FlutterNativeSplash.remove();
-//   Get.put(NetworkManager());
-//   runApp(const MyApp());
-// }
-
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
     // ignore: deprecated_member_use
@@ -52,9 +30,7 @@ Future<void> main() async {
   Get.put(LocalStorageService(), permanent: true);
   Get.put(NetworkManager(), permanent: true);
   final initialRoute = await getInitialRoute();
-
   runApp(MyApp(initialRoute: initialRoute));
-
   FlutterNativeSplash.remove();
 }
 

@@ -272,6 +272,65 @@ class AppConstants {
   static const String resetPasswordDesc =
       'Your new password must be different from previously used passwords.';
 
+  /// Platform & Exception Messages
+  static const String defaultErrorMessage =
+      'Something went wrong. Please try again.';
+  static const String accountAlreadyExists =
+      'An account already exists with this email address.';
+  static const String invalidEmailAddress =
+      'Please enter a valid email address.';
+  static const String weakPassword =
+      'The password is too weak. Please choose a stronger password.';
+  static const String invalidEmailOrPassword = 'Invalid email or password.';
+  static const String userNotFound =
+      'No account was found with these credentials.';
+  static const String userBanned =
+      'This account has been disabled. Please contact support.';
+  static const String emailNotConfirmed =
+      'Please verify your email address before signing in.';
+  static const String phoneNotConfirmed =
+      'Please verify your phone number before signing in.';
+  static const String signupDisabled =
+      'New account registration is currently disabled.';
+  static const String emailProviderDisabled =
+      'Email authentication is currently disabled.';
+  static const String phoneProviderDisabled =
+      'Phone authentication is currently disabled.';
+  static const String otpExpired =
+      'The verification code has expired. Please request a new one.';
+  static const String otpDisabled =
+      'OTP authentication is currently unavailable.';
+  static const String captchaFailed =
+      'Security verification failed. Please try again.';
+  static const String sessionExpired =
+      'Your session has expired. Please sign in again.';
+  static const String rateLimitExceeded =
+      'Too many requests. Please wait and try again.';
+  static const String recordAlreadyExists = 'This record already exists.';
+  static const String foreignKeyViolation =
+      'This operation cannot be completed because related data exists.';
+  static const String notNullViolation = 'Required information is missing.';
+  static const String permissionDeniedAction =
+      'You do not have permission to perform this action.';
+  static const String recordNotFound = 'The requested record was not found.';
+  static const String authFailed = 'Authentication failed. Please try again.';
+  static const String databaseError =
+      'A database error occurred. Please try again.';
+  static const String noInternetError =
+      'No internet connection. Please check your network.';
+  static const String requestTimeout =
+      'The request timed out. Please try again.';
+  static const String invalidDataFormat = 'Invalid data format received.';
+  static const String permissionDeniedDevice =
+      'Permission denied. Please allow the required permission.';
+  static const String cameraPermissionDenied =
+      'Camera permission is required to use this feature.';
+  static const String cameraUnavailable = 'Camera is currently unavailable.';
+  static const String storagePermissionDenied =
+      'Storage permission is required.';
+  static const String deviceError =
+      'A device error occurred. Please try again.';
+
   /// Sale View Screen Constants
   static const String noSalesFound = 'No sales found';
   static const String noSalesYet = 'No sales yet';
