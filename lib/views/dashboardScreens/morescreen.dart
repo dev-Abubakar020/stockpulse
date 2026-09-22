@@ -22,7 +22,7 @@ class MoreScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left:24),
-              child: CustomAppBar(title: 'More'),
+              child: CustomAppBar(title: AppConstants.moreTitle),
             ),
             Expanded(
               child: ListView(
@@ -36,31 +36,31 @@ class MoreScreen extends StatelessWidget {
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.category_outlined,
-                      title: 'Categories',
+                      title: AppConstants.categoriesTitle,
                       onTap: () {
                         Get.toNamed(Routes.allCategories);
                       },
                     ),
                     MoreMenuTile(
                       icon: Icons.receipt_long_outlined,
-                      title: 'Expenses',
+                      title: AppConstants.expensesTitle,
                       onTap: () {
                         Get.toNamed(Routes.addExpense);
                       },
                     ),
                     MoreMenuTile(
                       icon: Icons.bar_chart_outlined,
-                      title: 'Reports',
+                      title: AppConstants.reportsTitle,
                       onTap: () {},
                     ),
                     MoreMenuTile(
                       icon: Icons.badge_outlined,
-                      title: 'Staff',
+                      title: AppConstants.staffTitle,
                       showDivider: false,
                       onTap: () {
                         Get.snackbar(
-                          'Feature Unavailable',
-                          'This feature is coming Soon',
+                          AppConstants.featureUnavailableTitle,
+                          AppConstants.featureComingSoonMsg,
                         );
                       },
                     ),
@@ -69,12 +69,12 @@ class MoreScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Section 2
-                  CustomAppBar(title: 'Others Options'),
+                  CustomAppBar(title: AppConstants.othersOptionsTitle),
                   const SizedBox(height: 10),
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.settings_outlined,
-                      title: 'Settings',
+                      title: AppConstants.settingTitle,
                       showDivider: false,
                       onTap: () {
                         Get.toNamed(Routes.settingPage);
@@ -82,14 +82,14 @@ class MoreScreen extends StatelessWidget {
                     ),
                     MoreMenuTile(
                       icon: Icons.help_outline_rounded,
-                      title: 'Help & Support',
+                      title: AppConstants.helpAndSupportTitle,
                       onTap: () {
                         _launchUrl();
                       },
                     ),
                     MoreMenuTile(
                       icon: Icons.info_outline_rounded,
-                      title: 'About StockPulse',
+                      title: AppConstants.aboutStockPulseTitle,
                       showDivider: false,
                       onTap: () {
                         _launchUrl2();

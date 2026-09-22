@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../common/exceptional/platform_exceptions.dart';
 import '../common/widgets/custom_snackbar.dart';
 import '../models/category_model.dart';
@@ -17,7 +18,7 @@ class CategoryController extends GetxController {
   var isSaving = false.obs;
   var categoriesList = <CategoryModel>[].obs;
   var categoryCounts = <String, int>{}.obs;
-  
+
   // Search and Filter state
   var searchQuery = ''.obs;
   var selectedFilterIndex = 0.obs;
@@ -34,10 +35,14 @@ class CategoryController extends GetxController {
 
   // Fetch categories from database
   Future<void> fetchCategories() async {
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
+
     try {
       isLoading.value = true;
       final list = await _categoryRepository.getAllCategories();
-      
+
       try {
         final products = await _productRepository.getProducts();
         final counts = <String, int>{};
@@ -53,12 +58,10 @@ class CategoryController extends GetxController {
 
       categoriesList.assignAll(list);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to fetch categories: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     } finally {
       isLoading.value = false;
@@ -69,9 +72,9 @@ class CategoryController extends GetxController {
   List<CategoryModel> get filteredCategories {
     return categoriesList.where((category) {
       // 1. Filter by Search Query
-      final matchesSearch = category.name
-          .toLowerCase()
-          .contains(searchQuery.value.toLowerCase());
+      final matchesSearch = category.name.toLowerCase().contains(
+        searchQuery.value.toLowerCase(),
+      );
 
       // 2. Filter by Status Tab
       bool matchesStatus = true;
@@ -146,32 +149,31 @@ class CategoryController extends GetxController {
   }
 
   // Update status of a category
-  Future<void> changeCategoryStatus(CategoryModel category, bool isActive) async {
+  Future<void> changeCategoryStatus(
+    CategoryModel category,
+    bool isActive,
+  ) async {
     if (category.id == null) return;
-    
+    if (!await NetworkManager.instance.checkInternet()) return;
+
     try {
       await _categoryRepository.updateCategoryStatus(category.id!, isActive);
-      
+
       // Update local state
       int index = categoriesList.indexWhere((c) => c.id == category.id);
       if (index != -1) {
         categoriesList[index] = category.copyWith(isActive: isActive);
       }
-      
-      Get.snackbar(
-        'Success',
-        'Category status updated',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+
+      CustomSnackBar.successSnackBar(
+        title: AppConstants.successTitle,
+        message: AppConstants.categoryStatusUpdated,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to update category status: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     }
   }
@@ -181,7 +183,7 @@ class CategoryController extends GetxController {
     nameController.text = '';
     isCategoryActive.value = true;
   }
-  
+
   void clearForm() {
     nameController.clear();
     isCategoryActive.value = true;

@@ -3,112 +3,83 @@ import 'package:get/get.dart';
 
 import 'package:stockpulse/controllers/homecontroller.dart';
 
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/widgets/custom_snackbar.dart';
 import '../models/productItemModel.dart';
 import '../models/sale_item_model.dart';
 import '../models/sale_model.dart';
 import '../repositories/sale_repository.dart';
+import '../services/networkManager.dart';
+import '../utils/app_constants.dart';
 import 'allProductsController.dart';
 
 class SaleController extends GetxController {
   final SaleRepository repository;
   final ProductController productController;
 
-  SaleController({
-    required this.repository,
-    required this.productController,
-  });
-
-  // ============================================================
-  // STATE
-  // ============================================================
+  SaleController({required this.repository, required this.productController});
 
   final RxBool isLoading = false.obs;
   final RxBool isSalesLoading = false.obs;
 
   /// productId -> quantity
-  final RxMap<String, double> quantities =
-      <String, double>{}.obs;
+  final RxMap<String, double> quantities = <String, double>{}.obs;
 
   /// Allows sale price to be changed for this sale only.
-  final RxMap<String, double> salePrices =
-      <String, double>{}.obs;
+  final RxMap<String, double> salePrices = <String, double>{}.obs;
 
   final RxDouble discount = 0.0.obs;
 
   final RxString paymentMethod = 'cash'.obs;
 
-  final RxList<SaleModel> sales =
-      <SaleModel>[].obs;
+  final RxList<SaleModel> sales = <SaleModel>[].obs;
 
   final RxString searchQuery = ''.obs;
   final RxInt selectedFilter = 0.obs;
 
-  final TextEditingController noteController =
-  TextEditingController();
+  final TextEditingController noteController = TextEditingController();
 
-  final TextEditingController discountController =
-  TextEditingController();
+  final TextEditingController discountController = TextEditingController();
 
-  final TextEditingController searchController =
-  TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   final TextEditingController receivedAmountController =
-  TextEditingController();
+      TextEditingController();
 
-  final List<String> filters = const [
-    'All',
-    'Completed',
-    'Cancelled',
-  ];
+  final List<String> filters = const ['All', 'Completed', 'Cancelled'];
 
-  // ============================================================
-  // PRODUCTS
-  // ============================================================
+  List<ProductItemModel> get products => productController.products;
 
-  List<ProductItemModel> get products =>
-      productController.products;
+  bool isSelected(String productId) => quantities.containsKey(productId);
 
-  bool isSelected(String productId) =>
-      quantities.containsKey(productId);
-
-  double quantityOf(String productId) =>
-      quantities[productId] ?? 0;
+  double quantityOf(String productId) => quantities[productId] ?? 0;
 
   double salePriceOf(ProductItemModel product) =>
       salePrices[product.id] ?? product.salePrice;
-
-  // ============================================================
-  // CART
-  // ============================================================
 
   void addProduct(ProductItemModel product) {
     final currentQty = quantityOf(product.id);
 
     if (product.currentStock <= 0) {
-      Get.snackbar(
-        'Out of Stock',
-        '${product.article} is currently out of stock.',
-        snackPosition: SnackPosition.BOTTOM,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.outOfStock,
+        message: '${product.article} is currently out of stock.',
       );
       return;
     }
 
     if (currentQty + 1 > product.currentStock) {
-      Get.snackbar(
-        'Insufficient Stock',
-        'Only ${_formatQty(product.currentStock)} '
-            '${product.unit} available.',
-        snackPosition: SnackPosition.BOTTOM,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.insufficientStock,
+        message:
+            'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
       );
       return;
     }
 
     quantities[product.id] = currentQty + 1;
 
-    salePrices.putIfAbsent(
-      product.id,
-          () => product.salePrice,
-    );
+    salePrices.putIfAbsent(product.id, () => product.salePrice);
   }
 
   void decrementProduct(ProductItemModel product) {
@@ -139,14 +110,7 @@ class SaleController extends GetxController {
     receivedAmountController.clear();
   }
 
-  // ============================================================
-  // SALE PRICE
-  // ============================================================
-
-  void updateSalePrice(
-      String productId,
-      String value,
-      ) {
+  void updateSalePrice(String productId, String value) {
     final price = double.tryParse(value);
 
     if (price == null || price < 0) {
@@ -156,18 +120,9 @@ class SaleController extends GetxController {
     salePrices[productId] = price;
   }
 
-  // ============================================================
-  // DISCOUNT
-  // ============================================================
-
   void updateDiscount(String value) {
-    discount.value =
-        double.tryParse(value) ?? 0;
+    discount.value = double.tryParse(value) ?? 0;
   }
-
-  // ============================================================
-  // PAYMENT
-  // ============================================================
 
   void changePaymentMethod(String value) {
     final method = value.toLowerCase();
@@ -179,177 +134,134 @@ class SaleController extends GetxController {
     paymentMethod.value = method;
   }
 
-  // ============================================================
-  // TOTALS
-  // ============================================================
-
   double get subtotal {
     double total = 0;
 
-    quantities.forEach(
-          (productId, quantity) {
-        final product =
-        products.firstWhereOrNull(
-              (item) => item.id == productId,
-        );
+    quantities.forEach((productId, quantity) {
+      final product = products.firstWhereOrNull((item) => item.id == productId);
 
-        if (product == null) return;
+      if (product == null) return;
 
-        total +=
-            salePriceOf(product) * quantity;
-      },
-    );
+      total += salePriceOf(product) * quantity;
+    });
 
     return total;
   }
 
   double get totalAmount {
-    final value =
-        subtotal - discount.value;
+    final value = subtotal - discount.value;
 
     return value < 0 ? 0 : value;
   }
 
-  double lineTotal(
-      ProductItemModel product,
-      ) {
-    return quantityOf(product.id) *
-        salePriceOf(product);
+  double lineTotal(ProductItemModel product) {
+    return quantityOf(product.id) * salePriceOf(product);
   }
 
   double get receivedAmount {
-    final text =
-    receivedAmountController.text.trim();
+    final text = receivedAmountController.text.trim();
 
     if (text.isEmpty) {
       return totalAmount;
     }
 
-    return double.tryParse(text) ??
-        totalAmount;
+    return double.tryParse(text) ?? totalAmount;
   }
 
   double get changeAmount {
-    final value =
-        receivedAmount - totalAmount;
+    final value = receivedAmount - totalAmount;
 
     return value > 0 ? value : 0;
   }
 
   int get totalItemsCount {
-    return quantities.values.fold<int>(
-      0,
-          (sum, qty) => sum + qty.toInt(),
-    );
+    return quantities.values.fold<int>(0, (sum, qty) => sum + qty.toInt());
   }
-
-  // ============================================================
-  // BUILD RPC ITEMS
-  // ============================================================
 
   List<SaleItemModel> buildSaleItems() {
     final List<SaleItemModel> items = [];
 
-    quantities.forEach(
-          (productId, quantity) {
-        final product =
-        products.firstWhereOrNull(
-              (item) => item.id == productId,
-        );
+    quantities.forEach((productId, quantity) {
+      final product = products.firstWhereOrNull((item) => item.id == productId);
 
-        if (product == null) return;
+      if (product == null) return;
 
-        items.add(
-          SaleItemModel(
-            productId: product.id,
-            article: product.article,
-            color: product.color,
-            size: product.size,
-            unit: product.unit,
-            quantity: quantity,
-            salePrice:
-            salePriceOf(product),
-          ),
-        );
-      },
-    );
+      items.add(
+        SaleItemModel(
+          productId: product.id,
+          article: product.article,
+          color: product.color,
+          size: product.size,
+          unit: product.unit,
+          quantity: quantity,
+          salePrice: salePriceOf(product),
+        ),
+      );
+    });
 
     return items;
   }
 
-  // ============================================================
-  // CREATE SALE
-  // ============================================================
-
   Future<String?> createSale() async {
     if (quantities.isEmpty) {
-      Get.snackbar(
-        'Empty Cart',
-        'Please add at least one product.',
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: AppConstants.noProductsSelected,
       );
       return null;
     }
 
     if (discount.value < 0) {
-      Get.snackbar(
-        'Invalid Discount',
-        'Discount cannot be negative.',
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.invalidDiscount,
+        message: AppConstants.discountNegative,
       );
       return null;
     }
 
     if (discount.value > subtotal) {
-      Get.snackbar(
-        'Invalid Discount',
-        'Discount cannot exceed subtotal.',
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.invalidDiscount,
+        message: AppConstants.discountExceedSubtotal,
       );
       return null;
     }
 
-    // Client validation.
-    // DB RPC also validates this again.
     for (final entry in quantities.entries) {
-      final product =
-      products.firstWhereOrNull(
-            (p) => p.id == entry.key,
-      );
+      final product = products.firstWhereOrNull((p) => p.id == entry.key);
 
       if (product == null) {
-        Get.snackbar(
-          'Product Error',
-          'A selected product could not be found.',
+        CustomSnackBar.errorSnackBar(
+          title: AppConstants.productError,
+          message: 'A selected product could not be found.',
         );
         return null;
       }
 
       if (entry.value > product.currentStock) {
-        Get.snackbar(
-          'Insufficient Stock',
-          '${product.article} only has '
-              '${_formatQty(product.currentStock)} '
-              '${product.unit} available.',
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.insufficientStock,
+          message:
+              '${product.article} only has ${_formatQty(product.currentStock)} ${product.unit} available.',
         );
         return null;
       }
     }
 
+    if (!await NetworkManager.instance.checkInternet()) {
+      return null;
+    }
+
     try {
       isLoading.value = true;
-
-      final saleId =
-      await repository.createSale(
+      final saleId = await repository.createSale(
         items: buildSaleItems(),
         discount: discount.value,
-        paymentMethod:
-        paymentMethod.value,
+        paymentMethod: paymentMethod.value,
         notes: noteController.text,
       );
 
-      // IMPORTANT:
-      // Replace fetchProducts() if your actual
-      // ProductController uses another refresh method.
       await productController.fetchProducts();
-
       await fetchSales();
 
       // Refresh Home Dashboard Data
@@ -359,14 +271,10 @@ class SaleController extends GetxController {
 
       return saleId;
     } catch (e) {
-      Get.snackbar(
-        'Sale Failed',
-        e.toString().replaceFirst(
-          'Exception: ',
-          '',
-        ),
-        snackPosition:
-        SnackPosition.BOTTOM,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.saleFailed,
+        message: exception.message,
       );
 
       return null;
@@ -375,38 +283,29 @@ class SaleController extends GetxController {
     }
   }
 
-  // ============================================================
-  // SALES LIST
-  // ============================================================
-
   Future<void> fetchSales() async {
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
+
     try {
       isSalesLoading.value = true;
-      await Future.delayed(const Duration(seconds: 1));
-      final result =
-      await repository.getSales();
+      final result = await repository.getSales();
 
       sales.assignAll(result);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString().replaceFirst(
-          'Exception: ',
-          '',
-        ),
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     } finally {
       isSalesLoading.value = false;
     }
   }
 
-  // ============================================================
-  // SALE LIST SEARCH/FILTER
-  // ============================================================
-
   void searchSales(String value) {
-    searchQuery.value =
-        value.trim().toLowerCase();
+    searchQuery.value = value.trim().toLowerCase();
   }
 
   void changeFilter(int index) {
@@ -420,31 +319,21 @@ class SaleController extends GetxController {
       final query = searchQuery.value;
 
       result = result.where(
-            (sale) =>
-        sale.saleNo
-            .toLowerCase()
-            .contains(query) ||
-            sale.totalAmount
-                .toString()
-                .contains(query),
+        (sale) =>
+            sale.saleNo.toLowerCase().contains(query) ||
+            sale.totalAmount.toString().contains(query),
       );
     }
 
     switch (selectedFilter.value) {
       case 1:
         result = result.where(
-              (sale) =>
-          sale.status.toLowerCase() ==
-              'completed',
+          (sale) => sale.status.toLowerCase() == 'completed',
         );
         break;
 
       case 2:
-        result = result.where(
-              (sale) =>
-          sale.status.toLowerCase() ==
-              'void',
-        );
+        result = result.where((sale) => sale.status.toLowerCase() == 'void');
         break;
     }
 

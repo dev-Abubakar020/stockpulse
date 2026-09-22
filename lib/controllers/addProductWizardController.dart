@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
+
 import '../../models/productItemModel.dart';
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/widgets/custom_snackbar.dart';
 import '../models/category_model.dart';
 import '../repositories/product_repository.dart';
+import '../services/networkManager.dart';
+import '../utils/app_constants.dart';
 import 'allProductsController.dart';
 
 class AddProductWizardController extends GetxController {
@@ -18,10 +23,9 @@ class AddProductWizardController extends GetxController {
   // STEP 1 Fields
   final nameController = TextEditingController();
   final skuController = TextEditingController();
-  final Rxn<CategoryModel> selectedCategory =
-  Rxn<CategoryModel>();
+  final Rxn<CategoryModel> selectedCategory = Rxn<CategoryModel>();
   final RxString selectedUnit = 'Piece (pcs)'.obs;
-  
+
   // Image handling
   final Rxn<String> networkImageUrl = Rxn<String>();
   final Rxn<XFile> pickedFile = Rxn<XFile>();
@@ -30,7 +34,12 @@ class AddProductWizardController extends GetxController {
   final categories = <CategoryModel>[].obs;
   final isCategoriesLoading = false.obs;
 
-  final List<String> units = ['Piece (pcs)', 'Box', 'Kilogram (kg)', 'Litre (L)'];
+  final List<String> units = [
+    'Piece (pcs)',
+    'Box',
+    'Kilogram (kg)',
+    'Litre (L)',
+  ];
 
   // STEP 2 Fields
   final purchasePriceController = TextEditingController();
@@ -47,7 +56,7 @@ class AddProductWizardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     // Check if a product was passed for editing
     if (Get.arguments is ProductItemModel) {
       editingProduct.value = Get.arguments;
@@ -74,21 +83,22 @@ class AddProductWizardController extends GetxController {
     lowStockLimit.value = p.minStockThreshold.toInt();
     activeForSale.value = p.isActive;
     networkImageUrl.value = p.imageUrl;
-    
+
     // category will be set once fetchCategories finishes if it matches
   }
 
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    
+
     if (image != null) {
       pickedFile.value = image;
     }
   }
 
   void calculateMargin() {
-    final double purchase = double.tryParse(purchasePriceController.text) ?? 0.0;
+    final double purchase =
+        double.tryParse(purchasePriceController.text) ?? 0.0;
     final double sale = double.tryParse(salePriceController.text) ?? 0.0;
 
     if (sale > 0) {
@@ -117,6 +127,8 @@ class AddProductWizardController extends GetxController {
   }
 
   Future<void> saveProduct() async {
+    if (!await NetworkManager.instance.checkInternet()) return;
+
     try {
       isUploading.value = true;
       final repository = Get.find<ProductRepository>();
@@ -141,7 +153,9 @@ class AddProductWizardController extends GetxController {
         salePrice: double.tryParse(salePriceController.text) ?? 0.0,
         currentStock: initialStock.value.toDouble(),
         minStockThreshold: lowStockLimit.value.toDouble(),
-        barcode: skuController.text.trim().isEmpty ? null : skuController.text.trim(),
+        barcode: skuController.text.trim().isEmpty
+            ? null
+            : skuController.text.trim(),
         isActive: activeForSale.value,
         imageUrl: imageUrl,
       );
@@ -162,10 +176,10 @@ class AddProductWizardController extends GetxController {
         Get.find<HomeController>().fetchHomeData();
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to ${editingProduct.value != null ? 'update' : 'save'} product: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     } finally {
       isUploading.value = false;
@@ -174,22 +188,16 @@ class AddProductWizardController extends GetxController {
 
   bool validateStep1() {
     if (nameController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Required Field',
-        'Product name is required to continue',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.requiredFieldTitle,
+        message: AppConstants.productNameRequired,
       );
       return false;
     }
     if (selectedCategory.value == null) {
-      Get.snackbar(
-        'Required Field',
-        'Please select a category for this product',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.requiredFieldTitle,
+        message: AppConstants.selectCategoryRequired,
       );
       return false;
     }
@@ -201,43 +209,31 @@ class AddProductWizardController extends GetxController {
     final salePrice = salePriceController.text.trim();
 
     if (purchasePrice.isEmpty) {
-      Get.snackbar(
-        'Required Field',
-        'Purchase price is required',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.requiredFieldTitle,
+        message: AppConstants.purchasePriceRequired,
       );
       return false;
     }
     if (salePrice.isEmpty) {
-      Get.snackbar(
-        'Required Field',
-        'Sale price is required',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.requiredFieldTitle,
+        message: AppConstants.salePriceRequired,
       );
       return false;
     }
 
     if (double.tryParse(purchasePrice) == null) {
-      Get.snackbar(
-        'Invalid Input',
-        'Please enter a valid number for purchase price',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.invalidInputTitle,
+        message: AppConstants.validNumberPurchasePrice,
       );
       return false;
     }
     if (double.tryParse(salePrice) == null) {
-      Get.snackbar(
-        'Invalid Input',
-        'Please enter a valid number for sale price',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.invalidInputTitle,
+        message: AppConstants.validNumberSalePrice,
       );
       return false;
     }
@@ -286,6 +282,8 @@ class AddProductWizardController extends GetxController {
   }
 
   Future<void> fetchCategories() async {
+    if (!await NetworkManager.instance.checkInternet()) return;
+
     try {
       isCategoriesLoading.value = true;
       if (kDebugMode) {
@@ -295,17 +293,22 @@ class AddProductWizardController extends GetxController {
 
       final list = await repository.getCategories();
       if (kDebugMode) {
-        print('DEBUG: Successfully retrieved ${list.length} categories from Supabase.');
+        print(
+          'DEBUG: Successfully retrieved ${list.length} categories from Supabase.',
+        );
       }
       for (var cat in list) {
         if (kDebugMode) {
-          print('DEBUG: Category ID: ${cat.id}, Name: ${cat.name}, Active: ${cat.isActive}');
+          print(
+            'DEBUG: Category ID: ${cat.id}, Name: ${cat.name}, Active: ${cat.isActive}',
+          );
         }
       }
-      
+
       categories.assignAll(list);
 
-      if (editingProduct.value != null && editingProduct.value!.categoryId != null) {
+      if (editingProduct.value != null &&
+          editingProduct.value!.categoryId != null) {
         selectedCategory.value = categories.firstWhereOrNull(
           (c) => c.id == editingProduct.value!.categoryId,
         );
@@ -316,10 +319,10 @@ class AddProductWizardController extends GetxController {
       if (kDebugMode) {
         print('DEBUG ERROR: Exception inside fetchCategories: $e');
       }
-      Get.snackbar(
-        'Error',
-        'Failed to load categories: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     } finally {
       isCategoriesLoading.value = false;

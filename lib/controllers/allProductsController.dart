@@ -2,8 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../models/productItemModel.dart';
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/widgets/custom_snackbar.dart';
 import '../repositories/product_repository.dart';
+import '../services/networkManager.dart';
+import '../utils/app_constants.dart';
 
 class ProductController extends GetxController {
   final ProductRepository repository;
@@ -36,27 +41,27 @@ class ProductController extends GetxController {
         .toString();
   }
 
-
   // =========================
   // FETCH PRODUCTS
   // =========================
 
   Future<void> fetchProducts() async {
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
+
     try {
       isLoading.value = true;
-      final startTime = DateTime.now();
       debugPrint('Fetching products from Supabase...');
-      await Future.delayed(const Duration(seconds: 1));
       final fetched = await repository.getProducts();
       debugPrint('Successfully fetched ${fetched.length} products.');
       products.assignAll(fetched);
-
     } catch (e) {
       debugPrint('EXCEPTION CAUGHT IN fetchProducts: $e');
-      Get.snackbar(
-        'Error',
-        'Unable to load products: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     } finally {
       isLoading.value = false;
@@ -71,10 +76,14 @@ class ProductController extends GetxController {
     var allProducts = products.toList();
     switch (selectedFilterIndex.value) {
       case 1:
-        allProducts = allProducts.where((product) => product.isLowStock).toList();
+        allProducts = allProducts
+            .where((product) => product.isLowStock)
+            .toList();
         break;
       case 2:
-        allProducts = allProducts.where((product) => product.isOutOfStock).toList();
+        allProducts = allProducts
+            .where((product) => product.isOutOfStock)
+            .toList();
         break;
       default:
         break;
@@ -86,7 +95,9 @@ class ProductController extends GetxController {
         final title = product.article.toLowerCase();
         final cat = (product.categoryName ?? '').toLowerCase();
         final barcode = (product.barcode ?? '').toLowerCase();
-        return title.contains(query) || cat.contains(query) || barcode.contains(query);
+        return title.contains(query) ||
+            cat.contains(query) ||
+            barcode.contains(query);
       }).toList();
     }
 
@@ -101,29 +112,28 @@ class ProductController extends GetxController {
   // DELETE / DEACTIVATE
   // =========================
 
-  Future<void> deleteProduct(
-      ProductItemModel product,
-      ) async {
+  Future<void> deleteProduct(ProductItemModel product) async {
+    if (!await NetworkManager.instance.checkInternet()) return;
+
     try {
       await repository.deleteProduct(product.id);
 
-      products.removeWhere(
-            (item) => item.id == product.id,
-      );
+      products.removeWhere((item) => item.id == product.id);
 
       // Refresh Home Dashboard Data
       if (Get.isRegistered<HomeController>()) {
         Get.find<HomeController>().fetchHomeData();
       }
 
-      Get.snackbar(
-        'Success',
-        'Product removed successfully',
+      CustomSnackBar.successSnackBar(
+        title: AppConstants.successTitle,
+        message: AppConstants.productRemovedSuccess,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Unable to remove product',
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     }
   }

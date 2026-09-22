@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../models/sale_model.dart';
 import 'allProductsController.dart';
 
@@ -93,13 +93,13 @@ class HomeController extends GetxController {
     final hour = DateTime.now().hour;
 
     if (hour >= 5 && hour < 12) {
-      return 'Good Morning ☀️';
+      return AppConstants.morningGreeting;
     } else if (hour >= 12 && hour < 17) {
-      return 'Good Afternoon 🌤️';
+      return AppConstants.afternoonGreeting;
     } else if (hour >= 17 && hour < 21) {
-      return 'Good Evening 🌇';
+      return AppConstants.eveningGreeting;
     } else {
-      return 'Good Night 🌙';
+      return AppConstants.nightGreeting;
     }
   }
 }

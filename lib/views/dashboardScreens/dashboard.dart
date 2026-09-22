@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import 'package:stockpulse/views/dashboardScreens/allProducts.dart';
 import 'package:stockpulse/views/dashboardScreens/homeView.dart';
 import 'package:stockpulse/views/dashboardScreens/purchasePage.dart';
@@ -64,27 +65,27 @@ class DashboardScreen extends GetView<DashboardController> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home_outlined),
                   activeIcon: Icon(Icons.home),
-                  label: 'Home',
+                  label: AppConstants.homeTitle,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.receipt_long_outlined),
                   activeIcon: Icon(Icons.receipt_long),
-                  label: 'Sales',
+                  label: '${AppConstants.saleTitle}s',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.inventory_2_outlined),
                   activeIcon: Icon(Icons.inventory_2),
-                  label: 'Products',
+                  label: AppConstants.productLabel,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.shopping_cart_outlined),
                   activeIcon: Icon(Icons.shopping_cart),
-                  label: 'Purchases',
+                  label: '${AppConstants.purchaseTitle}s',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.menu),
                   activeIcon: Icon(Icons.menu),
-                  label: 'More',
+                  label: AppConstants.moreTitle,
                 ),
               ],
             ),

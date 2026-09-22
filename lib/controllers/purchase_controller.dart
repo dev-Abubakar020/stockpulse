@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
 
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/widgets/custom_snackbar.dart';
 import '../models/productItemModel.dart';
 import '../models/purchasemodel.dart';
 import '../repositories/purchase_repo.dart';
+import '../services/networkManager.dart';
+import '../utils/app_constants.dart';
 import 'allProductsController.dart';
 
 class PurchaseController extends GetxController {
@@ -31,12 +35,7 @@ class PurchaseController extends GetxController {
 
   final TextEditingController searchController = TextEditingController();
 
-  final List<String> filters = const [
-    'All',
-    'Completed',
-    'Cancelled',
-  ];
-
+  final List<String> filters = const ['All', 'Completed', 'Cancelled'];
 
   /// productId -> quantity
   final RxMap<String, double> quantities = <String, double>{}.obs;
@@ -78,10 +77,7 @@ class PurchaseController extends GetxController {
 
     // First time product is selected:
     // initialize today's purchase price from existing product price.
-    purchasePrices.putIfAbsent(
-      product.id,
-          () => product.purchasePrice,
-    );
+    purchasePrices.putIfAbsent(product.id, () => product.purchasePrice);
   }
 
   void decrementProduct(ProductItemModel product) {
@@ -114,10 +110,7 @@ class PurchaseController extends GetxController {
   // Purchase Price
   // =========================
 
-  void updatePurchasePrice(
-      String productId,
-      String value,
-      ) {
+  void updatePurchasePrice(String productId, String value) {
     final price = double.tryParse(value);
 
     if (price == null || price < 0) {
@@ -144,7 +137,7 @@ class PurchaseController extends GetxController {
 
     quantities.forEach((productId, quantity) {
       final product = products.firstWhereOrNull(
-            (product) => product.id == productId,
+        (product) => product.id == productId,
       );
 
       if (product == null) return;
@@ -176,7 +169,7 @@ class PurchaseController extends GetxController {
 
     quantities.forEach((productId, quantity) {
       final product = products.firstWhereOrNull(
-            (product) => product.id == productId,
+        (product) => product.id == productId,
       );
 
       if (product == null) return;
@@ -203,29 +196,33 @@ class PurchaseController extends GetxController {
 
   Future<String?> createPurchase() async {
     if (quantities.isEmpty) {
-      Get.snackbar(
-        'No Products',
-        'Please select at least one product.',
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: AppConstants.noProductsSelected,
       );
 
       return null;
     }
 
     if (discount.value < 0) {
-      Get.snackbar(
-        'Invalid Discount',
-        'Discount cannot be negative.',
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.invalidDiscount,
+        message: AppConstants.discountNegative,
       );
 
       return null;
     }
 
     if (discount.value > subtotal) {
-      Get.snackbar(
-        'Invalid Discount',
-        'Discount cannot exceed subtotal.',
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.invalidDiscount,
+        message: AppConstants.discountExceedSubtotal,
       );
 
+      return null;
+    }
+
+    if (!await NetworkManager.instance.checkInternet()) {
       return null;
     }
 
@@ -253,9 +250,10 @@ class PurchaseController extends GetxController {
 
       return purchaseId;
     } catch (e) {
-      Get.snackbar(
-        'Purchase Failed',
-        e.toString().replaceFirst('Exception: ', ''),
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.purchaseFailed,
+        message: exception.message,
       );
 
       return null;
@@ -264,81 +262,75 @@ class PurchaseController extends GetxController {
     }
   }
 
-
   // ============================================================
-// PURCHASE LIST
-// ============================================================
+  // PURCHASE LIST
+  // ============================================================
 
   Future<void> fetchPurchases() async {
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
+
     try {
       isPurchasesLoading.value = true;
-      await Future.delayed(const Duration(seconds: 1));
       final result = await repository.getPurchases();
 
       purchases.assignAll(result);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString().replaceFirst('Exception: ', ''),
-        snackPosition: SnackPosition.BOTTOM,
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
     } finally {
       isPurchasesLoading.value = false;
     }
   }
 
-// ============================================================
-// SEARCH
-// ============================================================
+  // ============================================================
+  // SEARCH
+  // ============================================================
 
   void searchPurchases(String value) {
     searchQuery.value = value.trim().toLowerCase();
   }
 
-// ============================================================
-// FILTER
-// ============================================================
+  // ============================================================
+  // FILTER
+  // ============================================================
 
   void changeFilter(int index) {
     selectedFilter.value = index;
   }
 
-// ============================================================
-// FILTERED PURCHASES
-// ============================================================
+  // ============================================================
+  // FILTERED PURCHASES
+  // ============================================================
 
   List<PurchaseModel> get filteredPurchases {
     Iterable<PurchaseModel> result = purchases;
 
     // Search
     if (searchQuery.value.isNotEmpty) {
-      result = result.where(
-            (purchase) {
-          final query = searchQuery.value;
+      result = result.where((purchase) {
+        final query = searchQuery.value;
 
-          return purchase.purchaseNo
-              .toLowerCase()
-              .contains(query) ||
-              purchase.totalAmount
-                  .toString()
-                  .contains(query);
-        },
-      );
+        return purchase.purchaseNo.toLowerCase().contains(query) ||
+            purchase.totalAmount.toString().contains(query);
+      });
     }
 
     // Status Filter
     switch (selectedFilter.value) {
       case 1:
         result = result.where(
-              (purchase) =>
-          purchase.status.toLowerCase() == 'completed',
+          (purchase) => purchase.status.toLowerCase() == 'completed',
         );
         break;
 
       case 2:
         result = result.where(
-              (purchase) =>
-          purchase.status.toLowerCase() == 'void',
+          (purchase) => purchase.status.toLowerCase() == 'void',
         );
         break;
     }

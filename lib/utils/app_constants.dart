@@ -43,14 +43,22 @@ class AppConstants {
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String signupTitle = 'Create Account';
   static const String saleTitle = 'Sale';
+  static const String newSale = 'New Sale';
   static const String productTitle = 'All Products';
   static const String businessTitle = 'Business Management';
   static const String totalProduct = 'Total Products';
   static const String quickAction = "Quick Actions";
   static const String recentSales = "Recent Sales";
+  static const String homeTitle = 'More';
+  static const String productLabel = 'Products';
   static const String moreTitle = 'More';
   static const String detailPTitle = 'Product Details';
   static const String purchaseTitle = 'Purchase';
+  static const String addPurchase = 'Add Purchase';
+  static const String addProducts = 'Add Product';
+  static const String uncatProduct = 'Uncategorized';
+  static const String addExpenses = 'Add Expense';
+  static const String lowStockTitle = 'Low Stock';
   static const String profitTitle = 'Profit';
   static const String settingTitle = 'Setting';
   static const String delTitle = 'Delete';
@@ -72,13 +80,16 @@ class AppConstants {
   static const String loginSlug = "Enter your credentials to access your Shop";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
-  static const String greeting = "Good Morning";
+  static const String morningGreeting = "Good Morning ☀️";
+  static const String afternoonGreeting = "Good Afternoon 🌤️";
+  static const String eveningGreeting = "Good Evening 🌇";
+  static const String nightGreeting = "Good Night 🌙";
   static const String nameHint = 'Enter your name';
   static const String emailHint = 'abc@company.com';
   static const String loginEmailHint = 'Enter your email';
   static const String loginPasswordLabel = 'Password';
   static const String loginPasswordHint = 'Enter your password';
-  static const String searchHint = "Search product, barcode...";
+  static const String searchHint = "Search product ...";
   static const String searchHint1 = 'Search Invoices, suppliers...';
   static const String unit = "/unit";
   static const String defaultCurrency = "Rs. ";
@@ -116,6 +127,7 @@ class AppConstants {
   static const String disTitle = "'Discount (Rs.)'";
   static const String walkInCustomer = "Walk In Customer";
   static const String all = "All";
+  static const String seeAll = "See All";
   static const String cartItem = "Cart Items";
   static const String cartEmpty = "Your Cart is Empty";
   static const String clrAll = "Clear All";
@@ -199,6 +211,7 @@ class AppConstants {
   static const String loginFailedLabel = 'Login Failed';
   static const String googleSignInLabel = 'Google Sign-In Failed';
   static const String completedLabel = 'Completed';
+  static const String cancelledLabel = 'Cancelled';
   static const String paymentMethodLabel = 'Payment Method';
   static const String cashLabel = 'Cash';
   static const String cardLabel = 'Card';
@@ -383,4 +396,73 @@ class AppConstants {
 
   // Helper Methods for Dynamic Strings
   static String requiredField(String fieldName) => '$fieldName is required.';
+
+  // Option 2: Static strings (if you prefer resolving state at the call site)
+  static const String noPurchasesFoundTitle = 'No purchases found';
+  static const String noPurchasesYetTitle = 'No purchases yet';
+  static const String noPurchasesFoundSubtitle =
+      'Try changing your search or filter.';
+  static const String noPurchasesYetSubtitle =
+      'Your completed purchases will appear here.';
+  // Static Constants Alternative
+  static const String queryNotFoundTitle = 'Query Not found';
+  static const String noProductsFoundTitle = 'No products found';
+  static const String noProductsFoundSubtitle =
+      'Try changing your search or filter.';
+  static const String noProductsYetSubtitle =
+      'Your added products will appear here.';
+
+  /// Additional Category, Product, Purchase & Sale Constants
+  static const String categoryNameEmpty = 'Category name cannot be empty';
+  static const String categoryAddedSuccess = 'Category added successfully';
+  static const String categoryStatusUpdated = 'Category status updated';
+  static const String failedFetchCategories = 'Failed to fetch categories';
+  static const String failedUpdateCategoryStatus =
+      'Failed to update category status';
+  static const String unableLoadProducts = 'Unable to load products';
+  static const String productRemovedSuccess = 'Product removed successfully';
+  static const String unableRemoveProduct = 'Unable to remove product';
+  static const String noProductsSelected =
+      'Please select at least one product.';
+  static const String invalidDiscount = 'Invalid Discount';
+  static const String discountNegative = 'Discount cannot be negative.';
+  static const String discountExceedSubtotal =
+      'Discount cannot exceed subtotal.';
+  static const String purchaseFailed = 'Purchase Failed';
+  static const String emptyCart = 'Empty Cart';
+  static const String productError = 'Product Error';
+  static const String outOfStock = 'Out of Stock';
+  static const String insufficientStock = 'Insufficient Stock';
+  static const String saleFailed = 'Sale Failed';
+  static const String productNameRequired =
+      'Product name is required to continue';
+  static const String selectCategoryRequired =
+      'Please select a category for this product';
+  static const String purchasePriceRequired = 'Purchase price is required';
+  static const String salePriceRequired = 'Sale price is required';
+  static const String validNumberPurchasePrice =
+      'Please enter a valid number for purchase price';
+  static const String validNumberSalePrice =
+      'Please enter a valid number for sale price';
+  static const String requiredFieldTitle = 'Required Field';
+  static const String invalidInputTitle = 'Invalid Input';
+
+  // Section Titles
+  static const String othersOptionsTitle = 'Others Options';
+  static const String categoriesTitle = 'Categories';
+  static const String expensesTitle = 'Expenses';
+  static const String reportsTitle = 'Reports';
+  static const String staffTitle = 'Staff';
+  static const String aboutTitle = 'About Profile';
+  static const String shoppTitle = 'Shop Profile';
+  static const String notificationTitle = 'Notifications';
+  static const String securityTitle = 'Security';
+  static const String supportTitle = 'Support';
+  static const String helpAndSupportTitle = 'Help & Support';
+  static const String aboutStockPulseTitle = 'About StockPulse';
+
+  // Snackbar Messages
+  static const String notificationSnackTitle = 'ⓘ Notification Service';
+  static const String featureUnavailableTitle = 'Feature Unavailable';
+  static const String featureComingSoonMsg = 'This feature is coming Soon';
 }

@@ -72,9 +72,9 @@ class AllProducts extends GetView<ProductController>  {
                   Obx(
                         () => CustomFilterTabs(
                       items: const [
-                        'All',
-                        'Low Stock',
-                        'Out of Stock',
+                        AppConstants.all,
+                        AppConstants.lowStockTitle,
+                        AppConstants.statusOutOfStock,
                       ],
                       selectedIndex:
                       controller.selectedFilterIndex.value,
@@ -102,10 +102,10 @@ class AllProducts extends GetView<ProductController>  {
                     padding: const EdgeInsets.only(left: 8,right: 8,bottom: 100),
                     child: EmptyStateWidget(
                       isSearching: isSearching,
-                      title: isSearching ? 'Query Not found' : 'No products found',
+                      title: isSearching ? AppConstants.queryNotFoundTitle : AppConstants.noProductsFoundTitle,
                       subtitle: isSearching
-                          ? 'Try changing your search or filter.'
-                          : 'Your added products will appear here.',
+                          ? AppConstants.noProductsFoundSubtitle
+                          : AppConstants.noProductsYetSubtitle,
                     ),
                   );
                 }
@@ -196,7 +196,7 @@ class AllProducts extends GetView<ProductController>  {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    product.categoryName ?? "Uncategorized",
+                                    product.categoryName ?? AppConstants.uncatProduct,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 13,
                                       color: theme.textSecondary,
@@ -257,30 +257,13 @@ class AllProducts extends GetView<ProductController>  {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  product.stockStatus ?? 'In Stock',
+                                  product.stockStatus ?? AppConstants.statusInStock,
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
                                     color: qtyTextColor,
                                   ),
                                 ),
-
-                                // if (product.stockStatus != null) ...[
-                                //   Text(
-                                //     product.stockStatus!,
-                                //     style: GoogleFonts.plusJakartaSans(
-                                //       fontSize: 11,
-                                //       fontWeight: FontWeight.w700,
-                                //       color: qtyTextColor,
-                                //     ),
-                                //   ),
-                                // ] else ...[
-                                //   Icon(
-                                //     Icons.more_vert_rounded,
-                                //     size: 18,
-                                //     color: theme.textSecondary,
-                                //   ),
-                                // ],
                               ],
                             ),
                           ],

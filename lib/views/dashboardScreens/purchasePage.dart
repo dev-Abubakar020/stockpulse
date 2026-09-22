@@ -44,18 +44,12 @@ class PurchasePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // =================================================
-                // APP BAR
-                // =================================================
-
                 CustomAppBar(
                   title: AppConstants.purchaseTitle,
-
                   actions: [
                     Expanded(
                       child: AppButton(
-                        text: '+ Add',
-
+                        text: '+ ${AppConstants.add}',
                         onPressed: () {
                           Get.toNamed(
                             Routes.addPurchase,
@@ -67,55 +61,26 @@ class PurchasePage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 15),
-
-                // =================================================
-                // SEARCH
-                // =================================================
-
                 CustomSearchField(
                   controller: controller.searchController,
-
                   hintText: 'Search purchase number...',
-
                   showScanner: false,
-
                   onChanged: controller.searchPurchases,
                 ),
-
                 const SizedBox(height: 24),
-
-                // =================================================
-                // FILTERS
-                // =================================================
 
                 Obx(
                       () => CustomFilterTabs(
                     items: controller.filters,
-
                     selectedIndex:
                     controller.selectedFilter.value,
-
                     onChanged: controller.changeFilter,
                   ),
                 ),
 
                 const SizedBox(height: 14),
-
-                // =================================================
-                // PURCHASE LIST
-                // =================================================
-
                 Obx(
                       () {
-                    // if (controller.isPurchasesLoading.value) {
-                    //   return const Padding(
-                    //     padding: EdgeInsets.only(top: 80),
-                    //     child: Center(
-                    //       child: CircularProgressIndicator(),
-                    //     ),
-                    //   );
-                    // }
-
                         if (controller.isPurchasesLoading.value) {
                           return const ProductListShimmer(
                             shrinkWrap: true,
@@ -129,10 +94,10 @@ class PurchasePage extends StatelessWidget {
                       final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
                       return EmptyStateWidget(
                         isSearching: isSearching,
-                        title: isSearching ? 'No purchases found' : 'No purchases yet',
+                        title: isSearching ? AppConstants.noPurchasesFoundTitle : AppConstants.noPurchasesYetTitle,
                         subtitle: isSearching
-                            ? 'Try changing your search or filter.'
-                            : 'Your completed purchases will appear here.',
+                            ? AppConstants.noPurchasesFoundSubtitle
+                            : AppConstants.noPurchasesYetSubtitle,
                       );
                     }
 
@@ -237,10 +202,10 @@ class PurchasePage extends StatelessWidget {
   String _statusLabel(String status) {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'Completed';
+        return AppConstants.completedLabel;
 
       case 'void':
-        return 'Cancelled';
+        return AppConstants.cancelledLabel;
 
       default:
         return status;
@@ -249,7 +214,7 @@ class PurchasePage extends StatelessWidget {
 
   StatusType _statusType(String status) {
     switch (status.toLowerCase()) {
-      case 'completed':
+      case AppConstants.completedLabel:
         return StatusType.success;
 
       case 'void':

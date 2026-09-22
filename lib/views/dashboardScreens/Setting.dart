@@ -28,50 +28,50 @@ class SettingPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   children: [
 
-                    CustomHeading(title: 'About Profile'),
+                    CustomHeading(title: AppConstants.aboutTitle),
                     const SizedBox(height: 10),
                     _buildCardGroup([
                       MoreMenuTile(
                         icon: Icons.store_outlined,
-                        title: 'Shop Profile',
+                        title: AppConstants.shoppTitle,
                         onTap: () {},
                       ),
                       MoreMenuTile(
                         icon: Icons.notifications_none_rounded,
-                        title: 'Notifications',
+                        title: AppConstants.notificationTitle,
                         onTap: () {
-                          Get.snackbar('ⓘ Notification Service', "Coming Soon",snackPosition:SnackPosition.BOTTOM ,
+                          Get.snackbar(AppConstants.notificationSnackTitle, "Coming Soon",snackPosition:SnackPosition.BOTTOM ,
                             duration: const Duration(seconds: 2),
                             backgroundColor: const Color(0xE61E293B),
                             colorText: Colors.white,
                           );
                         },
                       ),
-                      MoreMenuTile(
-                        icon: Icons.palette_outlined,
-                        title: 'Appearance',
-                        onTap: () {
-                          ThemeController.to.toggleTheme();
-                        },
-                      ),
+                      // MoreMenuTile(
+                      //   icon: Icons.palette_outlined,
+                      //   title: 'Appearance',
+                      //   onTap: () {
+                      //     ThemeController.to.toggleTheme();
+                      //   },
+                      // ),
                     ]),
 
                     const SizedBox(height: 20),
 
                     // Section 3: Support
-                    CustomHeading(title: 'Support'),
+                    CustomHeading(title: AppConstants.supportTitle),
                     const SizedBox(height: 10),
                     _buildCardGroup([
                       MoreMenuTile(
                         icon: Icons.help_outline_rounded,
-                        title: 'Security',
+                        title: AppConstants.securityTitle,
                         onTap: () {
                           _launchUrl();
                         },
                       ),
                       MoreMenuTile(
                         icon: Icons.logout,
-                        title: 'Logout',
+                        title: AppConstants.logout,
                         color: Colors.red,
                         showDivider: false,
                         onTap: controller.logout,
