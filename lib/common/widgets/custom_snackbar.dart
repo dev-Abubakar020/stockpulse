@@ -12,9 +12,7 @@ class CustomSnackBar {
   }
 
   // Custom Toast
-  static void customToast({
-    required String message,
-  }) {
+  static void customToast({required String message}) {
     final context = Get.context;
     if (context == null) return;
 
@@ -25,10 +23,7 @@ class CustomSnackBar {
         backgroundColor: Colors.transparent,
         behavior: SnackBarBehavior.floating,
         content: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             color: Colors.white.withValues(alpha: 0.9),
@@ -49,6 +44,7 @@ class CustomSnackBar {
     String message = '',
     int duration = 3,
   }) {
+    hideSnackBar();
     Get.snackbar(
       title,
       message,
@@ -59,10 +55,7 @@ class CustomSnackBar {
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(20),
       borderRadius: 12,
-      icon: const Icon(
-        Icons.check_circle_outline,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.check_circle_outline, color: Colors.white),
     );
   }
 
@@ -72,6 +65,7 @@ class CustomSnackBar {
     String message = '',
     int duration = 3,
   }) {
+    hideSnackBar();
     Get.snackbar(
       title,
       message,
@@ -82,10 +76,7 @@ class CustomSnackBar {
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(20),
       borderRadius: 12,
-      icon: const Icon(
-        Icons.warning_amber_rounded,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
     );
   }
 
@@ -95,6 +86,7 @@ class CustomSnackBar {
     String message = '',
     int duration = 3,
   }) {
+    hideSnackBar();
     Get.snackbar(
       title,
       message,
@@ -105,10 +97,7 @@ class CustomSnackBar {
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(20),
       borderRadius: 12,
-      icon: const Icon(
-        Icons.error_outline,
-        color: Colors.white,
-      ),
+      icon: const Icon(Icons.error_outline, color: Colors.white),
     );
   }
 }

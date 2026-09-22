@@ -4,6 +4,8 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
+import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../common/exceptional/platform_exceptions.dart';
@@ -40,17 +42,20 @@ class LoginController extends GetxController {
   }
 
   Future<void> signInWithGoogle() async {
+    if (!await NetworkManager.instance.checkInternet()) return;
+
     try {
       isGoogleLoading.value = true;
       final response = await authRepository.signInWithGoogle();
       if (response != null && response.user != null) {
         await _handlePostLoginNavigation();
       }
-    } on AppException catch (e) {
-    CustomSnackBar.errorSnackBar(
-    title: 'Google Sign-In Failed',
-    message: e.message,
-    );
+    } catch (e) {
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.googleSignInFailedTitle,
+        message: exception.message,
+      );
     } finally {
       isGoogleLoading.value = false;
     }
@@ -65,22 +70,20 @@ class LoginController extends GetxController {
 
     if (emailError != null) {
       CustomSnackBar.warningSnackBar(
-        title: 'Warning',
+        title: AppConstants.warningTitle,
         message: emailError,
       );
       return;
     }
     if (passwordError != null) {
       CustomSnackBar.warningSnackBar(
-        title: 'Warning',
+        title: AppConstants.warningTitle,
         message: passwordError,
       );
       return;
     }
 
-    // =========================
-    // LOGIN
-    // =========================
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isLoading.value = true;
@@ -97,7 +100,7 @@ class LoginController extends GetxController {
       final exception = AppException.fromException(e);
 
       CustomSnackBar.errorSnackBar(
-        title: 'Login Failed',
+        title: AppConstants.loginFailedTitle,
         message: exception.message,
       );
     } finally {
@@ -108,10 +111,16 @@ class LoginController extends GetxController {
   Future<void> sendOtp({required String dialCode}) async {
     final localPhone = phoneController.text.replaceAll(RegExp(r'\D'), '');
 
-    if (localPhone.length < 7) {
-      Get.snackbar('Error', 'Phone number is required');
+    final phoneError = CustomValidator.validatePhone(localPhone);
+    if (phoneError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: phoneError,
+      );
       return;
     }
+
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     final normalizedPhone = localPhone.replaceFirst(RegExp(r'^0+'), '');
     final phone = '$dialCode$normalizedPhone';
@@ -129,36 +138,48 @@ class LoginController extends GetxController {
         },
         onError: (error) {
           isPhoneLoading.value = false;
-          Get.snackbar('OTP Error', error);
+          final exception = AppException.fromException(error);
+          CustomSnackBar.errorSnackBar(
+            title: AppConstants.otpErrorTitle,
+            message: exception.message,
+          );
         },
       );
     } catch (e) {
       isPhoneLoading.value = false;
-      Get.snackbar('Error', e.toString());
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
     }
   }
 
   Future<void> verifyOtp() async {
     final otp = otpController.text.trim();
 
-    if (otp.isEmpty || otp.length < 6) {
-      Get.snackbar('Error', 'Enter a valid 6-digit OTP code');
+    final otpError = CustomValidator.validateOtp(otp);
+    if (otpError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: otpError,
+      );
       return;
     }
 
-    if (_verificationId == null) {
-      Get.snackbar('Error', 'Verification session expired. Resend OTP.');
+    final verificationId = _verificationId;
+    if (verificationId == null || verificationId.isEmpty) {
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: AppConstants.sessionExpiredMsg,
+      );
       return;
     }
+
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isPhoneLoading.value = true;
-
-      final verificationId = _verificationId;
-      if (verificationId == null || verificationId.isEmpty) {
-        Get.snackbar('Error', 'Verification session expired. Resend OTP.');
-        return;
-      }
 
       final response = await authRepository.verifyOtpAndSignIn(
         verificationId: verificationId,
@@ -169,7 +190,11 @@ class LoginController extends GetxController {
         await _handlePostLoginNavigation();
       }
     } catch (e) {
-      Get.snackbar('Verification Failed', e.toString());
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.verificationFailedTitle,
+        message: exception.message,
+      );
     } finally {
       isPhoneLoading.value = false;
     }
@@ -180,8 +205,17 @@ class LoginController extends GetxController {
   }
 
   Future<void> logout() async {
-    await Supabase.instance.client.auth.signOut();
-    Get.find<LocalStorageService>().setLoggedIn(false);
-    Get.offAllNamed(Routes.login);
+    if (!await NetworkManager.instance.checkInternet()) return;
+    try {
+      await Supabase.instance.client.auth.signOut();
+      Get.find<LocalStorageService>().setLoggedIn(false);
+      Get.offAllNamed(Routes.login);
+    } catch (e) {
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
+    }
   }
 }

@@ -57,7 +57,7 @@ class AppConstants {
   static const String cancelTitle = 'Cancel';
   static const String delProduct = 'Delete Product';
   static const String invHealth = 'Inventory Health';
-  static const String healthyStock  = 'Healthy Stock';
+  static const String healthyStock = 'Healthy Stock';
   static const String calPerPiece = 'Calculated per piece sold';
   static const String currAvailability = 'Current Available';
   static const String enterPhoneNumber = "Enter Phone Number";
@@ -65,13 +65,14 @@ class AppConstants {
       'Enter your details to register your secure zero-knowledge workspace';
   static const String loginWelcomeSubtitle =
       'Sign in to manage your store, sales, and inventory.';
-  static const String dangerZineSubtitle = 'Deleting this product will immediately remove it from the active POS register and transaction quick-picks. Past receipts remain archived.';
+  static const String dangerZineSubtitle =
+      'Deleting this product will immediately remove it from the active POS register and transaction quick-picks. Past receipts remain archived.';
   static const String recoveryEmailSubtitle =
       'No worries! Choose your recovery channel and we will send a secure verification code.';
   static const String loginSlug = "Enter your credentials to access your Shop";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
-  static const String greeting  = "Good Morning";
+  static const String greeting = "Good Morning";
   static const String nameHint = 'Enter your name';
   static const String emailHint = 'abc@company.com';
   static const String loginEmailHint = 'Enter your email';
@@ -151,7 +152,6 @@ class AppConstants {
   static const String exitAppTitle = 'Exit App';
   static const String exitAppSnackBarMsg = 'Press back again to exit the app';
 
-
   static const String createYourShop = 'Create your shop';
   static const String toggleTheme = 'Toggle theme';
   static const String workspaceSubtitle =
@@ -171,6 +171,10 @@ class AppConstants {
   static const String saveAndContinue = 'Save and continue';
   static const String addShopImage = 'Add shop image (optional)';
   static const String changeShopImage = 'Change shop image';
+  static const String shopCreatedSuccessMsg = 'Shop created successfully!';
+  static const String couldNotCreateShopTitle = 'Could not create shop';
+  static const String completeShopFieldsMsg =
+      'Please complete the owner, shop, and address fields.';
 
   static const String insufficientAmount = 'Insufficient Amount';
   static const String receivedAmountError =
@@ -189,8 +193,11 @@ class AppConstants {
   static const String printInvoice = 'Print Invoice';
   static const String shareWhatsApp = 'Share via WhatsApp';
   static const String saleCompletedSuccess = 'Sale Completed\nSuccessfully!';
-  static const String stockUpdatedAuto = 'Stock has been updated automatically.';
+  static const String stockUpdatedAuto =
+      'Stock has been updated automatically.';
   static const String statusLabel = 'Status';
+  static const String loginFailedLabel = 'Login Failed';
+  static const String googleSignInLabel = 'Google Sign-In Failed';
   static const String completedLabel = 'Completed';
   static const String paymentMethodLabel = 'Payment Method';
   static const String cashLabel = 'Cash';
@@ -203,13 +210,118 @@ class AppConstants {
   static const String completeSaleLabel = 'Complete Sale';
   static const String noProductsAvailable = 'No products available';
   static const String noProductsFound = 'No products found';
-  static const String addProductsBeforeSale = 'Add products before creating a sale.';
-  static const String tryAnotherProductName = 'Try another product name or barcode.';
+  static const String addProductsBeforeSale =
+      'Add products before creating a sale.';
+  static const String tryAnotherProductName =
+      'Try another product name or barcode.';
   static const String viewCart = 'View Cart';
+
+  /// Auth Alerts & Messages
+  static const String warningTitle = 'Warning';
+  static const String successTitle = 'Success';
+  static const String errorTitle = 'Error';
+  static const String loginFailedTitle = 'Login Failed';
+  static const String signupFailedTitle = 'Signup Failed';
+  static const String googleSignInFailedTitle = 'Google Sign-In Failed';
+  static const String noInternetTitle = 'No Internet Connection';
+  static const String noInternetMsg =
+      'Please check your internet connection and try again.';
+  static const String checkYourEmailTitle = 'Check your email';
+  static const String confirmEmailMsg =
+      'Your account was created. Please confirm your email before signing in.';
+  static const String resetLinkSentMsg =
+      'Password reset link sent to your email.';
+  static const String passwordUpdatedSuccessMsg =
+      'Password updated successfully.';
+  static const String verificationFailedTitle = 'Verification Failed';
+  static const String otpErrorTitle = 'OTP Error';
+  static const String phoneRequiredMsg = 'Phone number is required.';
+  static const String enterValidOtpMsg = 'Enter a valid 6-digit OTP code.';
+  static const String sessionExpiredMsg =
+      'Verification session expired. Please resend OTP.';
+  static const String incompleteCodeTitle = 'Incomplete Code';
+  static const String incompleteCodeMsg =
+      'Please enter all 6 digits of the verification code.';
+  static const String createNewPassword = 'Create New Password';
+  static const String newPasswordLabel = 'New Password';
+  static const String confirmPasswordLabel = 'Confirm Password';
+  static const String updatePasswordBtn = 'Update Password';
+  static const String createAccountBtn = 'Create Account';
+  static const String agreeToTermsText =
+      'I agree to the Terms of Service and Privacy Policy.';
+  static const String verifyAndProceedBtn = 'Verify & Proceed';
+  static const String verifyOtpCodeTitle = 'Verify OTP Code';
+  static const String resendCodeText = 'Resend Code';
+  static const String resendCodeInPrefix = 'Resend code in 00:';
+  static const String didntReceiveCode = "Didn't receive the code?";
+  static const String preferEmailSignIn = 'Prefer email sign in?';
+  static const String backToSignIn = 'Back to Sign In';
+  static const String newVendorReg = 'NEW VENDOR REGISTRATION';
+  static const String signupDesc =
+      'Create your secure account to manage inventory & sales';
+  static const String passwordsDoNotMatch = 'Passwords do not match.';
+  static const String passwordLengthError =
+      'Password must be at least 8 characters.';
+  static const String stockpulseWorkspace = 'STOCKPULSE WORKSPACE';
+  static const String twoFactorSecurity = '2FA SECURITY';
+  static const String phoneSubtitle =
+      'We will send a 6-digit one-time password to verify and secure your account.';
+  static const String mobileNumberLabel = 'MOBILE NUMBER';
+  static const String phoneEncryptedMsg =
+      'Your phone number is encrypted & never shared.';
+  static const String resetPasswordDesc =
+      'Your new password must be different from previously used passwords.';
 
   /// Sale View Screen Constants
   static const String noSalesFound = 'No sales found';
   static const String noSalesYet = 'No sales yet';
-  static const String changeSearchOrFilter = 'Try changing your search or filter.';
-  static const String completedSalesAppearHere = 'Your completed sales will appear here.';
+  static const String changeSearchOrFilter =
+      'Try changing your search or filter.';
+  static const String completedSalesAppearHere =
+      'Your completed sales will appear here.';
+
+  ///Validator
+  // Numeric Constants
+  static const int minPasswordLength = 8;
+  static const int minNameLength = 2;
+  static const int minPhoneDigits = 7;
+  static const int maxPhoneDigits = 15;
+  static const int minOtpLength = 6;
+
+  // Validation Error Messages
+  static const String emailRequired = 'Email is required.';
+  static const String invalidEmail = 'Please enter a valid email address.';
+  static const String passwordRequired = 'Password is required.';
+  static const String mustBeSignIn = 'You must be signed in to create a shop.';
+  static const String passwordMinLength =
+      'Password must be at least 8 characters long.';
+  static const String passwordUppercase =
+      'Password must contain at least one uppercase letter.';
+  static const String passwordLowercase =
+      'Password must contain at least one lowercase letter.';
+  static const String passwordNumber =
+      'Password must contain at least one number.';
+  static const String passwordSpecialChar =
+      'Password must contain at least one special character.';
+  static const String nameRequired = 'Name is required.';
+  static const String nameMinLength =
+      'Name must be at least 2 characters long.';
+  static const String confirmPasswordRequired = 'Please confirm your password.';
+  static const String phoneRequired = 'Phone number is required.';
+  static const String invalidPhone = 'Please enter a valid phone number.';
+  static const String otpRequired = 'Verification code is required.';
+  static const String invalidOtp = 'Please enter a valid 6-digit OTP code.';
+
+  // RegExp Raw Strings
+  static const String emailPattern =
+      r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$';
+  static const String uppercasePattern = r'[A-Z]';
+  static const String lowercasePattern = r'[a-z]';
+  static const String digitPattern = r'[0-9]';
+  static const String specialCharPattern = r'[!@#$%^&*(),.?":{}|<>]';
+  static const String nonDigitsPattern = r'\D';
+  static const String emptyString = '';
+
+  // Helper Methods for Dynamic Strings
+  static String requiredField(String fieldName) => '$fieldName is required.';
 }

@@ -189,7 +189,6 @@ class _AddExpensesState extends State<AddExpenses> {
               ),
             ),
 
-
             // ── Scrollable Content ───────────────────────────────────
             Expanded(
               child: SingleChildScrollView(

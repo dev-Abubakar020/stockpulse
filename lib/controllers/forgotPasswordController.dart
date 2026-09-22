@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
+import '../common/exceptional/platform_exceptions.dart';
 import '../common/exceptional/validator.dart';
 import '../common/widgets/custom_snackbar.dart';
 
@@ -19,20 +21,34 @@ class ForgotPasswordController extends GetxController {
   final isLoading = false.obs;
   final isOtpSent = false.obs;
   final selectedRecoveryMethod = 0.obs; // 0 for Email, 1 for Phone
-  
+
   String? _verificationId;
   String phoneNumberForOtp = '';
 
   Future<void> sendRecoveryCode() async {
     final input = emailOrPhoneController.text.trim();
-    final emailError = CustomValidator.validateEmail(input);
-    if (emailError != null) {
-      CustomSnackBar.warningSnackBar(
-        title: 'Warning',
-        message: emailError,
-      );
-      return;
+
+    if (selectedRecoveryMethod.value == 0) {
+      final emailError = CustomValidator.validateEmail(input);
+      if (emailError != null) {
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.warningTitle,
+          message: emailError,
+        );
+        return;
+      }
+    } else {
+      final phoneError = CustomValidator.validatePhone(input);
+      if (phoneError != null) {
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.warningTitle,
+          message: phoneError,
+        );
+        return;
+      }
     }
+
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isLoading.value = true;
@@ -40,22 +56,14 @@ class ForgotPasswordController extends GetxController {
         // Email Recovery
         await authRepository.sendPasswordResetEmail(input);
         CustomSnackBar.successSnackBar(
-          title:'Success',
-          message: 'Password reset link sent to your email',
+          title: AppConstants.successTitle,
+          message: AppConstants.resetLinkSentMsg,
         );
+        Get.toNamed(Routes.login);
       } else {
         // Phone Recovery
-        final localPhone = input.replaceAll(RegExp(r'\D'), '');
-        if (localPhone.length < 7) {
-          Get.snackbar('Error', 'Invalid phone number');
-          return;
-        }
-        
-        // Assuming dial code is handled or pre-pended. 
-        // For simplicity here, we use the input directly if it has +, else we need a dial code.
-        // In the UI, the user will likely provide the full number or we use a default.
         phoneNumberForOtp = input;
-        
+
         await authRepository.sendPhoneOtp(
           phoneNumber: input,
           onCodeSent: (verificationId) {
@@ -63,17 +71,28 @@ class ForgotPasswordController extends GetxController {
             isOtpSent.value = true;
             isLoading.value = false;
             if (Get.currentRoute != Routes.otpVerification) {
-              Get.toNamed(Routes.otpVerification, arguments: {'type': 'forgot_password'});
+              Get.toNamed(
+                Routes.otpVerification,
+                arguments: {'type': 'forgot_password'},
+              );
             }
           },
           onError: (error) {
             isLoading.value = false;
-            Get.snackbar('OTP Error', error);
+            final exception = AppException.fromException(error);
+            CustomSnackBar.errorSnackBar(
+              title: AppConstants.otpErrorTitle,
+              message: exception.message,
+            );
           },
         );
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
     } finally {
       if (selectedRecoveryMethod.value == 0) {
         isLoading.value = false;
@@ -83,26 +102,39 @@ class ForgotPasswordController extends GetxController {
 
   Future<void> verifyOtp() async {
     final otp = otpController.text.trim();
-    if (otp.length < 6) {
-      Get.snackbar('Error', 'Enter a valid 6-digit OTP');
+    final otpError = CustomValidator.validateOtp(otp);
+    if (otpError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: otpError,
+      );
       return;
     }
 
-    if (_verificationId == null) {
-      Get.snackbar('Error', 'Verification session expired');
+    final verificationId = _verificationId;
+    if (verificationId == null || verificationId.isEmpty) {
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: AppConstants.sessionExpiredMsg,
+      );
       return;
     }
+
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isLoading.value = true;
       await authRepository.verifyOtpAndSignIn(
-        verificationId: _verificationId!,
+        verificationId: verificationId,
         smsCode: otp,
       );
-      // After verifying phone, we can proceed to reset password
       Get.toNamed(Routes.resetPassword);
     } catch (e) {
-      Get.snackbar('Verification Failed', e.toString());
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.verificationFailedTitle,
+        message: exception.message,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -112,28 +144,43 @@ class ForgotPasswordController extends GetxController {
     final pass = newPasswordController.text;
     final confirmPass = confirmPasswordController.text;
 
-    if (pass.isEmpty || confirmPass.isEmpty) {
-      Get.snackbar('Error', 'Password fields cannot be empty');
+    final passError = CustomValidator.validatePassword(pass);
+    if (passError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: passError,
+      );
       return;
     }
 
-    if (pass != confirmPass) {
-      Get.snackbar('Error', 'Passwords do not match');
+    final confirmError = CustomValidator.validateConfirmPassword(
+      pass,
+      confirmPass,
+    );
+    if (confirmError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: confirmError,
+      );
       return;
     }
 
-    if (pass.length < 8) {
-      Get.snackbar('Error', 'Password must be at least 8 characters');
-      return;
-    }
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isLoading.value = true;
       await authRepository.resetPassword(pass);
-      Get.snackbar('Success', 'Password updated successfully');
+      CustomSnackBar.successSnackBar(
+        title: AppConstants.successTitle,
+        message: AppConstants.passwordUpdatedSuccessMsg,
+      );
       Get.offAllNamed(Routes.login);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
     } finally {
       isLoading.value = false;
     }

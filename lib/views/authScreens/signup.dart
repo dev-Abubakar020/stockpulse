@@ -70,7 +70,7 @@ class _SignupViewState extends State<SignupView> {
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
+                  horizontal: 14,
                   vertical: 20,
                 ),
                 child: ConstrainedBox(
@@ -106,7 +106,7 @@ class _SignupViewState extends State<SignupView> {
                             ),
                           ),
                           CustomTextButton(
-                            text: 'Sign In',
+                            text: AppConstants.loginButton,
                             fontSize: 14,
                             color: theme.primary,
                             onPressed: () => Get.toNamed(Routes.login),
@@ -173,7 +173,7 @@ class _BrandHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'NEW VENDOR REGISTRATION',
+              AppConstants.newVendorReg,
               style: GoogleFonts.sora(
                 color: theme.primary,
                 fontSize: 11,
@@ -196,7 +196,7 @@ class _BrandHeader extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Create your secure account to manage inventory & sales',
+          AppConstants.signupDesc,
           textAlign: TextAlign.center,
           style: GoogleFonts.plusJakartaSans(
             color: theme.textSecondary,
@@ -315,7 +315,7 @@ class _SignupCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'I agree to the Terms of Service and Privacy Policy.',
+                  AppConstants.agreeToTermsText,
                   style: GoogleFonts.plusJakartaSans(
                     color: theme.textSecondary,
                     fontSize: 12,
@@ -328,7 +328,7 @@ class _SignupCard extends StatelessWidget {
           const SizedBox(height: 22),
           Obx(
             () => AppButton(
-              text: 'Create Account',
+              text: AppConstants.createAccountBtn,
               onPressed: agreeToTerms ? controller.signup : null,
               isLoading: controller.isLoading.value,
               suffixIcon: const Icon(
@@ -430,7 +430,7 @@ class _OrDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'OR CONTINUE WITH',
+            AppConstants.loginContinueWith.toUpperCase(),
             style: GoogleFonts.sora(
               color: theme.textHint,
               fontSize: 10.5,
@@ -483,4 +483,3 @@ class _SocialTile extends StatelessWidget {
     );
   }
 }
-

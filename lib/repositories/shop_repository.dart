@@ -1,4 +1,5 @@
 import 'package:image_picker/image_picker.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShopRepository {
@@ -31,7 +32,7 @@ class ShopRepository {
   }) async {
     final user = _supabase.auth.currentUser;
     if (user == null) {
-      throw StateError('You must be signed in to create a shop.');
+      throw StateError(AppConstants.mustBeSignIn);
     }
 
     String? imageUrl;

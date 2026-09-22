@@ -1,14 +1,16 @@
+import 'package:stockpulse/utils/app_constants.dart';
+
 class CustomValidator {
   static String? validateEmptyText(String? fieldName, String? value) {
     if (value == null || value.trim().isEmpty) {
-      return '$fieldName is required.';
+      return AppConstants.requiredField(fieldName ?? AppConstants.emptyString);
     }
     return null;
   }
 
   static String? validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Email is required.';
+      return AppConstants.emailRequired;
     }
 
     final emailRegExp = RegExp(
@@ -16,7 +18,7 @@ class CustomValidator {
     );
 
     if (!emailRegExp.hasMatch(value.trim())) {
-      return 'Please enter a valid email address.';
+      return AppConstants.invalidEmail;
     }
 
     return null;
@@ -25,7 +27,7 @@ class CustomValidator {
   /// Login only
   static String? validateLoginPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required.';
+      return AppConstants.passwordRequired;
     }
 
     return null;
@@ -34,29 +36,77 @@ class CustomValidator {
   /// Signup / Change password
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required.';
+      return AppConstants.passwordRequired;
     }
 
     if (value.length < 8) {
-      return 'Password must be at least 8 characters long.';
+      return AppConstants.passwordMinLength;
     }
 
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Password must contain at least one uppercase letter.';
+      return AppConstants.passwordUppercase;
     }
 
     if (!RegExp(r'[a-z]').hasMatch(value)) {
-      return 'Password must contain at least one lowercase letter.';
+      return AppConstants.passwordLowercase;
     }
 
     if (!RegExp(r'[0-9]').hasMatch(value)) {
-      return 'Password must contain at least one number.';
+      return AppConstants.passwordNumber;
     }
 
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-      return 'Password must contain at least one special character.';
+      return AppConstants.passwordSpecialChar;
     }
 
+    return null;
+  }
+
+  /// Name validation
+  static String? validateName(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return AppConstants.nameRequired;
+    }
+    if (value.trim().length < 2) {
+      return AppConstants.nameMinLength;
+    }
+    return null;
+  }
+
+  /// Confirm Password validation
+  static String? validateConfirmPassword(
+    String? password,
+    String? confirmPassword,
+  ) {
+    if (confirmPassword == null || confirmPassword.isEmpty) {
+      return AppConstants.confirmPasswordRequired;
+    }
+    if (password != confirmPassword) {
+      return AppConstants.passwordsDoNotMatch;
+    }
+    return null;
+  }
+
+  /// Phone number validation
+  static String? validatePhone(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return AppConstants.phoneRequired;
+    }
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+    if (digits.length < 7 || digits.length > 15) {
+      return AppConstants.invalidPhone;
+    }
+    return null;
+  }
+
+  /// OTP validation
+  static String? validateOtp(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return AppConstants.otpRequired;
+    }
+    if (value.trim().length < 6) {
+      return AppConstants.invalidOtp;
+    }
     return null;
   }
 }

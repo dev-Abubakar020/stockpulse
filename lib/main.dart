@@ -7,7 +7,6 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:stockpulse/common/bindings/initialBinding.dart';
 import 'package:stockpulse/common/route/app_pages.dart';
 import 'package:stockpulse/common/theme/app_theme.dart';
-import 'package:stockpulse/controllers/splashController.dart';
 import 'package:stockpulse/firebase_options.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
@@ -41,9 +40,7 @@ Future<void> main() async {
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
@@ -52,13 +49,11 @@ Future<void> main() async {
   );
 
   await LocalStorageService.init();
-  Get.put(LocalStorageService(),permanent: true);
-  Get.put(NetworkManager(),permanent: true);
+  Get.put(LocalStorageService(), permanent: true);
+  Get.put(NetworkManager(), permanent: true);
   final initialRoute = await getInitialRoute();
 
-  runApp(
-    MyApp(initialRoute: initialRoute),
-  );
+  runApp(MyApp(initialRoute: initialRoute));
 
   FlutterNativeSplash.remove();
 }
@@ -66,17 +61,13 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   final String initialRoute;
 
-  const MyApp({
-    super.key,
-    required this.initialRoute,
-  });
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     final storage = Get.find<LocalStorageService>();
     final savedDark = storage.isDarkMode();
-    final initialThemeMode =
-    savedDark == true
+    final initialThemeMode = savedDark == true
         ? ThemeMode.dark
         : ThemeMode.light;
 
@@ -92,6 +83,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 Future<String> getInitialRoute() async {
   final storage = Get.find<LocalStorageService>();
   if (storage.isFirstTime()) {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
@@ -140,78 +139,91 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
                             ),
                           ],
                         ),
-                        child: Obx(() => Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Channel selector tab (Email vs SMS)
-                            Container(
-                              height: 44,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: theme.surfaceMuted,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: theme.border,
-                                  width: 1,
+                        child: Obx(
+                          () => Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Channel selector tab (Email vs SMS)
+                              Container(
+                                height: 44,
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: theme.surfaceMuted,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: theme.border,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: _RecoveryTab(
+                                        title: AppConstants.recoveryChannel,
+                                        icon: Icons.alternate_email_rounded,
+                                        isSelected:
+                                            controller
+                                                .selectedRecoveryMethod
+                                                .value ==
+                                            0,
+                                        onTap: () =>
+                                            controller
+                                                    .selectedRecoveryMethod
+                                                    .value =
+                                                0,
+                                      ),
+                                    ),
+                                    // Expanded(
+                                    //   child: _RecoveryTab(
+                                    //     title: 'SMS Number',
+                                    //     icon: Icons.phone_iphone_rounded,
+                                    //     isSelected: controller.selectedRecoveryMethod.value == 1,
+                                    //     onTap: () => controller.selectedRecoveryMethod.value = 1,
+                                    //   ),
+                                    // ),
+                                  ],
                                 ),
                               ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: _RecoveryTab(
-                                      title: AppConstants.recoveryChannel,
-                                      icon: Icons.alternate_email_rounded,
-                                      isSelected: controller.selectedRecoveryMethod.value == 0,
-                                      onTap: () => controller.selectedRecoveryMethod.value = 0,
-                                    ),
-                                  ),
-                                  // Expanded(
-                                  //   child: _RecoveryTab(
-                                  //     title: 'SMS Number',
-                                  //     icon: Icons.phone_iphone_rounded,
-                                  //     isSelected: controller.selectedRecoveryMethod.value == 1,
-                                  //     onTap: () => controller.selectedRecoveryMethod.value = 1,
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
+                              const SizedBox(height: 20),
 
-                            CustomTextField(
-                              controller: controller.emailOrPhoneController,
-                              labelText: controller.selectedRecoveryMethod.value == 0
-                                  ? AppConstants.regEmailAddress
-                                  : 'Registered Phone Number',
-                              hintText: controller.selectedRecoveryMethod.value == 0
-                                  ? AppConstants.emailHint
-                                  : '+1 (555) 000-0000',
-                              prefixIcon: Icon(
-                                controller.selectedRecoveryMethod.value == 0
-                                    ? Icons.mail_outline_rounded
-                                    : Icons.phone_outlined,
-                                color: theme.primary,
-                                size: 20,
+                              CustomTextField(
+                                controller: controller.emailOrPhoneController,
+                                labelText:
+                                    controller.selectedRecoveryMethod.value == 0
+                                    ? AppConstants.regEmailAddress
+                                    : 'Registered Phone Number',
+                                hintText:
+                                    controller.selectedRecoveryMethod.value == 0
+                                    ? AppConstants.emailHint
+                                    : '+1 (555) 000-0000',
+                                prefixIcon: Icon(
+                                  controller.selectedRecoveryMethod.value == 0
+                                      ? Icons.mail_outline_rounded
+                                      : Icons.phone_outlined,
+                                  color: theme.primary,
+                                  size: 20,
+                                ),
+                                keyboardType:
+                                    controller.selectedRecoveryMethod.value == 0
+                                    ? TextInputType.emailAddress
+                                    : TextInputType.phone,
+                                textInputAction: TextInputAction.done,
                               ),
-                              keyboardType: controller.selectedRecoveryMethod.value == 0
-                                  ? TextInputType.emailAddress
-                                  : TextInputType.phone,
-                              textInputAction: TextInputAction.done,
-                            ),
-                            const SizedBox(height: 22),
+                              const SizedBox(height: 22),
 
-                            AppButton(
-                              text: AppConstants.sendVerificationCode,
-                              onPressed: controller.sendRecoveryCode,
-                              isLoading: controller.isLoading.value,
-                              suffixIcon: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.white,
-                                size: 18,
+                              AppButton(
+                                text: AppConstants.sendVerificationCode,
+                                onPressed: controller.sendRecoveryCode,
+                                isLoading: controller.isLoading.value,
+                                suffixIcon: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                               ),
-                            ),
-                          ],
-                        )),
+                            ],
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
 

@@ -6,6 +6,7 @@ import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/controllers/forgotPasswordController.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 class ResetPasswordScreen extends GetView<ForgotPasswordController> {
   const ResetPasswordScreen({super.key});
@@ -21,7 +22,10 @@ class ResetPasswordScreen extends GetView<ForgotPasswordController> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 20,
+                ),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 440),
                   child: Column(
@@ -29,13 +33,13 @@ class ResetPasswordScreen extends GetView<ForgotPasswordController> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CustomAppBar(
-                        title: 'Reset Password',
+                        title: AppConstants.createNewPassword,
                         onBackPressed: () => Get.back(),
                       ),
                       const SizedBox(height: 28),
-                      
+
                       Text(
-                        'Create New Password',
+                        AppConstants.createNewPassword,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.sora(
                           color: theme.textPrimary,
@@ -45,7 +49,7 @@ class ResetPasswordScreen extends GetView<ForgotPasswordController> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Your new password must be different from previously used passwords.',
+                        AppConstants.resetPasswordDesc,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.plusJakartaSans(
                           color: theme.textSecondary,
@@ -65,25 +69,33 @@ class ResetPasswordScreen extends GetView<ForgotPasswordController> {
                           children: [
                             CustomTextField(
                               controller: controller.newPasswordController,
-                              labelText: 'New Password',
+                              labelText: AppConstants.newPasswordLabel,
                               hintText: '••••••••',
                               obscureText: true,
-                              prefixIcon: Icon(Icons.lock_outline, color: theme.primary),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                color: theme.primary,
+                              ),
                             ),
                             const SizedBox(height: 20),
                             CustomTextField(
                               controller: controller.confirmPasswordController,
-                              labelText: 'Confirm Password',
+                              labelText: AppConstants.confirmPasswordLabel,
                               hintText: '••••••••',
                               obscureText: true,
-                              prefixIcon: Icon(Icons.lock_reset, color: theme.primary),
+                              prefixIcon: Icon(
+                                Icons.lock_reset,
+                                color: theme.primary,
+                              ),
                             ),
                             const SizedBox(height: 30),
-                            Obx(() => AppButton(
-                              text: 'Update Password',
-                              onPressed: controller.updatePassword,
-                              isLoading: controller.isLoading.value,
-                            )),
+                            Obx(
+                              () => AppButton(
+                                text: AppConstants.updatePasswordBtn,
+                                onPressed: controller.updatePassword,
+                                isLoading: controller.isLoading.value,
+                              ),
+                            ),
                           ],
                         ),
                       ),

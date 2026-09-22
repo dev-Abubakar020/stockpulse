@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,9 +16,9 @@ class AppException implements Exception {
     final normalizedCode = code.toLowerCase().trim();
 
     switch (normalizedCode) {
-    // =========================
-    // SUPABASE AUTH
-    // =========================
+      // =========================
+      // SUPABASE AUTH
+      // =========================
 
       case 'user_already_exists':
       case 'email_exists':
@@ -26,9 +27,7 @@ class AppException implements Exception {
         );
 
       case 'email_address_invalid':
-        return const AppException(
-          'Please enter a valid email address.',
-        );
+        return const AppException('Please enter a valid email address.');
 
       case 'weak_password':
         return const AppException(
@@ -36,9 +35,7 @@ class AppException implements Exception {
         );
 
       case 'invalid_credentials':
-        return const AppException(
-          'Invalid email or password.',
-        );
+        return const AppException('Invalid email or password.');
 
       case 'user_not_found':
         return const AppException(
@@ -75,9 +72,9 @@ class AppException implements Exception {
           'Phone authentication is currently disabled.',
         );
 
-    // =========================
-    // OTP
-    // =========================
+      // =========================
+      // OTP
+      // =========================
 
       case 'otp_expired':
         return const AppException(
@@ -94,9 +91,9 @@ class AppException implements Exception {
           'Security verification failed. Please try again.',
         );
 
-    // =========================
-    // SESSION
-    // =========================
+      // =========================
+      // SESSION
+      // =========================
 
       case 'session_not_found':
       case 'session_expired':
@@ -106,9 +103,9 @@ class AppException implements Exception {
           'Your session has expired. Please sign in again.',
         );
 
-    // =========================
-    // RATE LIMIT
-    // =========================
+      // =========================
+      // RATE LIMIT
+      // =========================
 
       case 'over_request_rate_limit':
       case 'over_email_send_rate_limit':
@@ -117,39 +114,33 @@ class AppException implements Exception {
           'Too many requests. Please wait and try again.',
         );
 
-    // =========================
-    // POSTGRES / DATABASE
-    // =========================
+      // =========================
+      // POSTGRES / DATABASE
+      // =========================
 
-    /// Unique constraint violation
+      /// Unique constraint violation
       case '23505':
-        return const AppException(
-          'This record already exists.',
-        );
+        return const AppException('This record already exists.');
 
-    /// Foreign key violation
+      /// Foreign key violation
       case '23503':
         return const AppException(
           'This operation cannot be completed because related data exists.',
         );
 
-    /// NOT NULL violation
+      /// NOT NULL violation
       case '23502':
-        return const AppException(
-          'Required information is missing.',
-        );
+        return const AppException('Required information is missing.');
 
-    /// Permission / RLS
+      /// Permission / RLS
       case '42501':
         return const AppException(
           'You do not have permission to perform this action.',
         );
 
-    /// PostgREST single record not found
+      /// PostgREST single record not found
       case 'pgrst116':
-        return const AppException(
-          'The requested record was not found.',
-        );
+        return const AppException('The requested record was not found.');
 
       default:
         return const AppException();
@@ -177,9 +168,7 @@ class AppException implements Exception {
         }
       }
 
-      return const AppException(
-        'Authentication failed. Please try again.',
-      );
+      return const AppException('Authentication failed. Please try again.');
     }
 
     // =========================
@@ -194,9 +183,7 @@ class AppException implements Exception {
         }
       }
 
-      return const AppException(
-        'A database error occurred. Please try again.',
-      );
+      return const AppException('A database error occurred. Please try again.');
     }
 
     // =========================
@@ -209,9 +196,7 @@ class AppException implements Exception {
     }
 
     if (exception is TimeoutException) {
-      return const AppException(
-        'The request timed out. Please try again.',
-      );
+      return const AppException('The request timed out. Please try again.');
     }
 
     // =========================
@@ -225,9 +210,21 @@ class AppException implements Exception {
     // FORMAT
     // =========================
     if (exception is FormatException) {
-      return const AppException(
-        'Invalid data format received.',
-      );
+      return const AppException('Invalid data format received.');
+    }
+
+    // =========================
+    // FIREBASE / GENERIC EXCEPTION WITH MESSAGE
+    // =========================
+    try {
+      final msg = exception.message;
+      if (msg != null && msg is String && msg.isNotEmpty) {
+        return AppException(msg);
+      }
+    } catch (_) {}
+
+    if (exception is String && exception.isNotEmpty) {
+      return AppException(exception);
     }
 
     // =========================
@@ -237,9 +234,7 @@ class AppException implements Exception {
   }
 
   /// Handle Flutter/device PlatformException.
-  static AppException _fromPlatformException(
-      PlatformException exception,
-      ) {
+  static AppException _fromPlatformException(PlatformException exception) {
     switch (exception.code.toLowerCase()) {
       case 'permission_denied':
         return const AppException(
@@ -252,19 +247,13 @@ class AppException implements Exception {
         );
 
       case 'camera_unavailable':
-        return const AppException(
-          'Camera is currently unavailable.',
-        );
+        return const AppException('Camera is currently unavailable.');
 
       case 'storage_permission_denied':
-        return const AppException(
-          'Storage permission is required.',
-        );
+        return const AppException('Storage permission is required.');
 
       default:
-        return const AppException(
-          'A device error occurred. Please try again.',
-        );
+        return const AppException('A device error occurred. Please try again.');
     }
   }
 

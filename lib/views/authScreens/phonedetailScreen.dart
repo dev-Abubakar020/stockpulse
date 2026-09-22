@@ -119,7 +119,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'We will send a 6-digit one-time password to verify and secure your account.',
+                      AppConstants.phoneSubtitle,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.plusJakartaSans(
                         color: theme.textSecondary,
@@ -151,7 +151,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'MOBILE NUMBER',
+                            AppConstants.mobileNumberLabel,
                             style: GoogleFonts.plusJakartaSans(
                               color: theme.textPrimary,
                               fontSize: 13,
@@ -247,7 +247,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
 
                           Obx(
                             () => AppButton(
-                              text: 'Send Verification Code',
+                              text: AppConstants.sendVerificationCode,
                               onPressed: handleContinue,
                               isLoading: controller.isPhoneLoading.value,
                               suffixIcon: const Icon(
@@ -273,7 +273,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Your phone number is encrypted & never shared.',
+                          AppConstants.phoneEncryptedMsg,
                           style: GoogleFonts.plusJakartaSans(
                             color: theme.textHint,
                             fontSize: 12,
@@ -288,7 +288,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Prefer email sign in?',
+                          AppConstants.preferEmailSignIn,
                           style: GoogleFonts.plusJakartaSans(
                             color: theme.textSecondary,
                             fontSize: 13.5,
@@ -296,7 +296,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                           ),
                         ),
                         CustomTextButton(
-                          text: 'Back to Sign In',
+                          text: AppConstants.backToSignIn,
                           fontSize: 14,
                           color: theme.primary,
                           onPressed: () => Get.back(),
@@ -313,4 +313,3 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
     );
   }
 }
-

@@ -141,7 +141,7 @@ class _BrandHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              'STOCKPULSE WORKSPACE',
+              AppConstants.stockpulseWorkspace,
               style: GoogleFonts.sora(
                 color: theme.primary,
                 fontSize: 11,
@@ -451,4 +451,3 @@ class _SocialTile extends StatelessWidget {
     );
   }
 }
-

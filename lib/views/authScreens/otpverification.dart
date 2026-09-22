@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
+import 'package:stockpulse/common/widgets/custom_snackbar.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/forgotPasswordController.dart';
 import 'package:stockpulse/controllers/loginController.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/themetogglebtn.dart';
 
@@ -82,11 +84,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Future<void> verifyCode() async {
     if (controller.otpController.text.length < 6) {
-      Get.snackbar(
-        'Incomplete Code',
-        'Please enter all 6 digits of the verification code',
-        backgroundColor: context.appTheme.card,
-        colorText: context.appTheme.textPrimary,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.incompleteCodeTitle,
+        message: AppConstants.incompleteCodeMsg,
       );
       return;
     }
@@ -149,7 +149,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      '2FA SECURITY',
+                                      AppConstants.twoFactorSecurity,
                                       style: GoogleFonts.sora(
                                         color: theme.primary,
                                         fontSize: 10,
@@ -195,7 +195,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       const SizedBox(height: 18),
 
                       Text(
-                        'Verify OTP Code',
+                        AppConstants.verifyOtpCodeTitle,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.sora(
                           color: theme.textPrimary,
@@ -294,7 +294,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'Resend code in 00:${resendCountdown.toString().padLeft(2, '0')}',
+                              '${AppConstants.resendCodeInPrefix}${resendCountdown.toString().padLeft(2, '0')}',
                               style: GoogleFonts.plusJakartaSans(
                                 color: theme.textHint,
                                 fontSize: 13,
@@ -303,30 +303,21 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             ),
                           ] else ...[
                             Text(
-                              "Didn't receive the code?",
+                              AppConstants.didntReceiveCode,
                               style: GoogleFonts.plusJakartaSans(
                                 color: theme.textSecondary,
                                 fontSize: 13,
                               ),
                             ),
                             CustomTextButton(
-                              text: 'Resend Code',
+                              text: AppConstants.resendCodeText,
                               fontSize: 13,
                               color: theme.primary,
                               onPressed: () {
                                 if (controller is ForgotPasswordController) {
                                   controller.sendRecoveryCode();
                                 } else {
-                                  // Login controller resend
-                                  // Assuming we have dial code or it's handled in sendOtp
-                                  // The LoginController.sendOtp requires dialCode.
-                                  // For simplicity, we can trigger the previous flow or 
-                                  // if LoginController handles the state, just call it.
-                                  // Looking at LoginController, it needs dialCode.
-                                  // For now, let's just restart the timer and 
-                                  // recommend the user to go back if it fails.
-                                  // Or we can try to call it if we have the phone stored.
-                                  controller.sendOtp(dialCode: ''); // This might fail if dialCode is empty
+                                  controller.sendOtp(dialCode: '');
                                 }
                                 startResendTimer();
                               },
@@ -337,18 +328,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       const SizedBox(height: 20),
 
                       // Verify button
-                      Obx(() => AppButton(
-                        text: 'Verify & Proceed',
-                        onPressed: verifyCode,
-                        isLoading: controller is ForgotPasswordController 
-                            ? controller.isLoading.value 
-                            : controller.isPhoneLoading.value,
-                        suffixIcon: const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: 18,
+                      Obx(
+                        () => AppButton(
+                          text: AppConstants.verifyAndProceedBtn,
+                          onPressed: verifyCode,
+                          isLoading: controller is ForgotPasswordController
+                              ? controller.isLoading.value
+                              : controller.isPhoneLoading.value,
+                          suffixIcon: const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ),
-                      )),
+                      ),
                       const SizedBox(height: 20),
 
                       // Interactive Numeric Keypad

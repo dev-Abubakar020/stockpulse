@@ -4,7 +4,12 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/utils/app_constants.dart';
+
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/exceptional/validator.dart';
+import '../common/widgets/custom_snackbar.dart';
 
 class SignupController extends GetxController {
   final AuthRepository authRepository;
@@ -30,16 +35,20 @@ class SignupController extends GetxController {
   }
 
   Future<void> signInWithGoogle() async {
+    if (!await NetworkManager.instance.checkInternet()) return;
+
     try {
       isGoogleLoading.value = true;
       final response = await authRepository.signInWithGoogle();
       if (response != null && response.user != null) {
         await _handlePostSignupNavigation();
       }
-    } on AuthException catch (e) {
-      Get.snackbar('Google Sign-In Failed', e.message);
     } catch (e) {
-      Get.snackbar('Google Sign-In Failed', e.toString());
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.googleSignInFailedTitle,
+        message: exception.message,
+      );
     } finally {
       isGoogleLoading.value = false;
     }
@@ -50,20 +59,34 @@ class SignupController extends GetxController {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
-    if (name.isEmpty) {
-      Get.snackbar('Signup Failed', 'Please enter your name');
+    final nameError = CustomValidator.validateName(name);
+    if (nameError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: nameError,
+      );
       return;
     }
 
-    if (!GetUtils.isEmail(email)) {
-      Get.snackbar('Signup Failed', 'Please enter a valid email address');
+    final emailError = CustomValidator.validateEmail(email);
+    if (emailError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: emailError,
+      );
       return;
     }
 
-    if (password.length < 8) {
-      Get.snackbar('Signup Failed', 'Password must be at least 8 characters');
+    final passwordError = CustomValidator.validatePassword(password);
+    if (passwordError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: passwordError,
+      );
       return;
     }
+
+    if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isLoading.value = true;
@@ -74,22 +97,26 @@ class SignupController extends GetxController {
       );
 
       if (response.user == null) {
-        Get.snackbar(
-          'Check your email',
-          'Your account was created. Confirm your email before signing in.',
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.checkYourEmailTitle,
+          message: AppConstants.confirmEmailMsg,
         );
       } else if (response.session == null) {
-        Get.snackbar(
-          'Check your email',
-          'Your account was created. Confirm your email before signing in.',
+        CustomSnackBar.successSnackBar(
+          title: AppConstants.checkYourEmailTitle,
+          message: AppConstants.confirmEmailMsg,
         );
         Get.offAllNamed(Routes.login);
       } else {
         await _handlePostSignupNavigation();
       }
     } catch (error) {
-      Get.snackbar('Signup Failed', 'error');
-    }  finally {
+      final exception = AppException.fromException(error);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.signupFailedTitle,
+        message: exception.message,
+      );
+    } finally {
       isLoading.value = false;
     }
   }
