@@ -28,7 +28,7 @@ class AppConstants {
   static const String onboardingImage3 =
       "https://github.com/muhxdan/Flutter-Onboarding-Screen/blob/master/assets/images/image3.png?raw=true";
 
-  /// Onbording Screen Constants
+  /// OnBoarding Screen Constants
   static const String onboardingTitle1 = "Manage Your Store with Ease";
   static const String onboardingTitle2 = "View Analytic And Track Success";
   static const String onboardingTitle3 = "Clock In, Clock Out, Simplified";
@@ -463,7 +463,7 @@ class AppConstants {
   static const String helpAndSupportTitle = 'Help & Support';
   static const String aboutStockPulseTitle = 'About StockPulse';
 
-  // Snackbar Messages
+  // SnackBar Messages
   static const String notificationSnackTitle = 'ⓘ Notification Service';
   static const String featureUnavailableTitle = 'Feature Unavailable';
   static const String featureComingSoonMsg = 'This feature is coming Soon';

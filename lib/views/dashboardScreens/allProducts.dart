@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
@@ -176,26 +178,47 @@ class AllProducts extends GetView<ProductController>  {
                         child: Row(
                           children: [
                             // Product Image Container box
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: imgBgColor,
-                                borderRadius: BorderRadius.circular(12),
-                                image: product.imageUrl != null
-                                    ? DecorationImage(
-                                        image: NetworkImage(product.imageUrl!),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : null,
-                              ),
-                              alignment: Alignment.center,
-                              child: product.imageUrl == null
-                                  ? const Text(
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: product.imageUrl?.isNotEmpty == true
+                                    ? CachedNetworkImage(
+                                  imageUrl: product.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  fadeInDuration: const Duration(milliseconds: 300),
+
+                                  placeholder: (_, __) => Shimmer.fromColors(
+                                    baseColor: theme.isDark
+                                        ? const Color(0xFF131D2E)
+                                        : const Color(0xFFE2E8F0),
+                                    highlightColor: theme.isDark
+                                        ? const Color(0xFF1E2D44)
+                                        : const Color(0xFFF8FAFC),
+                                    child: Container(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+
+                                  errorWidget: (_, __, ___) => Container(
+                                    color: imgBgColor,
+                                    alignment: Alignment.center,
+                                    child: const Text(
                                       '📦',
                                       style: TextStyle(fontSize: 28),
-                                    )
-                                  : null,
+                                    ),
+                                  ),
+                                )
+                                    : Container(
+                                  color: imgBgColor,
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    '📦',
+                                    style: TextStyle(fontSize: 28),
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 14),
                             // Details central column

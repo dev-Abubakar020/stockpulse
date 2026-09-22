@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
@@ -33,22 +35,38 @@ class ProductDetailView extends GetView<ProductController> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 22),
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                 ),
-                child: IconButton(
-                  onPressed: () => Get.toNamed(Routes.addProductWizard, arguments: product),
-                  padding: const EdgeInsets.all(8),
-                  constraints: const BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.edit, size: 16, color: Colors.white),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextButton.icon(
+                onPressed: () => Get.toNamed(Routes.addProductWizard),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                label: Text(
+                  AppConstants.add,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -65,29 +83,75 @@ class ProductDetailView extends GetView<ProductController> {
                 theme,
                 child: Row(
                   children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: theme.surfaceMuted,
-                        borderRadius: BorderRadius.circular(16),
-                        image: product.imageUrl != null
-                            ? DecorationImage(
-                                image: NetworkImage(product.imageUrl!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      alignment: Alignment.center,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
                       child: Stack(
                         children: [
-                          if (product.imageUrl == null)
-                            const Center(child: Text('📦', style: TextStyle(fontSize: 48))),
+                          SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                                ? CachedNetworkImage(
+                              imageUrl: product.imageUrl!,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                              fadeInDuration: const Duration(milliseconds: 300),
+                              imageBuilder: (context, imageProvider) => Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: theme.isDark 
+                                    ? const Color(0xFF131D2E) 
+                                    : const Color(0xFFE2E8F0),
+                                highlightColor: theme.isDark 
+                                    ? const Color(0xFF1E2D44) 
+                                    : const Color(0xFFF8FAFC),
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: theme.surfaceMuted,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  '📦',
+                                  style: TextStyle(fontSize: 48),
+                                ),
+                              ),
+                            )
+                                : Container(
+                              color: theme.surfaceMuted,
+                              child: const Center(
+                                child: Text(
+                                  '📦',
+                                  style: TextStyle(fontSize: 48),
+                                ),
+                              ),
+                            ),
+                          ),
+
                           Positioned(
                             bottom: 8,
                             left: 8,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF22C55E),
                                 borderRadius: BorderRadius.circular(4),
@@ -105,6 +169,46 @@ class ProductDetailView extends GetView<ProductController> {
                         ],
                       ),
                     ),
+                    // Container(
+                    //   width: 100,
+                    //   height: 100,
+                    //   decoration: BoxDecoration(
+                    //     color: theme.surfaceMuted,
+                    //     borderRadius: BorderRadius.circular(16),
+                    //     image: product.imageUrl != null
+                    //         ? DecorationImage(
+                    //             image: NetworkImage(product.imageUrl!),
+                    //             fit: BoxFit.cover,
+                    //           )
+                    //         : null,
+                    //   ),
+                    //   alignment: Alignment.center,
+                    //   child: Stack(
+                    //     children: [
+                    //       if (product.imageUrl == null)
+                    //         const Center(child: Text('📦', style: TextStyle(fontSize: 48))),
+                    //       Positioned(
+                    //         bottom: 8,
+                    //         left: 8,
+                    //         child: Container(
+                    //           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    //           decoration: BoxDecoration(
+                    //             color: const Color(0xFF22C55E),
+                    //             borderRadius: BorderRadius.circular(4),
+                    //           ),
+                    //           child: Text(
+                    //             AppConstants.statusActive,
+                    //             style: GoogleFonts.plusJakartaSans(
+                    //               fontSize: 9,
+                    //               fontWeight: FontWeight.bold,
+                    //               color: Colors.white,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
