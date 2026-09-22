@@ -38,21 +38,38 @@ class AllProducts extends GetView<ProductController>  {
                   CustomAppBar(
                     title: AppConstants.productTitle,
                     actions: [
-                      TextButton.icon(
-                        onPressed: () => Get.toNamed(Routes.addProductWizard),
-                        style: TextButton.styleFrom(
-                          backgroundColor: theme.primary,
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        icon: Icon(Icons.add,color: Colors.white,fontWeight: FontWeight.w700,size: 20,),
-                        label: Text(
-                          AppConstants.add,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w600,
+                        child: TextButton.icon(
+                          onPressed: () => Get.toNamed(Routes.addProductWizard),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.add,
                             color: Colors.white,
+                            size: 20,
+                          ),
+                          label: Text(
+                            AppConstants.add,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

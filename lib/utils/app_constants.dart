@@ -94,7 +94,7 @@ class AppConstants {
   static const String unit = "/unit";
   static const String defaultCurrency = "Rs. ";
   static const String todayCardSummary = "Today's Sales";
-  static const String addSale = "+ New Sale";
+  static const String addSale = "New Sale";
   static const String add = "Add";
   static const String edit = "Edit";
   static const String priceMargin = "Pricing & Margins";

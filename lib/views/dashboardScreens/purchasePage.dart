@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
@@ -38,7 +39,7 @@ class PurchasePage extends StatelessWidget {
 
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
-              vertical: 16,
+              vertical: 8,
             ),
 
             child: Column(
@@ -47,14 +48,39 @@ class PurchasePage extends StatelessWidget {
                 CustomAppBar(
                   title: AppConstants.purchaseTitle,
                   actions: [
-                    Expanded(
-                      child: AppButton(
-                        text: '+ ${AppConstants.add}',
-                        onPressed: () {
-                          Get.toNamed(
-                            Routes.addPurchase,
-                          );
-                        },
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextButton.icon(
+                        onPressed: () => Get.toNamed(Routes.addPurchase),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        label: Text(
+                          AppConstants.addPurchase,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ],
