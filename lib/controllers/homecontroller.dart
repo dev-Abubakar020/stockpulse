@@ -82,7 +82,7 @@ class HomeController extends GetxController {
         .from('sales')
         .select()
         .order('sale_date', ascending: false)
-        .limit(5);
+        .limit(3);
 
     return (response as List)
         .map((json) => SaleModel.fromJson(Map<String, dynamic>.from(json)))

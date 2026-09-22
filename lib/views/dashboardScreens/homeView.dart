@@ -366,7 +366,7 @@ class _QuickActionItem extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,

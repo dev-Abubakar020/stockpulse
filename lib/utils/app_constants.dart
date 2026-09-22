@@ -43,13 +43,13 @@ class AppConstants {
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String signupTitle = 'Create Account';
   static const String saleTitle = 'Sale';
-  static const String newSale = 'New Sale';
+  static const String newSale = 'New \nSale';
   static const String productTitle = 'All Products';
   static const String businessTitle = 'Business Management';
   static const String totalProduct = 'Total Products';
   static const String quickAction = "Quick Actions";
   static const String recentSales = "Recent Sales";
-  static const String homeTitle = 'More';
+  static const String homeTitle = 'Home';
   static const String productLabel = 'Products';
   static const String moreTitle = 'More';
   static const String detailPTitle = 'Product Details';
