@@ -38,7 +38,7 @@ class AllProducts extends GetView<ProductController>  {
                   CustomAppBar(
                     title: AppConstants.productTitle,
                     actions: [
-                      TextButton(
+                      TextButton.icon(
                         onPressed: () => Get.toNamed(Routes.addProductWizard),
                         style: TextButton.styleFrom(
                           backgroundColor: theme.primary,
@@ -47,7 +47,8 @@ class AllProducts extends GetView<ProductController>  {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(
+                        icon: Icon(Icons.add,color: Colors.white,fontWeight: FontWeight.w700,size: 20,),
+                        label: Text(
                           AppConstants.add,
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w600,

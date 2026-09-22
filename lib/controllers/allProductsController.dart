@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/productItemModel.dart';
 import '../repositories/product_repository.dart';
 
@@ -21,6 +22,17 @@ class ProductController extends GetxController {
     super.onInit();
 
     fetchProducts();
+  }
+
+  String getUserName() {
+    final user = Supabase.instance.client.auth.currentUser;
+    final metadata = user?.userMetadata ?? <String, dynamic>{};
+    return (metadata['name'] ??
+            metadata['full_name'] ??
+            metadata['display_name'] ??
+            user?.email?.split('@').first ??
+            'User')
+        .toString();
   }
 
   String getGreetingMessage() {

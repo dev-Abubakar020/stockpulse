@@ -18,6 +18,8 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
     final productController = Get.find<ProductController>();
+    final userName = productController.getUserName();
+    final double nameFontSize = userName.length > 16 ? 14 : 18;
 
     return Scaffold(
       backgroundColor: theme.background,
@@ -27,66 +29,72 @@ class HomeView extends StatelessWidget {
           children: [
             // --- Fixed Greeting Header Section ---
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        productController.getGreetingMessage(),
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
-                          color: theme.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Text(
-                            'Abubakar',
-                            style: GoogleFonts.sora(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: theme.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Text(
-                            '👋',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: theme.surface,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: theme.border),
-                    ),
-                    child: Row(
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Today',
+                          productController.getGreetingMessage(),
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: theme.textPrimary,
+                            fontSize: 14,
+                            color: theme.textSecondary,
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          size: 18,
-                          color: theme.textPrimary,
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                userName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.sora(
+                                  fontSize: nameFontSize,
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.textPrimary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              '👋',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  //   decoration: BoxDecoration(
+                  //     color: theme.surface,
+                  //     borderRadius: BorderRadius.circular(10),
+                  //     border: Border.all(color: theme.border),
+                  //   ),
+                  //   child: Row(
+                  //     children: [
+                  //       Text(
+                  //         'Today',
+                  //         style: GoogleFonts.plusJakartaSans(
+                  //           fontSize: 13,
+                  //           fontWeight: FontWeight.w600,
+                  //           color: theme.textPrimary,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(width: 4),
+                  //       Icon(
+                  //         Icons.keyboard_arrow_down_rounded,
+                  //         size: 18,
+                  //         color: theme.textPrimary,
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -98,24 +106,7 @@ class HomeView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 16),
-                    // --- Today's Sales (Main Full-Width Card Summary) ---
-                    InkWell(
-                      onTap: () {
-                        Get.find<DashboardController>().changePage(1);
-                      },
-                      child: CardSummary(
-                        title: AppConstants.todayCardSummary,
-                        value: "Rs. 48,250",
-                        subtitle: "32 sales today",
-                        badgeText: "+12%",
-                        icon: Icons.arrow_upward_rounded,
-                        iconColor: const Color(0xFF2E7D32),
-                        iconBackgroundColor: const Color(0xFFE8F5E9),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
+                    const SizedBox(height: 12),
                     // --- Summary Grid Layout (2 Columns) ---
                     Row(
                       children: [
@@ -125,9 +116,8 @@ class HomeView extends StatelessWidget {
                               Get.find<DashboardController>().changePage(3);
                             },
                             child: CardSummary(
-                              title: AppConstants.purchaseTitle,
+                              title: AppConstants.saleTitle,
                               value: 'Rs. 19,300',
-                              subtitle: 'Today',
                               icon: Icons.receipt_long_outlined,
                               iconColor: const Color(0xFF00796B),
                               iconBackgroundColor: const Color(0xFFE0F2F1),
@@ -137,9 +127,8 @@ class HomeView extends StatelessWidget {
                         const SizedBox(width: 14),
                         Expanded(
                           child: CardSummary(
-                            title: AppConstants.profitTitle,
+                            title: AppConstants.purchaseTitle,
                             value: 'Rs. 8,420',
-                            subtitle: 'Today',
                             icon: Icons.trending_up_rounded,
                             iconColor: const Color(0xFF2E7D32),
                             iconBackgroundColor: const Color(0xFFE8F5E9),
@@ -147,7 +136,7 @@ class HomeView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -158,7 +147,6 @@ class HomeView extends StatelessWidget {
                             child: Obx(() => CardSummary(
                                   title: AppConstants.totalProduct,
                                   value: productController.products.length.toString(),
-                                  subtitle: 'In inventory',
                                   icon: Icons.grid_view_rounded,
                                   iconColor: const Color(0xFF1565C0),
                                   iconBackgroundColor: const Color(0xFFE3F2FD),
@@ -170,7 +158,6 @@ class HomeView extends StatelessWidget {
                           child: CardSummary(
                             title: 'Low Stock',
                             value: '8 Items',
-                            subtitle: 'Needs attention',
                             icon: Icons.warning_amber_rounded,
                             iconColor: const Color(0xFFC62828),
                             iconBackgroundColor: const Color(0xFFFFEBEE),
@@ -178,7 +165,7 @@ class HomeView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
                     // --- Quick Actions Section ---
                     CustomHeading(
                       title: AppConstants.quickAction,

@@ -317,132 +317,56 @@ class _AddSaleState extends State<AddSale> {
                             ),
                           ),
 
-                          if (isInCart)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Container(
+                          Obx(() {
+                            final isInCart = saleController.isSelected(product.id);
+                            final qty = saleController.quantityOf(product.id);
+
+                            if (isInCart) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  _buildQuantityControls(product, qty),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Rs. ${saleController.lineTotal(product).toStringAsFixed(2)}',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: textDark,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else if (outOfStock) {
+                              return Text(
+                                AppConstants.statusOutOfStock,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red,
+                                ),
+                              );
+                            } else {
+                              return GestureDetector(
+                                onTap: () {
+                                  saleController.addProduct(product);
+                                },
+                                child: Container(
+                                  width: 34,
                                   height: 34,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF3F4F6),
-                                    borderRadius: BorderRadius.circular(8),
+                                  decoration: const BoxDecoration(
+                                    color: primaryGreen,
+                                    shape: BoxShape.circle,
                                   ),
-
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          saleController.decrementProduct(
-                                            product,
-                                          );
-                                        },
-                                        borderRadius:
-                                            const BorderRadius.horizontal(
-                                              left: Radius.circular(8),
-                                            ),
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 6,
-                                          ),
-                                          child: Icon(
-                                            Icons.remove,
-                                            size: 16,
-                                            color: textDark,
-                                          ),
-                                        ),
-                                      ),
-
-                                      Text(
-                                        _formatQuantity(qty),
-
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 14,
-
-                                          fontWeight: FontWeight.w700,
-
-                                          color: textDark,
-                                        ),
-                                      ),
-
-                                      InkWell(
-                                        onTap: () {
-                                          saleController.addProduct(product);
-                                        },
-
-                                        borderRadius:
-                                            const BorderRadius.horizontal(
-                                              right: Radius.circular(8),
-                                            ),
-
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 6,
-                                          ),
-
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 16,
-                                            color: textDark,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 20,
                                   ),
                                 ),
-
-                                const SizedBox(height: 4),
-
-                                Text(
-                                  'Rs. ${saleController.lineTotal(product).toStringAsFixed(2)}',
-
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12,
-
-                                    fontWeight: FontWeight.w700,
-
-                                    color: textDark,
-                                  ),
-                                ),
-                              ],
-                            )
-                          else if (outOfStock)
-                            Text(
-                              AppConstants.statusOutOfStock,
-
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11,
-
-                                fontWeight: FontWeight.w600,
-
-                                color: Colors.red,
-                              ),
-                            )
-                          else
-                            GestureDetector(
-                              onTap: () {
-                                saleController.addProduct(product);
-                              },
-
-                              child: Container(
-                                width: 34,
-                                height: 34,
-
-                                decoration: const BoxDecoration(
-                                  color: primaryGreen,
-
-                                  shape: BoxShape.circle,
-                                ),
-
-                                child: const Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
+                              );
+                            }
+                          }),
                         ],
                       ),
                     );
@@ -450,6 +374,45 @@ class _AddSaleState extends State<AddSale> {
                 ),
         ),
       ],
+    );
+  }
+
+  Widget _buildQuantityControls(ProductItemModel product, double qty) {
+    return Container(
+      height: 34,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: () => saleController.decrementProduct(product),
+            borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Icon(Icons.remove, size: 16, color: textDark),
+            ),
+          ),
+          Text(
+            _formatQuantity(qty),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: textDark,
+            ),
+          ),
+          InkWell(
+            onTap: () => saleController.addProduct(product),
+            borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Icon(Icons.add, size: 16, color: textDark),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -579,87 +542,83 @@ class _AddSaleState extends State<AddSale> {
           else
             ListView.separated(
               shrinkWrap: true,
-
               physics: const NeverScrollableScrollPhysics(),
-
               itemCount: cartItems.length,
-
-              separatorBuilder: (_, __) =>
-                  const Divider(height: 18, color: borderColor),
-
+              separatorBuilder: (_, __) => const Divider(height: 18, color: borderColor),
               itemBuilder: (context, index) {
                 final product = cartItems[index];
 
-                final quantity = saleController.quantityOf(product.id);
+                return Obx(() {
+                  // Re-fetch reactive values inside Obx
+                  final quantity = saleController.quantityOf(product.id);
+                  final salePrice = saleController.salePriceOf(product);
+                  final lineTotal = saleController.lineTotal(product);
 
-                final salePrice = saleController.salePriceOf(product);
+                  // If item was removed (quantity 0), show nothing or a removed state.
+                  // Since we are inside a ListView and cartItems is calculated outside, 
+                  // we might see a frame with qty 0 before list rebuilds.
+                  if (quantity <= 0) return const SizedBox.shrink();
 
-                final lineTotal = saleController.lineTotal(product);
-
-                return Row(
-                  children: [
-                    const Text('📦', style: TextStyle(fontSize: 28)),
-
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-
-                        children: [
-                          Text(
-                            product.article,
-
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-
-                              fontWeight: FontWeight.w600,
-
-                              color: textDark,
+                  return Row(
+                    children: [
+                      const Text('📦', style: TextStyle(fontSize: 28)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.article,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: textDark,
+                              ),
                             ),
-                          ),
-
-                          const SizedBox(height: 3),
-
-                          Text(
-                            'Rs. ${salePrice.toStringAsFixed(2)} × ${_formatQuantity(quantity)}',
-
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: textMuted,
+                            const SizedBox(height: 3),
+                            Text(
+                              'Rs. ${salePrice.toStringAsFixed(2)}',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                color: textMuted,
+                              ),
                             ),
+                          ],
+                        ),
+                      ),
+                      
+                      // Interactive Quantity Controls
+                      _buildQuantityControls(product, quantity),
+                      const SizedBox(width: 12),
+
+                      SizedBox(
+                        width: 80,
+                        child: Text(
+                          'Rs. ${lineTotal.toStringAsFixed(2)}',
+                          textAlign: TextAlign.right,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: textDark,
                           ),
-                        ],
+                        ),
                       ),
-                    ),
 
-                    Text(
-                      'Rs. ${lineTotal.toStringAsFixed(2)}',
+                      const SizedBox(width: 8),
 
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-
-                        fontWeight: FontWeight.w700,
-
-                        color: textDark,
+                      GestureDetector(
+                        onTap: () {
+                          saleController.removeProduct(product.id);
+                        },
+                        child: const Icon(
+                          Icons.delete_outline_rounded,
+                          color: textMuted,
+                          size: 20,
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    GestureDetector(
-                      onTap: () {
-                        saleController.removeProduct(product.id);
-                      },
-
-                      child: const Icon(
-                        Icons.delete_outline_rounded,
-                        color: textMuted,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                );
+                    ],
+                  );
+                });
               },
             ),
 
