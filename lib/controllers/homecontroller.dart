@@ -19,6 +19,13 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchHomeData();
+
+    // Automatically re-calculate low stock whenever products list changes
+    ever(productController.products, (_) {
+      lowStockCount.value = productController.products
+          .where((p) => p.isLowStock || p.isOutOfStock)
+          .length;
+    });
   }
 
   Future<void> fetchHomeData() async {

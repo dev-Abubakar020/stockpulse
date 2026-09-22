@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stockpulse/controllers/homecontroller.dart';
 import '../../models/productItemModel.dart';
 import '../models/category_model.dart';
 import '../repositories/product_repository.dart';
@@ -154,6 +155,11 @@ class AddProductWizardController extends GetxController {
       // Refresh the all products controller list
       if (Get.isRegistered<ProductController>()) {
         Get.find<ProductController>().fetchProducts();
+      }
+
+      // Refresh Home Dashboard Data
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().fetchHomeData();
       }
     } catch (e) {
       Get.snackbar(

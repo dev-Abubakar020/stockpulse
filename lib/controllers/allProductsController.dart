@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:stockpulse/controllers/homecontroller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/productItemModel.dart';
 import '../repositories/product_repository.dart';
@@ -109,6 +110,11 @@ class ProductController extends GetxController {
       products.removeWhere(
             (item) => item.id == product.id,
       );
+
+      // Refresh Home Dashboard Data
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().fetchHomeData();
+      }
 
       Get.snackbar(
         'Success',

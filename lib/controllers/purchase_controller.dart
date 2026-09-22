@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stockpulse/controllers/homecontroller.dart';
+
 import '../models/productItemModel.dart';
 import '../models/purchasemodel.dart';
 import '../repositories/purchase_repo.dart';
@@ -243,6 +245,11 @@ class PurchaseController extends GetxController {
       await productController.fetchProducts();
 
       clearCart();
+
+      // Refresh Home Dashboard Data
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().fetchHomeData();
+      }
 
       return purchaseId;
     } catch (e) {
