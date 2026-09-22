@@ -28,7 +28,6 @@ class HomeView extends GetView<HomeController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- Fixed Greeting Header Section ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
@@ -70,37 +69,10 @@ class HomeView extends GetView<HomeController> {
                         ],
                       ),
                     ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    //   decoration: BoxDecoration(
-                    //     color: theme.surface,
-                    //     borderRadius: BorderRadius.circular(10),
-                    //     border: Border.all(color: theme.border),
-                    //   ),
-                    //   child: Row(
-                    //     children: [
-                    //       Text(
-                    //         'Today',
-                    //         style: GoogleFonts.plusJakartaSans(
-                    //           fontSize: 13,
-                    //           fontWeight: FontWeight.w600,
-                    //           color: theme.textPrimary,
-                    //         ),
-                    //       ),
-                    //       const SizedBox(width: 4),
-                    //       Icon(
-                    //         Icons.keyboard_arrow_down_rounded,
-                    //         size: 18,
-                    //         color: theme.textPrimary,
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
 
-              // --- Scrollable Content ---
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
@@ -108,7 +80,6 @@ class HomeView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 12),
-                      // --- Summary Grid Layout (2 Columns) ---
                       Obx(() => Row(
                         children: [
                           Expanded(
@@ -162,7 +133,7 @@ class HomeView extends GetView<HomeController> {
                           const SizedBox(width: 14),
                           Expanded(
                             child: Obx(() => CardSummary(
-                              title: 'Low Stock',
+                              title: AppConstants.lowStockTitle,
                               value: '${controller.lowStockCount.value} Items',
                               icon: Icons.warning_amber_rounded,
                               iconColor: const Color(0xFFC62828),
@@ -181,7 +152,7 @@ class HomeView extends GetView<HomeController> {
                         children: [
                           Expanded(
                             child: _QuickActionItem(
-                              title: 'New Sale',
+                              title: AppConstants.newSale,
                               icon: Icons.add_shopping_cart_rounded,
                               color: const Color(0xFF2E7D32),
                               onTap: () async {
@@ -192,7 +163,7 @@ class HomeView extends GetView<HomeController> {
                           ),
                           Expanded(
                             child: _QuickActionItem(
-                              title: 'Add Purchase',
+                              title: AppConstants.addPurchase,
                               icon: Icons.assignment_turned_in_outlined,
                               color: const Color(0xFF00796B),
                               onTap: () async {
@@ -203,7 +174,7 @@ class HomeView extends GetView<HomeController> {
                           ),
                           Expanded(
                             child: _QuickActionItem(
-                              title: 'Add Product',
+                              title: AppConstants.addProducts,
                               icon: Icons.add_box_outlined,
                               color: const Color(0xFF1565C0),
                               onTap: () async {
@@ -214,7 +185,7 @@ class HomeView extends GetView<HomeController> {
                           ),
                           Expanded(
                             child: _QuickActionItem(
-                              title: 'Add Expense',
+                              title: AppConstants.addExpenses,
                               icon: Icons.account_balance_wallet_outlined,
                               color: const Color(0xFFEF6C00),
                               onTap: () {
@@ -229,7 +200,7 @@ class HomeView extends GetView<HomeController> {
                       // --- Recent Sales Section ---
                       CustomHeading(
                         title: AppConstants.recentSales,
-                        actionText: 'See All',
+                        actionText: AppConstants.seeAll,
                         onPressed: () {
                           Get.find<DashboardController>().changePage(1);
                         },
@@ -243,7 +214,7 @@ class HomeView extends GetView<HomeController> {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Text(
-                                'No recent sales found',
+                                AppConstants.noProductsAvailable,
                                 style: GoogleFonts.plusJakartaSans(
                                   color: theme.textSecondary,
                                 ),
