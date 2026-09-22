@@ -12,6 +12,7 @@ import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
 import '../../common/widgets/emptyfilter.dart';
+import '../../common/widgets/product_shimmer.dart';
 import '../../controllers/allProductsController.dart';
 
 
@@ -37,21 +38,20 @@ class AllProducts extends GetView<ProductController>  {
                   CustomAppBar(
                     title: AppConstants.productTitle,
                     actions: [
-                      TextButton.icon(
+                      TextButton(
                         onPressed: () => Get.toNamed(Routes.addProductWizard),
-                        icon: const Icon(Icons.add, size: 18, color: Colors.white),
-                        label: Text(
-                          AppConstants.add,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
                         style: TextButton.styleFrom(
                           backgroundColor: theme.primary,
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          AppConstants.add,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -63,6 +63,7 @@ class AllProducts extends GetView<ProductController>  {
                   CustomSearchField(
                     hintText: AppConstants.searchHint,
                     showScanner: false,
+                    onChanged: (value) => controller.searchQuery.value = value,
                   ),
                   const SizedBox(height: 14),
 
@@ -85,23 +86,21 @@ class AllProducts extends GetView<ProductController>  {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const ProductListShimmer();
                 }
 
                 final products = controller.filteredProducts;
 
                 if (products.isEmpty) {
-                  final bool isSearching = products.isNotEmpty || products != 0;
+                  final bool isSearching = controller.searchQuery.value.isNotEmpty;
                   return Padding(
                     padding: const EdgeInsets.only(left: 8,right: 8,bottom: 100),
                     child: EmptyStateWidget(
                       isSearching: isSearching,
-                      title: isSearching ? 'Query Not found' : 'No Sale yet',
+                      title: isSearching ? 'Query Not found' : 'No products found',
                       subtitle: isSearching
                           ? 'Try changing your search or filter.'
-                          : 'Your completed sale will appear here.',
+                          : 'Your added products will appear here.',
                     ),
                   );
                 }

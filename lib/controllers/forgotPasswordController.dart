@@ -20,7 +20,7 @@ class ForgotPasswordController extends GetxController {
 
   final isLoading = false.obs;
   final isOtpSent = false.obs;
-  final selectedRecoveryMethod = 0.obs; // 0 for Email, 1 for Phone
+  final selectedRecoveryMethod = 0.obs;
 
   String? _verificationId;
   String phoneNumberForOtp = '';

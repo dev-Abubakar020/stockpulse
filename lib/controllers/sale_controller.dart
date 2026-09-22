@@ -375,7 +375,7 @@ class SaleController extends GetxController {
   Future<void> fetchSales() async {
     try {
       isSalesLoading.value = true;
-
+      await Future.delayed(const Duration(seconds: 1));
       final result =
       await repository.getSales();
 

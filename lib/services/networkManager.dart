@@ -55,6 +55,7 @@ class NetworkManager extends GetxController {
       CustomSnackBar.warningSnackBar(
         title: AppConstants.noInternetTitle,
         message: AppConstants.noInternetMsg,
+
       );
       return false;
     }

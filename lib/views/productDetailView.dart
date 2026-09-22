@@ -116,45 +116,45 @@ class ProductDetailView extends GetView<ProductController> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            AppConstants.defaultTitle,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 13,
-                              color: theme.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(Icons.qr_code_2, size: 16, color: theme.textSecondary),
-                              const SizedBox(width: 4),
-                              Text(
-                                product.barcode ?? AppConstants.defaultBarCode,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: theme.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              IconButton(
-                                onPressed: () async {
-                                  final barcodeToCopy = product.barcode ?? AppConstants.defaultBarCode;
-                                  await Clipboard.setData(ClipboardData(text: barcodeToCopy));
-
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(AppConstants.barcodeCopied),
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                  }
-                                },
-                                icon: Icon(Icons.copy_rounded, size: 14, color: theme.textSecondary),
-                              ),
-                            ],
-                          ),
+                          // Text(
+                          //   AppConstants.defaultTitle,
+                          //   style: GoogleFonts.plusJakartaSans(
+                          //     fontSize: 13,
+                          //     color: theme.textSecondary,
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 12),
+                          // Row(
+                          //   children: [
+                          //     Icon(Icons.qr_code_2, size: 16, color: theme.textSecondary),
+                          //     const SizedBox(width: 4),
+                          //     Text(
+                          //       product.barcode ?? AppConstants.defaultBarCode,
+                          //       style: GoogleFonts.plusJakartaSans(
+                          //         fontSize: 13,
+                          //         fontWeight: FontWeight.w600,
+                          //         color: theme.textPrimary,
+                          //       ),
+                          //     ),
+                          //     const SizedBox(width: 4),
+                          //     IconButton(
+                          //       onPressed: () async {
+                          //         final barcodeToCopy = product.barcode ?? AppConstants.defaultBarCode;
+                          //         await Clipboard.setData(ClipboardData(text: barcodeToCopy));
+                          //
+                          //         if (context.mounted) {
+                          //           ScaffoldMessenger.of(context).showSnackBar(
+                          //             const SnackBar(
+                          //               content: Text(AppConstants.barcodeCopied),
+                          //               duration: Duration(seconds: 2),
+                          //             ),
+                          //           );
+                          //         }
+                          //       },
+                          //       icon: Icon(Icons.copy_rounded, size: 14, color: theme.textSecondary),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),

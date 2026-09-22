@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/widgets/custom_snackbar.dart';
 import '../models/category_model.dart';
 import '../repositories/category_repository.dart';
 
 import '../repositories/product_repository.dart';
+import '../services/networkManager.dart';
+import '../utils/app_constants.dart';
 
 class CategoryController extends GetxController {
   final CategoryRepository _categoryRepository = CategoryRepository();
@@ -89,46 +93,52 @@ class CategoryController extends GetxController {
   // Add a new category
   Future<bool> saveCategory() async {
     final name = nameController.text.trim();
+
     if (name.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Category name cannot be empty',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orangeAccent,
-        colorText: Colors.white,
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: 'Category name cannot be empty',
       );
+      return false;
+    }
+
+    if (!await NetworkManager.instance.checkInternet()) {
       return false;
     }
 
     try {
       isSaving.value = true;
+
       final newCategory = CategoryModel(
         name: name,
         isActive: isCategoryActive.value,
       );
-      
+
       final saved = await _categoryRepository.addCategory(newCategory);
+
       categoriesList.add(saved);
-      
-      // Reset input fields
+
       resetForm();
 
-      Get.snackbar(
-        'Success',
-        'Category added successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      Get.back();
+
+      // Then show success snackbar on previous screen
+      Future.delayed(const Duration(milliseconds: 200), () {
+        CustomSnackBar.successSnackBar(
+          title: AppConstants.successTitle,
+          message: 'Category added successfully',
+        );
+      });
+
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to add category: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
+      final exception = AppException.fromException(e);
+
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
       );
+
       return false;
     } finally {
       isSaving.value = false;

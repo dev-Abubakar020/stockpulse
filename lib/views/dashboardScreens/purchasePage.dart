@@ -13,6 +13,7 @@ import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/cutom_TransactionTile.dart';
 
 import '../../common/widgets/emptyfilter.dart';
+import '../../common/widgets/product_shimmer.dart';
 import '../../controllers/purchase_controller.dart';
 
 class PurchasePage extends StatelessWidget {
@@ -106,15 +107,21 @@ class PurchasePage extends StatelessWidget {
 
                 Obx(
                       () {
-                    if (controller.isPurchasesLoading.value) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 80),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
+                    // if (controller.isPurchasesLoading.value) {
+                    //   return const Padding(
+                    //     padding: EdgeInsets.only(top: 80),
+                    //     child: Center(
+                    //       child: CircularProgressIndicator(),
+                    //     ),
+                    //   );
+                    // }
 
+                        if (controller.isPurchasesLoading.value) {
+                          return const ProductListShimmer(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                          );
+                        }
                     final purchases =
                         controller.filteredPurchases;
 

@@ -14,6 +14,7 @@ class ProductController extends GetxController {
   final isSaving = false.obs;
 
   final selectedFilterIndex = 0.obs;
+  final searchQuery = ''.obs;
 
   @override
   void onInit() {
@@ -42,10 +43,13 @@ class ProductController extends GetxController {
   Future<void> fetchProducts() async {
     try {
       isLoading.value = true;
+      final startTime = DateTime.now();
       debugPrint('Fetching products from Supabase...');
+      await Future.delayed(const Duration(seconds: 1));
       final fetched = await repository.getProducts();
       debugPrint('Successfully fetched ${fetched.length} products.');
       products.assignAll(fetched);
+
     } catch (e) {
       debugPrint('EXCEPTION CAUGHT IN fetchProducts: $e');
       Get.snackbar(
@@ -63,21 +67,29 @@ class ProductController extends GetxController {
   // =========================
 
   List<ProductItemModel> get filteredProducts {
-    final allProducts = products.toList();
+    var allProducts = products.toList();
     switch (selectedFilterIndex.value) {
       case 1:
-        return allProducts
-            .where((product) => product.isLowStock)
-            .toList();
-
+        allProducts = allProducts.where((product) => product.isLowStock).toList();
+        break;
       case 2:
-        return allProducts
-            .where((product) => product.isOutOfStock)
-            .toList();
-
+        allProducts = allProducts.where((product) => product.isOutOfStock).toList();
+        break;
       default:
-        return allProducts;
+        break;
     }
+
+    final query = searchQuery.value.trim().toLowerCase();
+    if (query.isNotEmpty) {
+      allProducts = allProducts.where((product) {
+        final title = product.article.toLowerCase();
+        final cat = (product.categoryName ?? '').toLowerCase();
+        final barcode = (product.barcode ?? '').toLowerCase();
+        return title.contains(query) || cat.contains(query) || barcode.contains(query);
+      }).toList();
+    }
+
+    return allProducts;
   }
 
   void changeFilter(int index) {

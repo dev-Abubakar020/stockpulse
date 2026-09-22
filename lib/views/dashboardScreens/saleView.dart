@@ -12,6 +12,7 @@ import '../../common/widgets/Custom_filter.dart';
 import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/cutom_TransactionTile.dart';
 import '../../common/widgets/emptyfilter.dart';
+import '../../common/widgets/product_shimmer.dart';
 
 
 class SaleView extends StatelessWidget {
@@ -25,11 +26,14 @@ class SaleView extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: RefreshIndicator(
+          onRefresh: controller.fetchSales,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               CustomAppBar(
                 title: AppConstants.saleTitle,
                 actions: [
@@ -60,15 +64,20 @@ class SaleView extends StatelessWidget {
 
               // --- Dynamic Sales List ---
               Obx(() {
+                // if (controller.isSalesLoading.value) {
+                //   return const Center(
+                //     child: Padding(
+                //       padding: EdgeInsets.symmetric(vertical: 32),
+                //       child: CircularProgressIndicator(),
+                //     ),
+                //   );
+                // }
                 if (controller.isSalesLoading.value) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 32),
-                      child: CircularProgressIndicator(),
-                    ),
+                  return const ProductListShimmer(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                   );
                 }
-
                 final salesList = controller.filteredSales;
 
                 if (salesList.isEmpty) {
@@ -115,6 +124,6 @@ class SaleView extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }

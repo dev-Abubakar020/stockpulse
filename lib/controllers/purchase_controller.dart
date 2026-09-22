@@ -265,7 +265,7 @@ class PurchaseController extends GetxController {
   Future<void> fetchPurchases() async {
     try {
       isPurchasesLoading.value = true;
-
+      await Future.delayed(const Duration(seconds: 1));
       final result = await repository.getPurchases();
 
       purchases.assignAll(result);
