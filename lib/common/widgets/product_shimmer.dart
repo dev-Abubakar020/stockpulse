@@ -20,7 +20,7 @@ class ProductListShimmer extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: shrinkWrap,
       physics: physics,
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      // padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
       itemCount: itemCount,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {

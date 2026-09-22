@@ -266,8 +266,9 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                 children: [
                   _buildFieldLabel('CATEGORY *', theme),
                   GestureDetector(
-                    onTap: () {
-                      Get.toNamed(Routes.addCategories);
+                    onTap: () async {
+                      await Get.toNamed(Routes.addCategories);
+                      controller.fetchCategories();
                     },
                     child: Text(
                       '+ New Category',
@@ -352,12 +353,12 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 8),
               _buildTextField(
                 controller.skuController,
-                'Scan or enter code',
+                'Enter code',
                 theme,
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.qr_code_scanner, color: theme.primary),
-                  onPressed: () {},
-                ),
+                // suffixIcon: IconButton(
+                //   icon: Icon(Icons.qr_code_scanner, color: theme.primary),
+                //   onPressed: () {},
+                // ),
               ),
               const SizedBox(height: 20),
 

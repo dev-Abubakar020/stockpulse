@@ -297,10 +297,7 @@ class AddCategories extends StatelessWidget {
                     onPressed: controller.isSaving.value
                         ? null
                         : () async {
-                            final success = await controller.saveCategory();
-                            if (success) {
-                              Get.back();
-                            }
+                            await controller.saveCategory();
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,

@@ -83,10 +83,14 @@ class AllProducts extends GetView<ProductController>  {
                 ],
               ),
             ),
+
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return const ProductListShimmer();
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                    child: const ProductListShimmer(),
+                  );
                 }
 
                 final products = controller.filteredProducts;
