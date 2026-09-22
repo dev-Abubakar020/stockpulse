@@ -26,7 +26,6 @@ class _AddSaleState extends State<AddSale> {
   String? _createdSaleId;
   final TextEditingController _searchController = TextEditingController();
 
-
   static const Color primaryGreen = Color(0xFF0D5E3A);
 
   static const Color lightGreenBg = Color(0xFFE8F5E9);
@@ -38,7 +37,6 @@ class _AddSaleState extends State<AddSale> {
   static const Color textDark = Color(0xFF111827);
 
   static const Color textMuted = Color(0xFF6B7280);
-
 
   @override
   void initState() {
@@ -65,7 +63,6 @@ class _AddSaleState extends State<AddSale> {
     }
   }
 
-
   void _resetSale() {
     saleController.clearCart();
     _searchController.clear();
@@ -78,7 +75,6 @@ class _AddSaleState extends State<AddSale> {
       _createdSaleId = null;
     });
   }
-
 
   Future<void> _completeSale() async {
     if (saleController.paymentMethod.value == 'cash') {
@@ -109,7 +105,6 @@ class _AddSaleState extends State<AddSale> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -137,7 +132,6 @@ class _AddSaleState extends State<AddSale> {
     );
   }
 
-
   Widget _buildTopBar() {
     if (_currentStep == 3) {
       return Padding(
@@ -156,9 +150,11 @@ class _AddSaleState extends State<AddSale> {
       );
     }
 
-    return const CustomAppBar(title: 'New ${AppConstants.saleTitle}', showBackButton: true);
+    return const CustomAppBar(
+      title: 'New ${AppConstants.saleTitle}',
+      showBackButton: true,
+    );
   }
-
 
   Widget _buildCurrentStepContent() {
     switch (_currentStep) {
@@ -178,7 +174,6 @@ class _AddSaleState extends State<AddSale> {
         return const SizedBox();
     }
   }
-
 
   Widget _buildStep1SelectProducts() {
     final query = _searchQuery.trim().toLowerCase();
@@ -200,7 +195,6 @@ class _AddSaleState extends State<AddSale> {
 
     return Column(
       children: [
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Container(
@@ -318,7 +312,9 @@ class _AddSaleState extends State<AddSale> {
                           ),
 
                           Obx(() {
-                            final isInCart = saleController.isSelected(product.id);
+                            final isInCart = saleController.isSelected(
+                              product.id,
+                            );
                             final qty = saleController.quantityOf(product.id);
 
                             if (isInCart) {
@@ -389,7 +385,9 @@ class _AddSaleState extends State<AddSale> {
         children: [
           InkWell(
             onTap: () => saleController.decrementProduct(product),
-            borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(8),
+            ),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: Icon(Icons.remove, size: 16, color: textDark),
@@ -405,7 +403,9 @@ class _AddSaleState extends State<AddSale> {
           ),
           InkWell(
             onTap: () => saleController.addProduct(product),
-            borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
+            borderRadius: const BorderRadius.horizontal(
+              right: Radius.circular(8),
+            ),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: Icon(Icons.add, size: 16, color: textDark),
@@ -415,7 +415,6 @@ class _AddSaleState extends State<AddSale> {
       ),
     );
   }
-
 
   Widget _buildStep2ReviewCart() {
     final cartItems = saleController.products
@@ -505,21 +504,21 @@ class _AddSaleState extends State<AddSale> {
                 ),
               ),
 
-              GestureDetector(
-                onTap: saleController.clearCart,
+              Obx(() {
+                final isEmpty = saleController.quantities.isEmpty;
 
-                child: Text(
-                  AppConstants.clrAll,
-
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-
-                    fontWeight: FontWeight.w600,
-
-                    color: primaryGreen,
+                return GestureDetector(
+                  onTap: isEmpty ? null : saleController.clearCart,
+                  child: Text(
+                    AppConstants.clrAll,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isEmpty ? Colors.grey : primaryGreen,
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
             ],
           ),
 
@@ -544,7 +543,8 @@ class _AddSaleState extends State<AddSale> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: cartItems.length,
-              separatorBuilder: (_, __) => const Divider(height: 18, color: borderColor),
+              separatorBuilder: (_, __) =>
+                  const Divider(height: 18, color: borderColor),
               itemBuilder: (context, index) {
                 final product = cartItems[index];
 
@@ -555,7 +555,7 @@ class _AddSaleState extends State<AddSale> {
                   final lineTotal = saleController.lineTotal(product);
 
                   // If item was removed (quantity 0), show nothing or a removed state.
-                  // Since we are inside a ListView and cartItems is calculated outside, 
+                  // Since we are inside a ListView and cartItems is calculated outside,
                   // we might see a frame with qty 0 before list rebuilds.
                   if (quantity <= 0) return const SizedBox.shrink();
 
@@ -586,7 +586,7 @@ class _AddSaleState extends State<AddSale> {
                           ],
                         ),
                       ),
-                      
+
                       // Interactive Quantity Controls
                       _buildQuantityControls(product, quantity),
                       const SizedBox(width: 12),
@@ -653,7 +653,7 @@ class _AddSaleState extends State<AddSale> {
           // DISCOUNT
           // ====================================================
           Text(
-    AppConstants.disTitle,
+            AppConstants.disTitle,
 
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
@@ -978,53 +978,52 @@ class _AddSaleState extends State<AddSale> {
             const SizedBox(height: 24),
           ],
 
-          // ====================================================
-          // INVOICE OPTIONS
-          // ====================================================
-          Text(
-            AppConstants.invoiceOptions,
-
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
-
-              fontWeight: FontWeight.w700,
-
-              color: textDark,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildInvoiceOptionRow(
-            icon: Icons.print_outlined,
-
-            title: AppConstants.printInvoice,
-
-            value: _printInvoice,
-
-            onChanged: (value) {
-              setState(() {
-                _printInvoice = value;
-              });
-            },
-          ),
-
-          const SizedBox(height: 10),
-
-          _buildInvoiceOptionRow(
-            icon: Icons.chat_outlined,
-
-            title: AppConstants.shareWhatsApp,
-
-            value: _shareWhatsApp,
-
-            onChanged: (value) {
-              setState(() {
-                _shareWhatsApp = value;
-              });
-            },
-          ),
-
+          // // ====================================================
+          // // INVOICE OPTIONS
+          // // ====================================================
+          // Text(
+          //   AppConstants.invoiceOptions,
+          //
+          //   style: GoogleFonts.plusJakartaSans(
+          //     fontSize: 14,
+          //
+          //     fontWeight: FontWeight.w700,
+          //
+          //     color: textDark,
+          //   ),
+          // ),
+          //
+          // const SizedBox(height: 12),
+          //
+          // _buildInvoiceOptionRow(
+          //   icon: Icons.print_outlined,
+          //
+          //   title: AppConstants.printInvoice,
+          //
+          //   value: _printInvoice,
+          //
+          //   onChanged: (value) {
+          //     setState(() {
+          //       _printInvoice = value;
+          //     });
+          //   },
+          // ),
+          //
+          // const SizedBox(height: 10),
+          //
+          // _buildInvoiceOptionRow(
+          //   icon: Icons.chat_outlined,
+          //
+          //   title: AppConstants.shareWhatsApp,
+          //
+          //   value: _shareWhatsApp,
+          //
+          //   onChanged: (value) {
+          //     setState(() {
+          //       _shareWhatsApp = value;
+          //     });
+          //   },
+          // ),
           const SizedBox(height: 24),
         ],
       ),
@@ -1111,11 +1110,17 @@ class _AddSaleState extends State<AddSale> {
 
               child: Column(
                 children: [
-                  _buildReceiptRow(AppConstants.statusLabel, AppConstants.completedLabel),
+                  _buildReceiptRow(
+                    AppConstants.statusLabel,
+                    AppConstants.completedLabel,
+                  ),
 
                   const SizedBox(height: 10),
 
-                  _buildReceiptRow(AppConstants.customer, AppConstants.walkInCustomer),
+                  _buildReceiptRow(
+                    AppConstants.customer,
+                    AppConstants.walkInCustomer,
+                  ),
 
                   const SizedBox(height: 10),
 
@@ -1129,7 +1134,10 @@ class _AddSaleState extends State<AddSale> {
                   if (_createdSaleId != null) ...[
                     const SizedBox(height: 10),
 
-                    _buildReceiptRow(AppConstants.saleIdLabel, _shortId(_createdSaleId!)),
+                    _buildReceiptRow(
+                      AppConstants.saleIdLabel,
+                      _shortId(_createdSaleId!),
+                    ),
                   ],
 
                   const Divider(height: 20, color: borderColor),

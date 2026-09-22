@@ -6,20 +6,19 @@ import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/Custom_card.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
+import 'package:stockpulse/controllers/homecontroller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../controllers/dashboardController.dart';
 import '../../controllers/allProductsController.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    final productController = Get.find<ProductController>();
-    final userName = productController.getUserName();
-    final double nameFontSize = userName.length > 16 ? 14 : 18;
+    final double nameFontSize = controller.userName.length > 16 ? 14 : 18;
 
     return Scaffold(
       backgroundColor: theme.background,
@@ -38,7 +37,7 @@ class HomeView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          productController.getGreetingMessage(),
+                          controller.getGreetingMessage(),
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
                             color: theme.textSecondary,
@@ -49,7 +48,7 @@ class HomeView extends StatelessWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                userName,
+                                controller.userName,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.sora(
@@ -108,16 +107,16 @@ class HomeView extends StatelessWidget {
                   children: [
                     const SizedBox(height: 12),
                     // --- Summary Grid Layout (2 Columns) ---
-                    Row(
+                    Obx(() => Row(
                       children: [
                         Expanded(
                           child: InkWell(
                             onTap: () {
-                              Get.find<DashboardController>().changePage(3);
+                              Get.find<DashboardController>().changePage(1);
                             },
                             child: CardSummary(
                               title: AppConstants.saleTitle,
-                              value: 'Rs. 19,300',
+                              value: 'Rs. ${controller.totalSales.value.toInt()}',
                               icon: Icons.receipt_long_outlined,
                               iconColor: const Color(0xFF00796B),
                               iconBackgroundColor: const Color(0xFFE0F2F1),
@@ -126,16 +125,21 @@ class HomeView extends StatelessWidget {
                         ),
                         const SizedBox(width: 14),
                         Expanded(
-                          child: CardSummary(
-                            title: AppConstants.purchaseTitle,
-                            value: 'Rs. 8,420',
-                            icon: Icons.trending_up_rounded,
-                            iconColor: const Color(0xFF2E7D32),
-                            iconBackgroundColor: const Color(0xFFE8F5E9),
+                          child: InkWell(
+                            onTap: () {
+                              Get.find<DashboardController>().changePage(3);
+                            },
+                            child: CardSummary(
+                              title: AppConstants.purchaseTitle,
+                              value: 'Rs. ${controller.totalPurchases.value.toInt()}',
+                              icon: Icons.trending_up_rounded,
+                              iconColor: const Color(0xFF2E7D32),
+                              iconBackgroundColor: const Color(0xFFE8F5E9),
+                            ),
                           ),
                         ),
                       ],
-                    ),
+                    )),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -146,7 +150,7 @@ class HomeView extends StatelessWidget {
                             },
                             child: Obx(() => CardSummary(
                                   title: AppConstants.totalProduct,
-                                  value: productController.products.length.toString(),
+                                  value: controller.productController.products.length.toString(),
                                   icon: Icons.grid_view_rounded,
                                   iconColor: const Color(0xFF1565C0),
                                   iconBackgroundColor: const Color(0xFFE3F2FD),
@@ -155,13 +159,13 @@ class HomeView extends StatelessWidget {
                         ),
                         const SizedBox(width: 14),
                         Expanded(
-                          child: CardSummary(
+                          child: Obx(() => CardSummary(
                             title: 'Low Stock',
-                            value: '8 Items',
+                            value: '${controller.lowStockCount.value} Items',
                             icon: Icons.warning_amber_rounded,
                             iconColor: const Color(0xFFC62828),
                             iconBackgroundColor: const Color(0xFFFFEBEE),
-                          ),
+                          )),
                         ),
                       ],
                     ),
@@ -178,8 +182,9 @@ class HomeView extends StatelessWidget {
                             title: 'New Sale',
                             icon: Icons.add_shopping_cart_rounded,
                             color: const Color(0xFF2E7D32),
-                            onTap: () {
-                              Get.toNamed(Routes.addSale);
+                            onTap: () async {
+                              await Get.toNamed(Routes.addSale);
+                              controller.fetchHomeData();
                             },
                           ),
                         ),
@@ -188,8 +193,9 @@ class HomeView extends StatelessWidget {
                             title: 'Add Purchase',
                             icon: Icons.assignment_turned_in_outlined,
                             color: const Color(0xFF00796B),
-                            onTap: () {
-                              Get.toNamed(Routes.addPurchase);
+                            onTap: () async {
+                              await Get.toNamed(Routes.addPurchase);
+                              controller.fetchHomeData();
                             },
                           ),
                         ),
@@ -198,8 +204,9 @@ class HomeView extends StatelessWidget {
                             title: 'Add Product',
                             icon: Icons.add_box_outlined,
                             color: const Color(0xFF1565C0),
-                            onTap: () {
-                              Get.toNamed(Routes.addProductWizard);
+                            onTap: () async {
+                              await Get.toNamed(Routes.addProductWizard);
+                              controller.fetchHomeData();
                             },
                           ),
                         ),
@@ -228,84 +235,110 @@ class HomeView extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     // --- Recent Sales List ---
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 3,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
-                      itemBuilder: (context, index) {
-                        final invoices = ['INV-1048', 'INV-1047', 'INV-1046'];
-                        final times = ['Today, 10:42 AM', 'Today, 10:21 AM', 'Today, 9:55 AM'];
-                        final amounts = ['Rs. 2,450', 'Rs. 12,960', 'Rs. 3,850'];
-
-                        return Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: theme.surface,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: theme.border),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE8F5E9),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.assignment_outlined,
-                                  color: Color(0xFF2E7D32),
-                                  size: 20,
-                                ),
+                    Obx(() {
+                      if (controller.recentSales.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Text(
+                              'No recent sales found',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: theme.textSecondary,
                               ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    invoices[index],
-                                    style: GoogleFonts.sora(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    times[index],
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 12,
-                                      color: theme.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    amounts[index],
-                                    style: GoogleFonts.sora(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: theme.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  const CustomStatusChip(
-                                    textTitle: 'Completed',
-                                    type: StatusType.success,
-                                  ),
-                                ],
-                              ),
-                            ],
+                            ),
                           ),
                         );
-                      },
-                    ),
+                      }
+                      
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.recentSales.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final sale = controller.recentSales[index];
+                          final dateStr = "${sale.saleDate.day}/${sale.saleDate.month} ${sale.saleDate.hour}:${sale.saleDate.minute.toString().padLeft(2, '0')}";
+
+                          StatusType statusType = StatusType.neutral;
+                          if (sale.status.toLowerCase() == 'completed') {
+                            statusType = StatusType.success;
+                          } else if (sale.status.toLowerCase() == 'void' || sale.status.toLowerCase() == 'cancelled') {
+                            statusType = StatusType.error;
+                          }
+
+                          return Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.surface,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: theme.border),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: statusType == StatusType.success 
+                                        ? const Color(0xFFE8F5E9) 
+                                        : const Color(0xFFFFF1F0),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    Icons.assignment_outlined,
+                                    color: statusType == StatusType.success 
+                                        ? const Color(0xFF2E7D32) 
+                                        : const Color(0xFFC62828),
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      sale.saleNo,
+                                      style: GoogleFonts.sora(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: theme.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      dateStr,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12,
+                                        color: theme.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      'Rs. ${sale.totalAmount.toInt()}',
+                                      style: GoogleFonts.sora(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: theme.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    CustomStatusChip(
+                                      textTitle: sale.status.capitalizeFirst!,
+                                      type: statusType,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }),
                   ],
                 ),
               ),

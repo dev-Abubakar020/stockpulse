@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../controllers/dashboardController.dart';
 import '../../controllers/allProductsController.dart';
+import '../../controllers/homecontroller.dart';
 import '../../repositories/product_repository.dart';
 import '../../controllers/purchase_controller.dart';
 import '../../repositories/purchase_repo.dart';
@@ -14,6 +15,8 @@ class DashboardBinding extends Bindings {
 
     Get.lazyPut<ProductRepository>(() => ProductRepository());
     Get.lazyPut<ProductController>(() => ProductController(Get.find<ProductRepository>()));
+
+    Get.lazyPut<HomeController>(() => HomeController());
 
     Get.lazyPut<PurchaseRepository>(() => PurchaseRepository());
     Get.lazyPut<PurchaseController>(
