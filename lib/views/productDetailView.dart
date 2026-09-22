@@ -45,7 +45,7 @@ class ProductDetailView extends GetView<ProductController> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextButton.icon(
-                onPressed: () => Get.toNamed(Routes.addProductWizard),
+                onPressed: () => Get.toNamed(Routes.addProductWizard,arguments: product),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
@@ -62,7 +62,7 @@ class ProductDetailView extends GetView<ProductController> {
                   size: 20,
                 ),
                 label: Text(
-                  AppConstants.add,
+                  AppConstants.edit,
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -169,46 +169,6 @@ class ProductDetailView extends GetView<ProductController> {
                         ],
                       ),
                     ),
-                    // Container(
-                    //   width: 100,
-                    //   height: 100,
-                    //   decoration: BoxDecoration(
-                    //     color: theme.surfaceMuted,
-                    //     borderRadius: BorderRadius.circular(16),
-                    //     image: product.imageUrl != null
-                    //         ? DecorationImage(
-                    //             image: NetworkImage(product.imageUrl!),
-                    //             fit: BoxFit.cover,
-                    //           )
-                    //         : null,
-                    //   ),
-                    //   alignment: Alignment.center,
-                    //   child: Stack(
-                    //     children: [
-                    //       if (product.imageUrl == null)
-                    //         const Center(child: Text('📦', style: TextStyle(fontSize: 48))),
-                    //       Positioned(
-                    //         bottom: 8,
-                    //         left: 8,
-                    //         child: Container(
-                    //           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    //           decoration: BoxDecoration(
-                    //             color: const Color(0xFF22C55E),
-                    //             borderRadius: BorderRadius.circular(4),
-                    //           ),
-                    //           child: Text(
-                    //             AppConstants.statusActive,
-                    //             style: GoogleFonts.plusJakartaSans(
-                    //               fontSize: 9,
-                    //               fontWeight: FontWeight.bold,
-                    //               color: Colors.white,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(

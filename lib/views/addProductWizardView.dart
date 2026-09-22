@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import '../common/theme/theme_helper.dart';
 import '../controllers/addProductWizardController.dart';
@@ -202,55 +204,124 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               // Product Image Box Placeholder container
               GestureDetector(
                 onTap: () => controller.pickImage(),
-                child: Obx(() => Container(
-                  height: 140,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: theme.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: theme.border, width: 1, style: BorderStyle.solid),
-                    image: _buildProductImage(controller),
-                  ),
-                  child: controller.pickedFile.value == null && controller.networkImageUrl.value == null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 24,
-                              backgroundColor: theme.primary.withValues(alpha: 0.1),
-                              child: Icon(Icons.camera_alt_outlined, color: theme.primary, size: 22),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Add Product Image',
-                              style: GoogleFonts.sora(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: theme.textPrimary,
+                child: Obx(() {
+                  final pickedFile = controller.pickedFile.value;
+                  final networkUrl = controller.networkImageUrl.value;
+
+                  final hasImage =
+                      pickedFile != null ||
+                          (networkUrl != null && networkUrl.isNotEmpty);
+
+                  return Container(
+                    height: 140,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: theme.border,
+                        width: 1,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+
+                          // ───────── IMAGE ─────────
+                          if (pickedFile != null)
+                            Image.file(
+                              pickedFile as File,
+                              fit: BoxFit.cover,
+                            )
+                          else if (networkUrl != null && networkUrl.isNotEmpty)
+                            CachedNetworkImage(
+                              imageUrl: networkUrl,
+                              fit: BoxFit.cover,
+                              fadeInDuration: const Duration(milliseconds: 300),
+
+                              // Shimmer while loading
+                              placeholder: (_, __) => Shimmer.fromColors(
+                                baseColor: theme.isDark
+                                    ? const Color(0xFF131D2E)
+                                    : const Color(0xFFE2E8F0),
+                                highlightColor: theme.isDark
+                                    ? const Color(0xFF1E2D44)
+                                    : const Color(0xFFF8FAFC),
+                                child: Container(
+                                  color: Colors.white,
+                                ),
+                              ),
+
+                              // Error
+                              errorWidget: (_, __, ___) => Container(
+                                color: theme.surfaceMuted,
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  color: theme.textSecondary,
+                                  size: 36,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Supports PNG, JPG, or snap photo',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11,
-                                color: theme.textSecondary,
+
+                          // ───────── EMPTY STATE ─────────
+                          if (!hasImage)
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor:
+                                  theme.primary.withValues(alpha: 0.1),
+                                  child: Icon(
+                                    Icons.camera_alt_outlined,
+                                    color: theme.primary,
+                                    size: 22,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Add Product Image',
+                                  style: GoogleFonts.sora(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: theme.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Supports PNG, JPG, or snap photo',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: theme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                          // ───────── EDIT BUTTON ─────────
+                          if (hasImage)
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: CircleAvatar(
+                                radius: 14,
+                                backgroundColor:
+                                Colors.black.withValues(alpha: 0.5),
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
                               ),
                             ),
-                          ],
-                        )
-                      : Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              radius: 14,
-                              backgroundColor: Colors.black.withValues(alpha: 0.5),
-                              child: const Icon(Icons.edit, color: Colors.white, size: 14),
-                            ),
-                          ),
-                        ),
-                )),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
               ),
               const SizedBox(height: 24),
 
