@@ -20,7 +20,10 @@ class MoreScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            CustomAppBar(title: 'More'),
+            Padding(
+              padding: const EdgeInsets.only(left:24),
+              child: CustomAppBar(title: 'More'),
+            ),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(
