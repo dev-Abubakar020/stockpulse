@@ -89,7 +89,7 @@ class PurchasePage extends StatelessWidget {
                 const SizedBox(height: 15),
                 CustomSearchField(
                   controller: controller.searchController,
-                  hintText: 'Search purchase number...',
+                  hintText: AppConstants.searchHint2,
                   showScanner: false,
                   onChanged: controller.searchPurchases,
                 ),

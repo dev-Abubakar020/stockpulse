@@ -79,7 +79,7 @@ class SaleView extends StatelessWidget {
               const SizedBox(height: 15),
               CustomSearchField(
                 controller: controller.searchController,
-                hintText: AppConstants.searchHint,
+                hintText: AppConstants.searchHint3,
                 showScanner: false,
                 onChanged: controller.searchSales,
               ),

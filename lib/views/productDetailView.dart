@@ -32,14 +32,25 @@ class ProductDetailView extends GetView<ProductController> {
         showBackButton: true,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: AppButton(
-              text: AppConstants.edit,
-              onPressed: () => Get.toNamed(Routes.addProductWizard, arguments: product),
-              fullWidth: false,
-              height: 36,
-              borderRadius: 8,
-              prefixIcon: const Icon(Icons.edit, size: 16, color: Colors.white),
+            padding: const EdgeInsets.only(right: 22),
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  onPressed: () => Get.toNamed(Routes.addProductWizard, arguments: product),
+                  padding: const EdgeInsets.all(8),
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.edit, size: 16, color: Colors.white),
+                ),
+              ),
             ),
           ),
         ],
