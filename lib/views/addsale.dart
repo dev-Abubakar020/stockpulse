@@ -272,7 +272,7 @@ class _AddSaleState extends State<AddSale> {
                                 Text(
                                   product.article,
                                   style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 14,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w600,
                                     color: textDark,
                                   ),
@@ -295,18 +295,18 @@ class _AddSaleState extends State<AddSale> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                if (product.barcode != null &&
-                                    product.barcode!.isNotEmpty) ...[
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${AppConstants.barcodeLabel}${product.barcode}',
-
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 10,
-                                      color: textMuted,
-                                    ),
-                                  ),
-                                ],
+                                // if (product.barcode != null &&
+                                //     product.barcode!.isNotEmpty) ...[
+                                //   const SizedBox(height: 2),
+                                //   Text(
+                                //     '${AppConstants.barcodeLabel}${product.barcode}',
+                                //
+                                //     style: GoogleFonts.plusJakartaSans(
+                                //       fontSize: 10,
+                                //       color: textMuted,
+                                //     ),
+                                //   ),
+                                // ],
                               ],
                             ),
                           ),
@@ -322,11 +322,11 @@ class _AddSaleState extends State<AddSale> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   _buildQuantityControls(product, qty),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 8),
                                   Text(
                                     'Rs. ${saleController.lineTotal(product).toStringAsFixed(2)}',
                                     style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                       color: textDark,
                                     ),
@@ -390,17 +390,19 @@ class _AddSaleState extends State<AddSale> {
             ),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Icon(Icons.remove, size: 16, color: textDark),
+              child: Icon(Icons.remove, size: 24, color: textDark),
             ),
           ),
+          SizedBox(width: 8,),
           Text(
             _formatQuantity(qty),
             style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               color: textDark,
             ),
           ),
+          SizedBox(width: 8,),
           InkWell(
             onTap: () => saleController.addProduct(product),
             borderRadius: const BorderRadius.horizontal(
@@ -408,7 +410,7 @@ class _AddSaleState extends State<AddSale> {
             ),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Icon(Icons.add, size: 16, color: textDark),
+              child: Icon(Icons.add, size: 24, color: textDark),
             ),
           ),
         ],

@@ -95,14 +95,6 @@ class SaleView extends StatelessWidget {
 
               // --- Dynamic Sales List ---
               Obx(() {
-                // if (controller.isSalesLoading.value) {
-                //   return const Center(
-                //     child: Padding(
-                //       padding: EdgeInsets.symmetric(vertical: 32),
-                //       child: CircularProgressIndicator(),
-                //     ),
-                //   );
-                // }
                 if (controller.isSalesLoading.value) {
                   return const ProductListShimmer(
                     shrinkWrap: true,
