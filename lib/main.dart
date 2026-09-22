@@ -9,16 +9,41 @@ import 'package:stockpulse/common/route/app_pages.dart';
 import 'package:stockpulse/common/theme/app_theme.dart';
 import 'package:stockpulse/controllers/splashController.dart';
 import 'package:stockpulse/firebase_options.dart';
+import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/services/networkManager.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'common/route/app_routes.dart';
+
+// Future<void> main() async {
+//   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+//   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+//
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+//
+//   await Supabase.initialize(
+//     url: AppConstants.supabaseUrl,
+//     // ignore: deprecated_member_use
+//     anonKey: AppConstants.supabaseAnonKey,
+//   );
+//
+//   await LocalStorageService.init();
+//   Get.put(LocalStorageService(), permanent: true);
+//   FlutterNativeSplash.remove();
+//   Get.put(NetworkManager());
+//   runApp(const MyApp());
+// }
+
 Future<void> main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
@@ -27,32 +52,63 @@ Future<void> main() async {
   );
 
   await LocalStorageService.init();
-  Get.put(LocalStorageService(), permanent: true);
+  Get.put(LocalStorageService(),permanent: true);
+  Get.put(NetworkManager(),permanent: true);
+  final initialRoute = await getInitialRoute();
+
+  runApp(
+    MyApp(initialRoute: initialRoute),
+  );
+
   FlutterNativeSplash.remove();
-  Get.put(NetworkManager());
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+
+  const MyApp({
+    super.key,
+    required this.initialRoute,
+  });
 
   @override
   Widget build(BuildContext context) {
     final storage = Get.find<LocalStorageService>();
     final savedDark = storage.isDarkMode();
-    final initialThemeMode = (savedDark == true)
+    final initialThemeMode =
+    savedDark == true
         ? ThemeMode.dark
         : ThemeMode.light;
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: AppConstants.appName,
-      initialBinding: InitialBinding(),
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: initialThemeMode,
-      initialRoute: SplashController.getInitialRoute(),
       getPages: AppPages.pages,
+      theme: AppTheme.lightTheme,
+      initialRoute: initialRoute,
+      themeMode: initialThemeMode,
+      title: AppConstants.appName,
+      darkTheme: AppTheme.darkTheme,
+      initialBinding: InitialBinding(),
     );
   }
+}
+Future<String> getInitialRoute() async {
+  final storage = Get.find<LocalStorageService>();
+  if (storage.isFirstTime()) {
+    return Routes.onboarding;
+  }
+  final session = Supabase.instance.client.auth.currentSession;
+  if (session == null) {
+    return Routes.login;
+  }
+
+  // User logged in -> check shop
+  final shopRepository = ShopRepository();
+  final hasShop = await shopRepository.currentUserHasShop();
+
+  if (!hasShop) {
+    return Routes.createShop;
+  }
+
+  return Routes.dashboard;
 }

@@ -1,3 +1,4 @@
+import 'package:stockpulse/common/bindings/forgotPasswordBinding.dart';
 import 'package:stockpulse/common/bindings/loginBinding.dart';
 import 'package:stockpulse/common/bindings/signUpBinding.dart';
 import 'package:stockpulse/common/bindings/shopCreateBinding.dart';
@@ -7,6 +8,7 @@ import 'package:stockpulse/views/authScreens/signup.dart';
 import 'package:stockpulse/views/authScreens/forgotPassword.dart';
 import 'package:stockpulse/views/authScreens/otpverification.dart';
 import 'package:stockpulse/views/authScreens/phonedetailScreen.dart';
+import 'package:stockpulse/views/authScreens/resetPassword.dart';
 import 'package:stockpulse/views/dashboardScreens/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
 
@@ -54,6 +56,12 @@ class AppPages {
     GetPage(
       name: Routes.forgotPassword,
       page: () => const ForgotPasswordScreen(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: Routes.resetPassword,
+      page: () => const ResetPasswordScreen(),
+      binding: ForgotPasswordBinding(),
     ),
     GetPage(
       name: Routes.phoneDetails,

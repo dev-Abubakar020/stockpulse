@@ -30,6 +30,7 @@ class CreateShop extends GetView<ShopCreateController> {
             icon: Icon(
               theme.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
             ),
+            padding: EdgeInsets.only(right: 24),
           ),
         ],
       ),

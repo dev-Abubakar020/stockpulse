@@ -2,8 +2,13 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
+import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../common/exceptional/platform_exceptions.dart';
+import '../common/exceptional/validator.dart';
+import '../common/widgets/custom_snackbar.dart';
 
 class LoginController extends GetxController {
   final AuthRepository authRepository;
@@ -24,18 +29,28 @@ class LoginController extends GetxController {
   String? _verificationId;
   String phoneNumberForOtp = '';
 
+  Future<void> _handlePostLoginNavigation() async {
+    Get.find<LocalStorageService>().setLoggedIn(true);
+    final hasShop = await Get.find<ShopRepository>().currentUserHasShop();
+    if (hasShop) {
+      Get.offAllNamed(Routes.dashboard);
+    } else {
+      Get.offAllNamed(Routes.createShop);
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     try {
       isGoogleLoading.value = true;
       final response = await authRepository.signInWithGoogle();
       if (response != null && response.user != null) {
-        Get.find<LocalStorageService>().setLoggedIn(true);
-        Get.offAllNamed(Routes.dashboard);
+        await _handlePostLoginNavigation();
       }
-    } on AuthException catch (e) {
-      Get.snackbar('Google Sign-In Failed', e.message);
-    } catch (e) {
-      Get.snackbar('Google Sign-In Failed', e.toString());
+    } on AppException catch (e) {
+    CustomSnackBar.errorSnackBar(
+    title: 'Google Sign-In Failed',
+    message: e.message,
+    );
     } finally {
       isGoogleLoading.value = false;
     }
@@ -45,13 +60,27 @@ class LoginController extends GetxController {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      Get.snackbar('Error', 'Email and password are required');
-      return;
-    } else if (!GetUtils.isEmail(email)) {
-      Get.snackbar('Error', 'Please enter a valid email address');
+    final emailError = CustomValidator.validateEmail(email);
+    final passwordError = CustomValidator.validateLoginPassword(password);
+
+    if (emailError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: 'Warning',
+        message: emailError,
+      );
       return;
     }
+    if (passwordError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: 'Warning',
+        message: passwordError,
+      );
+      return;
+    }
+
+    // =========================
+    // LOGIN
+    // =========================
 
     try {
       isLoading.value = true;
@@ -62,11 +91,15 @@ class LoginController extends GetxController {
       );
 
       if (response.user != null) {
-        Get.find<LocalStorageService>().setLoggedIn(true);
-        Get.offAllNamed(Routes.dashboard);
+        await _handlePostLoginNavigation();
       }
     } catch (e) {
-      Get.snackbar('Login Failed', e.toString());
+      final exception = AppException.fromException(e);
+
+      CustomSnackBar.errorSnackBar(
+        title: 'Login Failed',
+        message: exception.message,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -133,8 +166,7 @@ class LoginController extends GetxController {
       );
 
       if (response.user != null) {
-        Get.find<LocalStorageService>().setLoggedIn(true);
-        Get.offAllNamed(Routes.dashboard);
+        await _handlePostLoginNavigation();
       }
     } catch (e) {
       Get.snackbar('Verification Failed', e.toString());

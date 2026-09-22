@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
+import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,13 +19,22 @@ class SignupController extends GetxController {
   final obscurePassword = true.obs;
   final obscureConfirmPassword = true.obs;
 
+  Future<void> _handlePostSignupNavigation() async {
+    Get.find<LocalStorageService>().setLoggedIn(true);
+    final hasShop = await Get.find<ShopRepository>().currentUserHasShop();
+    if (hasShop) {
+      Get.offAllNamed(Routes.dashboard);
+    } else {
+      Get.offAllNamed(Routes.createShop);
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     try {
       isGoogleLoading.value = true;
       final response = await authRepository.signInWithGoogle();
       if (response != null && response.user != null) {
-        Get.find<LocalStorageService>().setLoggedIn(true);
-        Get.offAllNamed(Routes.createShop);
+        await _handlePostSignupNavigation();
       }
     } on AuthException catch (e) {
       Get.snackbar('Google Sign-In Failed', e.message);
@@ -75,14 +85,11 @@ class SignupController extends GetxController {
         );
         Get.offAllNamed(Routes.login);
       } else {
-        Get.find<LocalStorageService>().setLoggedIn(true);
-        Get.offAllNamed(Routes.createShop);
+        await _handlePostSignupNavigation();
       }
-    } on AuthException catch (error) {
-      Get.snackbar('Signup Failed', error.message);
-    } catch (e) {
-      Get.snackbar('Signup Failed', e.toString());
-    } finally {
+    } catch (error) {
+      Get.snackbar('Signup Failed', 'error');
+    }  finally {
       isLoading.value = false;
     }
   }

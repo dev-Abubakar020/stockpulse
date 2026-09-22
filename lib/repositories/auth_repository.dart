@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../common/exceptional/platform_exceptions.dart';
 import '../common/route/app_routes.dart';
 import '../services/local_storage_service.dart';
 
@@ -52,7 +53,9 @@ class AuthRepository {
     final idToken = googleUser.authentication.idToken;
 
     if (idToken == null || idToken.isEmpty) {
-      throw StateError('Google did not return an ID token.');
+      throw const AppException(
+        'Google Sign-In failed. No authentication token was received.',
+      );
     }
 
     return _supabase.auth.signInWithIdToken(
@@ -98,6 +101,15 @@ class AuthRepository {
     return userCredential;
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _supabase.auth.resetPasswordForEmail(email.trim());
+  }
+
+  Future<UserResponse> resetPassword(String newPassword) async {
+    return await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
 
   User? get currentUser => _supabase.auth.currentUser;
 

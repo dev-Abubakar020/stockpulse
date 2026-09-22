@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -168,15 +167,19 @@ class AppException implements Exception {
     // SUPABASE AUTH
     // =========================
     if (exception is AuthException) {
-      if (exception.code != null) {
-        final mapped = AppException.fromCode(exception.code!);
+      final code = exception.code;
+
+      if (code != null) {
+        final mapped = AppException.fromCode(code);
 
         if (!_isDefaultMessage(mapped.message)) {
           return mapped;
         }
       }
 
-      return AppException(exception.message);
+      return const AppException(
+        'Authentication failed. Please try again.',
+      );
     }
 
     // =========================

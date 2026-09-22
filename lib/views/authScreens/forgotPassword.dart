@@ -7,48 +7,11 @@ import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
+import 'package:stockpulse/controllers/forgotPasswordController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
   const ForgotPasswordScreen({super.key});
-
-  @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
-}
-
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final emailController = TextEditingController();
-  bool isLoading = false;
-  int selectedRecoveryMethod = 0;
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    super.dispose();
-  }
-
-  void handleSendCode() {
-    final input = emailController.text.trim();
-    if (input.isEmpty) {
-      Get.snackbar(
-        'Required',
-        selectedRecoveryMethod == 0
-            ? AppConstants.recoveryEmail
-            : AppConstants.recoveryPhone,
-        backgroundColor: context.appTheme.card,
-        colorText: context.appTheme.textPrimary,
-      );
-      return;
-    }
-
-    setState(() => isLoading = true);
-    Future.delayed(const Duration(milliseconds: 600), () {
-      if (mounted) {
-        setState(() => isLoading = false);
-        Get.toNamed(Routes.otpVerification);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                           ],
                         ),
-                        child: Column(
+                        child: Obx(() => Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             // Channel selector tab (Email vs SMS)
@@ -198,20 +161,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     child: _RecoveryTab(
                                       title: AppConstants.recoveryChannel,
                                       icon: Icons.alternate_email_rounded,
-                                      isSelected: selectedRecoveryMethod == 0,
-                                      onTap: () => setState(
-                                        () => selectedRecoveryMethod = 0,
-                                      ),
+                                      isSelected: controller.selectedRecoveryMethod.value == 0,
+                                      onTap: () => controller.selectedRecoveryMethod.value = 0,
                                     ),
                                   ),
                                   // Expanded(
                                   //   child: _RecoveryTab(
                                   //     title: 'SMS Number',
                                   //     icon: Icons.phone_iphone_rounded,
-                                  //     isSelected: selectedRecoveryMethod == 1,
-                                  //     onTap: () => setState(
-                                  //       () => selectedRecoveryMethod = 1,
-                                  //     ),
+                                  //     isSelected: controller.selectedRecoveryMethod.value == 1,
+                                  //     onTap: () => controller.selectedRecoveryMethod.value = 1,
                                   //   ),
                                   // ),
                                 ],
@@ -220,21 +179,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             const SizedBox(height: 20),
 
                             CustomTextField(
-                              controller: emailController,
-                              labelText: selectedRecoveryMethod == 0
+                              controller: controller.emailOrPhoneController,
+                              labelText: controller.selectedRecoveryMethod.value == 0
                                   ? AppConstants.regEmailAddress
                                   : 'Registered Phone Number',
-                              hintText: selectedRecoveryMethod == 0
+                              hintText: controller.selectedRecoveryMethod.value == 0
                                   ? AppConstants.emailHint
                                   : '+1 (555) 000-0000',
                               prefixIcon: Icon(
-                                selectedRecoveryMethod == 0
+                                controller.selectedRecoveryMethod.value == 0
                                     ? Icons.mail_outline_rounded
                                     : Icons.phone_outlined,
                                 color: theme.primary,
                                 size: 20,
                               ),
-                              keyboardType: selectedRecoveryMethod == 0
+                              keyboardType: controller.selectedRecoveryMethod.value == 0
                                   ? TextInputType.emailAddress
                                   : TextInputType.phone,
                               textInputAction: TextInputAction.done,
@@ -243,8 +202,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                             AppButton(
                               text: AppConstants.sendVerificationCode,
-                              onPressed: handleSendCode,
-                              isLoading: isLoading,
+                              onPressed: controller.sendRecoveryCode,
+                              isLoading: controller.isLoading.value,
                               suffixIcon: const Icon(
                                 Icons.arrow_forward_rounded,
                                 color: Colors.white,
@@ -252,7 +211,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ),
                             ),
                           ],
-                        ),
+                        )),
                       ),
                       const SizedBox(height: 20),
 

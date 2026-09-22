@@ -1,13 +1,15 @@
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
+import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashController extends GetxController {
   var visible = true.obs;
   bool _disposed = false;
-  final LocalStorageService storage = Get.find<LocalStorageService>();
 
+  final LocalStorageService storage = Get.find<LocalStorageService>();
+  final ShopRepository shopRepository = ShopRepository();
 
   @override
   void onInit() {
@@ -24,30 +26,45 @@ class SplashController extends GetxController {
 
   Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 2));
-    Get.offAllNamed(getInitialRoute());
+
+    final route = await getInitialRoute();
+
+    if (!_disposed) {
+      Get.offAllNamed(route);
+    }
   }
 
-  static String getInitialRoute() {
-    final storage = Get.find<LocalStorageService>();
-
+  Future<String> getInitialRoute() async {
+    // 1. First time user
     if (storage.isFirstTime()) {
       return Routes.onboarding;
     }
 
+    // 2. Check actual Supabase authentication
     final session = Supabase.instance.client.auth.currentSession;
-    final bool isAuthenticated = session != null || storage.isLoggedIn();
 
-    if (isAuthenticated) {
-      return Routes.dashboard;
-    } else {
+    if (session == null) {
       return Routes.login;
     }
+
+    // 3. User logged in -> check whether shop exists
+    final hasShop = await shopRepository.currentUserHasShop();
+
+    if (!hasShop) {
+      return Routes.createShop;
+    }
+
+    // 4. Logged in + shop exists
+    return Routes.dashboard;
   }
 
   void _startFade() async {
     while (!_disposed) {
       await Future.delayed(const Duration(milliseconds: 800));
-      if (!_disposed) visible.toggle();
+
+      if (!_disposed) {
+        visible.toggle();
+      }
     }
   }
 }

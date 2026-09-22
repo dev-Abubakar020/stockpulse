@@ -1,14 +1,11 @@
 class CustomValidator {
-  /// Validate required fields
   static String? validateEmptyText(String? fieldName, String? value) {
     if (value == null || value.trim().isEmpty) {
       return '$fieldName is required.';
     }
-
     return null;
   }
 
-  /// Validate email
   static String? validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Email is required.';
@@ -25,7 +22,16 @@ class CustomValidator {
     return null;
   }
 
-  /// Validate password
+  /// Login only
+  static String? validateLoginPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required.';
+    }
+
+    return null;
+  }
+
+  /// Signup / Change password
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required.';
@@ -49,22 +55,6 @@ class CustomValidator {
 
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
       return 'Password must contain at least one special character.';
-    }
-
-    return null;
-  }
-
-  /// Validate Pakistani phone number
-  /// Example: 03001234567
-  static String? validatePhoneNumber(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Phone number is required.';
-    }
-
-    final phoneRegExp = RegExp(r'^03\d{9}$');
-
-    if (!phoneRegExp.hasMatch(value.trim())) {
-      return 'Please enter a valid phone number (e.g. 03001234567).';
     }
 
     return null;

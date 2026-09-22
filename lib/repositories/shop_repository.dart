@@ -13,7 +13,7 @@ class ShopRepository {
 
     final shop = await _supabase
         .from('shops')
-        .select('uid')
+        .select('auth_uid')
         .eq('auth_uid', user.id)
         .limit(1)
         .maybeSingle();
