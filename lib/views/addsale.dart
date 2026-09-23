@@ -1586,8 +1586,8 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
                           const SizedBox(height: 10),
                           Text(
                             _query.isEmpty
-                                ? 'No products available'
-                                : 'No products found',
+                                ? AppConstants.noProductsAvailable
+                                : AppConstants.noProductsFound,
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(0xFF6B7280),
                             ),
