@@ -68,7 +68,7 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     CustomAppBar(
-                      title: Text('Forgot Password'),
+                      title: Text(AppConstants.loginForgotPassword),
                       showBackArrow: true,
                     ),
                     const SizedBox(height: 24),

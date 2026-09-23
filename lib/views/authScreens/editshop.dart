@@ -22,7 +22,7 @@ class EditShopDetails extends GetView<ShopCreateController> {
     final theme = context.appTheme;
     return Scaffold(
       appBar: CustomAppBar(
-        title: const Text('Business Info'),
+        title: const Text(AppConstants.businessInfo),
         showBackArrow: true,
         actions: [
           Obx(() => TextButton.icon(
@@ -32,7 +32,7 @@ class EditShopDetails extends GetView<ShopCreateController> {
                   size: 18,
                 ),
                 label: Text(
-                  controller.isEditable.value ? 'Cancel' : 'Edit',
+                  controller.isEditable.value ? AppConstants.cancelTitle : AppConstants.edit,
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
                 ),
               )),
@@ -207,7 +207,7 @@ class EditShopDetails extends GetView<ShopCreateController> {
                             return const SizedBox.shrink();
                           }
                           return AppButton(
-                            text: 'Update Business',
+                            text: AppConstants.updateBusiness,
                             onPressed: controller.updateShop,
                             isLoading: controller.isUpdating.value,
                             suffixIcon: const Icon(

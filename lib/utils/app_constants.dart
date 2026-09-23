@@ -66,6 +66,7 @@ class AppConstants {
   static const String delTitle = 'Delete';
   static const String cancelTitle = 'Cancel';
   static const String delProduct = 'Delete Product';
+  static const String businessInfo = 'Business Info';
   static const String invHealth = 'Inventory Health';
   static const String healthyStock = 'Healthy Stock';
   static const String calPerPiece = 'Calculated per piece sold';
@@ -262,6 +263,7 @@ class AppConstants {
   static const String createNewPassword = 'Create New Password';
   static const String newPasswordLabel = 'New Password';
   static const String confirmPasswordLabel = 'Confirm Password';
+  static const String updateBusiness = 'Update Business';
   static const String updatePasswordBtn = 'Update Password';
   static const String createAccountBtn = 'Create Account';
   static const String agreeToTermsText =

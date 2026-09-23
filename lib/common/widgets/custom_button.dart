@@ -91,7 +91,7 @@ class AppButton extends StatelessWidget {
         Text(
           text,
           style: GoogleFonts.sora(
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
             color: isClickable ? textColor : textColor.withValues(alpha: 0.6),
