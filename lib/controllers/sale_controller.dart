@@ -23,6 +23,12 @@ class SaleController extends GetxController {
   final RxBool isSalesLoading = false.obs;
   final RxBool isSaleItemsLoading = false.obs;
   final RxList<SaleItemModel> currentSaleItems = <SaleItemModel>[].obs;
+  final RxString creatorName = ''.obs;
+
+  Future<void> fetchCreatorName(String userId) async {
+    // creatorName.value = 'Loading...';
+    creatorName.value = await repository.getUserName(userId);
+  }
 
   /// productId -> quantity
   final RxMap<String, double> quantities = <String, double>{}.obs;

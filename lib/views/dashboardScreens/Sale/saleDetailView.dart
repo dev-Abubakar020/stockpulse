@@ -23,6 +23,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
     super.initState();
     sale = Get.arguments as SaleModel;
     controller.fetchSaleItems(sale.id);
+    controller.fetchCreatorName(sale.createdBy);
   }
 
   @override
@@ -91,7 +92,13 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                       theme,
                     ),
                     const SizedBox(height: 8),
-                    _buildInfoRow('Created By', sale.createdBy, theme),
+                    Obx(
+                      () => _buildInfoRow(
+                        'Created By',
+                        controller.creatorName.value,
+                        theme,
+                      ),
+                    ),
                     if (sale.notes != null && sale.notes!.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       _buildInfoRow('Notes', sale.notes!, theme),
@@ -170,7 +177,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                                   ),
                                 ),
                                 if ((item.color != null &&
-                                    item.color!.isNotEmpty) ||
+                                        item.color!.isNotEmpty) ||
                                     (item.size != null &&
                                         item.size!.isNotEmpty)) ...[
                                   const SizedBox(height: 4),

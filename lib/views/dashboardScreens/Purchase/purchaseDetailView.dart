@@ -23,6 +23,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
     super.initState();
     purchase = Get.arguments as PurchaseModel;
     controller.fetchPurchaseItems(purchase.id);
+    controller.fetchCreatorName(purchase.createdBy);
   }
 
   @override
@@ -86,7 +87,13 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                     const SizedBox(height: 12),
                     _buildInfoRow('Date & Time', dateStr, theme),
                     const SizedBox(height: 8),
-                    _buildInfoRow('Created By', purchase.createdBy, theme),
+                    Obx(
+                      () => _buildInfoRow(
+                        'Created By',
+                        controller.creatorName.value,
+                        theme,
+                      ),
+                    ),
                     if (purchase.notes != null &&
                         purchase.notes!.isNotEmpty) ...[
                       const SizedBox(height: 8),
@@ -166,7 +173,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                                   ),
                                 ),
                                 if ((item.color != null &&
-                                    item.color!.isNotEmpty) ||
+                                        item.color!.isNotEmpty) ||
                                     (item.size != null &&
                                         item.size!.isNotEmpty)) ...[
                                   const SizedBox(height: 4),

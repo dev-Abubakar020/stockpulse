@@ -150,6 +150,45 @@ class PurchaseRepository {
     }
   }
 
+  // ============================================================
+  // GET USER NAME
+  // ============================================================
+
+  Future<String> getUserName(String userId) async {
+    try {
+      final currentUser = _supabase.auth.currentUser;
+      if (currentUser != null && currentUser.id == userId) {
+        final metaName = currentUser.userMetadata?['name'] as String? ??
+            currentUser.userMetadata?['full_name'] as String?;
+        if (metaName != null && metaName.trim().isNotEmpty) {
+          return metaName.trim();
+        }
+        if (currentUser.email != null && currentUser.email!.isNotEmpty) {
+          return currentUser.email!.split('@').first;
+        }
+      }
+
+      final response = await _supabase
+          .from('profiles')
+          .select('name, full_name, email')
+          .eq('id', userId)
+          .maybeSingle();
+
+      if (response != null) {
+        final name = response['name'] as String? ??
+            response['full_name'] as String? ??
+            response['email'] as String?;
+        if (name != null && name.trim().isNotEmpty) {
+          return name.trim().contains('@')
+              ? name.trim().split('@').first
+              : name.trim();
+        }
+      }
+    } catch (_) {}
+
+    return 'Shop Owner';
+  }
+
   String? _cleanNotes(String? notes) {
     final value = notes?.trim();
 

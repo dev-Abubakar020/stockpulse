@@ -30,6 +30,12 @@ class PurchaseController extends GetxController {
   final RxBool isPurchasesLoading = false.obs;
   final RxBool isPurchaseItemsLoading = false.obs;
   final RxList<PurchaseItemModel> currentPurchaseItems = <PurchaseItemModel>[].obs;
+  final RxString creatorName = ''.obs;
+
+  Future<void> fetchCreatorName(String userId) async {
+    creatorName.value = 'Loading...';
+    creatorName.value = await repository.getUserName(userId);
+  }
 
   final RxString searchQuery = ''.obs;
 
