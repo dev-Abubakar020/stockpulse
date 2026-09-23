@@ -8,7 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../common/widgets/alertDialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_MenuTile.dart';
+import '../../common/widgets/custom_shimmer.dart';
+import '../../controllers/allProductsController.dart';
 import '../../controllers/loginController.dart';
+import '../../controllers/shopCreateController.dart';
 
 class MoreScreen extends StatelessWidget {
   MoreScreen({super.key});
@@ -17,6 +20,9 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ShopCreateController controller =
+    Get.find<ShopCreateController>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: CustomAppBar(
@@ -50,126 +56,132 @@ class MoreScreen extends StatelessWidget {
                 vertical: 8,
               ),
               child: _buildInfoGroup(
-                 [
-                  /// GLOW AVATAR
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFF0F766E),
-                          Color(0xFF14B8A6),
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF0F766E).withValues(alpha: 0.6),
-                          blurRadius: 4,
-                          spreadRadius: 0.5,
-                        ),
-                      ],
-                    ),
-                    child:
-                    // Obx(() {
-                      // if (controller.isProfileLoading.value) {
-                      //   return shimmerCircle();
-                      // }
+                  [
+                    /// PROFILE IMAGE
+                    Obx(() {
+                      if (controller.isProfileLoading.value) {
+                        return CustomShimmer.circle(size: 64);
+                      }
 
-                       CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.black,
-                          backgroundImage : NetworkImage(AppConstants.defaultUserIcon)
-                        // backgroundImage: controller.pic.value.isNotEmpty
-                        //     ? NetworkImage(controller.pic.value)
-                        //     : const NetworkImage(
-                        //   'https://i.pravatar.cc/150?img=3',
-                        // ),
-                      )
-
-                  ),
-
-                  const SizedBox(width: 20),
-
-                  /// NAME + ROLE
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Obx(() {
-                          // if (controller.isProfileLoading.value) {
-                          //   return shimmerLine(
-                          //     width: 140,
-                          //     height: 18,
-                          //   );
-                          // }
-
-                           Text(
-                            'name',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.playfairDisplay(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-
-
-                        const SizedBox(height: 8),
-
-                        // Obx(() {
-                          // if (controller.isProfileLoading.value) {
-                          //   return shimmerLine(
-                          //     width: 90,
-                          //     height: 12,
-                          //   );
-                          // }
-
-                           Text(
-                            'Shop Name :',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.notoSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.blue.shade300,
-                            ),
-                          )
-                        // }),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  /// EDIT PROFILE
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        width: 42,
-                        height: 42,
+                      return Container(
+                        padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
-                          color: Color(0xFF0F766E).withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Color(0xFF0F766E).withValues(alpha: 0.20),
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF0F766E),
+                              Color(0xFF14B8A6),
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF0F766E)
+                                  .withValues(alpha: 0.4),
+                              blurRadius: 4,
+                              spreadRadius: 0.5,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.grey.shade200,
+                          backgroundImage: NetworkImage(
+                            controller.shopImageUrl.value.isNotEmpty
+                                // ? controller.shopImageUrl.value
+                            ?AppConstants.defaultUserIcon
+                                : AppConstants.defaultUserIcon,
                           ),
                         ),
-                        child:  Icon(
-                          Icons.edit_outlined,
-                          size: 20,
-                          color: Color(0xFF0F766E).withValues(alpha: 0.5),
+                      );
+                    }),
+
+                    const SizedBox(width: 16),
+
+                    /// OWNER + SHOP
+                    Expanded(
+                      child: Obx(() {
+                        if (controller.isProfileLoading.value) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomShimmer.line(width: 140, height: 18),
+                              const SizedBox(height: 8),
+                              CustomShimmer.line(width: 90, height: 12),
+                            ],
+                          );
+                        }
+
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// OWNER NAME
+                            Text(
+                              controller.ownerController.text.isNotEmpty
+                                  ? controller.ownerController.text
+                                  : 'Owner',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.playfairDisplay(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+
+                            const SizedBox(height: 5),
+
+                            /// SHOP NAME
+                            Text(
+                              controller.shopController.text.isNotEmpty
+                                  ? controller.shopController.text
+                                  : 'Shop',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF0F766E),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    /// EDIT
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Get.toNamed(Routes.editProfile);
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F766E)
+                                .withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFF0F766E)
+                                  .withValues(alpha: 0.20),
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 20,
+                            color: const Color(0xFF0F766E)
+                                .withValues(alpha: 0.7),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ]
               ),
             ),
             Expanded(
@@ -271,7 +283,7 @@ class MoreScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 90,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),

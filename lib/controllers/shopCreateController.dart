@@ -27,6 +27,7 @@ class ShopCreateController extends GetxController {
   final imagePicker = ImagePicker();
   final isUpdating = false.obs;
   final isEditable = false.obs;
+  final isProfileLoading = false.obs;
   final shopImageUrl = ''.obs;
 
   final selectedCountry = countries
@@ -50,6 +51,7 @@ class ShopCreateController extends GetxController {
 
   Future<void> fetchShopDetails() async {
     try {
+      isProfileLoading.value = true;
       final shop = await shopRepository.getShop();
       if (shop != null) {
         ownerController.text = shop['ownerame'] ?? '';
@@ -86,6 +88,8 @@ class ShopCreateController extends GetxController {
                   user?.email?.split('@').first ??
                   '')
               .toString();
+    } finally {
+      isProfileLoading.value = false;
     }
   }
 
