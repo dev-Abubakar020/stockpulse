@@ -28,6 +28,12 @@ class AllProducts extends GetView<ProductController>  {
 
     return Scaffold(
       backgroundColor: theme.background,
+      appBar: CustomAppBar(
+        title: Text(AppConstants.productTitle),
+        actions: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.logout,color: Colors.red,))
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -36,49 +42,6 @@ class AllProducts extends GetView<ProductController>  {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //AppBar
-                  CustomAppBar(
-                    title: Text(AppConstants.productTitle),
-                    actions: [
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: TextButton.icon(
-                          onPressed: () => Get.toNamed(Routes.addProductWizard),
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          label: Text(
-                            AppConstants.add,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
                   //Search field
                   CustomSearchField(
                     hintText: AppConstants.searchHint,
@@ -118,7 +81,7 @@ class AllProducts extends GetView<ProductController>  {
                 if (products.isEmpty) {
                   final bool isSearching = controller.searchQuery.value.isNotEmpty;
                   return Padding(
-                    padding: const EdgeInsets.only(left: 8,right: 8,bottom: 100),
+                    padding: const EdgeInsets.only(left: 8,right: 8,bottom: 6),
                     child: EmptyStateWidget(
                       isSearching: isSearching,
                       title: isSearching ? AppConstants.queryNotFoundTitle : AppConstants.noProductsFoundTitle,
@@ -315,6 +278,37 @@ class AllProducts extends GetView<ProductController>  {
               }),
             ),
           ],
+        ),
+      ),
+
+      /// Floating Action Button
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF0F766E),
+              Color(0xFF14B8A6),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () => Get.toNamed(Routes.addProductWizard),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          icon: const Icon(Icons.add),
+          label: const Text(
+            AppConstants.addPurchase,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );

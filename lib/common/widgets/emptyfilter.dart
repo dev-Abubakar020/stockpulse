@@ -18,7 +18,7 @@ class EmptyStateWidget extends StatelessWidget {
     this.subtitle,
     this.action,
     this.iconSize = 55.0,
-    this.topMargin = 30.0,
+    this.topMargin = 0.0,
   });
 
   @override
@@ -44,7 +44,7 @@ class EmptyStateWidget extends StatelessWidget {
       margin: EdgeInsets.only(top: topMargin),
       padding: const EdgeInsets.symmetric(
         horizontal: 24,
-        vertical: 50,
+        // vertical: 50,
       ),
       decoration: BoxDecoration(
         color: context.isDark ? const Color(0xFF131D2E) : Colors.white,
@@ -55,37 +55,39 @@ class EmptyStateWidget extends StatelessWidget {
               : const Color(0xFFE2E8F0),
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            effectiveIcon,
-            size: iconSize,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 14),
-          Text(
-            effectiveTitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              effectiveIcon,
+              size: iconSize,
+              color: Colors.grey.shade400,
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            effectiveSubtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade600,
+            const SizedBox(height: 14),
+            Text(
+              effectiveTitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          if (action != null) ...[
-            const SizedBox(height: 20),
-            action!,
+            const SizedBox(height: 6),
+            Text(
+              effectiveSubtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            if (action != null) ...[
+              const SizedBox(height: 20),
+              action!,
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

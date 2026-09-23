@@ -90,8 +90,8 @@ class AppConstants {
   static const String loginPasswordLabel = 'Password';
   static const String loginPasswordHint = 'Enter your password';
   static const String searchHint = "Search product ...";
-  static const String searchHint2 = 'Search purchase products...';
-  static const String searchHint3 = 'Search Sale products...';
+  static const String searchHint2 = 'Search purchase ...';
+  static const String searchHint3 = 'Search Sale ...';
   static const String searchHint1 = 'Search Invoices, suppliers...';
   static const String unit = "/unit";
   static const String defaultCurrency = "Rs. ";

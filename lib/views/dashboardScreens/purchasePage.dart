@@ -28,158 +28,153 @@ class PurchasePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.background,
-
+      appBar: CustomAppBar(
+        title: Text(AppConstants.purchaseTitle),
+        actions: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.logout,color: Colors.red,))
+        ],
+      ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: controller.fetchPurchases,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 8,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomSearchField(
+                    controller: controller.searchController,
+                    hintText: AppConstants.searchHint2,
+                    showScanner: false,
+                    onChanged: controller.searchPurchases,
+                  ),
+                  const SizedBox(height: 14),
 
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 8,
+                  Obx(
+                    () => CustomFilterTabs(
+                      items: controller.filters,
+                      selectedIndex:
+                      controller.selectedFilter.value,
+                      onChanged: controller.changeFilter,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomAppBar(
-                  title: Text(AppConstants.purchaseTitle),
-                  actions: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
+            Expanded(
+              child: Obx(
+                () {
+                  if (controller.isPurchasesLoading.value) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                      child: const ProductListShimmer(),
+                    );
+                  }
+                  final purchases =
+                      controller.filteredPurchases;
+                  if (purchases.isEmpty) {
+                    final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        left: 8,
+                        right: 8,
+                        bottom: 6,
                       ),
-                      child: TextButton.icon(
-                        onPressed: () => Get.toNamed(Routes.addPurchase),
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        label: Text(
-                          AppConstants.addPurchase,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-                CustomSearchField(
-                  controller: controller.searchController,
-                  hintText: AppConstants.searchHint2,
-                  showScanner: false,
-                  onChanged: controller.searchPurchases,
-                ),
-                const SizedBox(height: 24),
-
-                Obx(
-                      () => CustomFilterTabs(
-                    items: controller.filters,
-                    selectedIndex:
-                    controller.selectedFilter.value,
-                    onChanged: controller.changeFilter,
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-                Obx(
-                      () {
-                        if (controller.isPurchasesLoading.value) {
-                          return const ProductListShimmer(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                          );
-                        }
-                    final purchases =
-                        controller.filteredPurchases;
-
-                    if (purchases.isEmpty) {
-                      final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
-                      return EmptyStateWidget(
+                      child: EmptyStateWidget(
                         isSearching: isSearching,
-                        title: isSearching ? AppConstants.noPurchasesFoundTitle : AppConstants.noPurchasesYetTitle,
+                        title: isSearching
+                            ? AppConstants.noPurchasesFoundTitle
+                            : AppConstants.noPurchasesYetTitle,
                         subtitle: isSearching
                             ? AppConstants.noPurchasesFoundSubtitle
                             : AppConstants.noPurchasesYetSubtitle,
-                      );
-                    }
-
-                    return _buildCardGroup(
-                      context,
-                      [
-                        ListView.separated(
-                          shrinkWrap: true,
-
-                          physics:
-                          const NeverScrollableScrollPhysics(),
-
-                          itemCount: purchases.length,
-
-                          separatorBuilder: (_, __) =>
-                          const SizedBox(height: 10),
-
-                          itemBuilder: (context, index) {
-                            final purchase =
-                            purchases[index];
-
-                            return CustomTransactionTile(
-                              reference:
-                              purchase.purchaseNo,
-
-                              dateTime:
-                              _formatPurchaseDate(
-                                purchase.purchaseDate,
-                              ),
-
-                              amount:
-                              'Rs. ${purchase.totalAmount.toStringAsFixed(2)}',
-
-                              status:
-                              _statusLabel(
-                                purchase.status,
-                              ),
-
-                              statusType:
-                              _statusType(
-                                purchase.status,
-                              ),
-
-                              onTap: () {
-                                // Purchase details will be
-                                // implemented next.
-                              },
-                            );
-                          },
-                        ),
-                      ],
+                      ),
                     );
-                  },
-                ),
+                  }
 
-                const SizedBox(height: 30),
-              ],
+                  return RefreshIndicator(
+                    onRefresh: controller.fetchPurchases,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        20,
+                        4,
+                        20,
+                        24,
+                      ),
+                      itemCount: purchases.length,
+                      separatorBuilder: (_, __) =>
+                      const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final purchase =
+                        purchases[index];
+
+                        return CustomTransactionTile(
+                          reference:
+                          purchase.purchaseNo,
+
+                          dateTime:
+                          _formatPurchaseDate(
+                            purchase.purchaseDate,
+                          ),
+
+                          amount:
+                          'Rs. ${purchase.totalAmount.toStringAsFixed(2)}',
+
+                          status:
+                          _statusLabel(
+                            purchase.status,
+                          ),
+
+                          statusType:
+                          _statusType(
+                            purchase.status,
+                          ),
+
+                          onTap: () {
+                            // Purchase details will be
+                            // implemented next.
+                          },
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      /// Floating Action Button
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF0F766E),
+              Color(0xFF14B8A6),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () => Get.toNamed(Routes.addPurchase),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          icon: const Icon(Icons.add),
+          label: const Text(
+            AppConstants.addPurchase,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -187,38 +182,7 @@ class PurchasePage extends StatelessWidget {
     );
   }
 
-  // ============================================================
-  // CARD
-  // ============================================================
 
-  Widget _buildCardGroup(
-      BuildContext context,
-      List<Widget> children,
-      ) {
-    final isDark = context.isDark;
-
-    return Container(
-      padding: const EdgeInsets.all(10),
-
-      decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF131D2E)
-            : Colors.white,
-
-        borderRadius: BorderRadius.circular(16),
-
-        border: Border.all(
-          color: isDark
-              ? const Color(0xFF1E2D44)
-              : const Color(0xFFE2E8F0),
-        ),
-      ),
-
-      child: Column(
-        children: children,
-      ),
-    );
-  }
 
   // ============================================================
   // STATUS
