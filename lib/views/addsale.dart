@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../common/widgets/appbar.dart';
 import '../controllers/sale_controller.dart';
 import '../models/productItemModel.dart';
 
@@ -151,8 +150,8 @@ class _AddSaleState extends State<AddSale> {
     }
 
     return const CustomAppBar(
-      title: 'New ${AppConstants.saleTitle}',
-      showBackButton: true,
+      title: Text('New ${AppConstants.saleTitle}'),
+      showBackArrow: true,
     );
   }
 

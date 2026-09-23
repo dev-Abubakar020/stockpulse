@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/controllers/forgotPasswordController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
+import '../../common/widgets/appbar.dart';
 
 class ResetPasswordScreen extends GetView<ForgotPasswordController> {
   const ResetPasswordScreen({super.key});
@@ -33,8 +34,7 @@ class ResetPasswordScreen extends GetView<ForgotPasswordController> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CustomAppBar(
-                        title: AppConstants.createNewPassword,
-                        onBackPressed: () => Get.back(),
+                        title: Text(AppConstants.createNewPassword),
                       ),
                       const SizedBox(height: 28),
 

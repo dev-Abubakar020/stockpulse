@@ -5,11 +5,11 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../common/route/app_routes.dart';
+import '../common/widgets/appbar.dart';
 import '../controllers/allProductsController.dart';
 import '../models/productItemModel.dart';
 
@@ -30,8 +30,8 @@ class ProductDetailView extends GetView<ProductController> {
     return Scaffold(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
-        title: AppConstants.detailPTitle,
-        showBackButton: true,
+        title: Text(AppConstants.detailPTitle),
+        showBackArrow: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 22),

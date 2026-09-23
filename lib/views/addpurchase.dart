@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 
+import '../common/widgets/appbar.dart';
 import '../controllers/purchase_controller.dart';
 import '../models/productItemModel.dart';
 
@@ -104,8 +103,8 @@ class _AddPurchaseState extends State<AddPurchase> {
                 vertical: 10,
               ),
               child: CustomAppBar(
-                title: 'New Purchase',
-                showBackButton: true,
+                title: Text('New Purchase'),
+                showBackArrow: true,
                 actions: [
                   CustomTextButton(
                     text: 'Reset',

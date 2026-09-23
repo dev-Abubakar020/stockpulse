@@ -4,13 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_statuschip.dart';
-import '../../common/widgets/custom_button.dart';
 import '../../common/widgets/cutom_TransactionTile.dart';
 
 import '../../common/widgets/emptyfilter.dart';
@@ -46,7 +45,7 @@ class PurchasePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomAppBar(
-                  title: AppConstants.purchaseTitle,
+                  title: Text(AppConstants.purchaseTitle),
                   actions: [
                     Container(
                       decoration: BoxDecoration(

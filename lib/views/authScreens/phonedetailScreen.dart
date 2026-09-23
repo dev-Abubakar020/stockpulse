@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/data/countries_data.dart';
 import 'package:stockpulse/common/data/phone_hint.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
@@ -13,6 +12,7 @@ import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
 class PhoneDetailScreen extends StatefulWidget {
@@ -75,8 +75,8 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                   children: [
                     // Top bar
                     CustomAppBar(
-                      showBackButton: true,
-                      title: AppConstants.phoneLoginTitle,
+                      showBackArrow: true,
+                      title: Text(AppConstants.phoneLoginTitle),
                       actions: const [ThemeToggleButton()],
                     ),
                     const SizedBox(height: 28),

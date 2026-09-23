@@ -8,11 +8,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/emptyfilter.dart';
 import '../../common/widgets/product_shimmer.dart';
 import '../../controllers/allProductsController.dart';
@@ -38,7 +38,7 @@ class AllProducts extends GetView<ProductController>  {
                 children: [
                   //AppBar
                   CustomAppBar(
-                    title: AppConstants.productTitle,
+                    title: Text(AppConstants.productTitle),
                     actions: [
                       Container(
                         decoration: BoxDecoration(

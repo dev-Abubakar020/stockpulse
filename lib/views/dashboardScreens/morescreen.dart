@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_MenuTile.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -22,7 +22,7 @@ class MoreScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left:24),
-              child: CustomAppBar(title: AppConstants.moreTitle),
+              child: CustomAppBar(title: Text(AppConstants.moreTitle)),
             ),
             Expanded(
               child: ListView(
@@ -31,7 +31,7 @@ class MoreScreen extends StatelessWidget {
                   vertical: 8,
                 ),
                 children: [
-                  CustomAppBar(title: AppConstants.businessTitle),
+                  CustomAppBar(title: Text(AppConstants.businessTitle)),
                   const SizedBox(height: 10),
                   _buildCardGroup([
                     MoreMenuTile(
@@ -69,7 +69,7 @@ class MoreScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Section 2
-                  CustomAppBar(title: AppConstants.othersOptionsTitle),
+                  CustomAppBar(title: Text(AppConstants.othersOptionsTitle)),
                   const SizedBox(height: 10),
                   _buildCardGroup([
                     MoreMenuTile(

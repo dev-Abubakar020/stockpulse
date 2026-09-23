@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stockpulse/common/widgets/custom_appbar.dart';
-import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+import '../common/widgets/appbar.dart';
+import '../common/widgets/custome_textbutton.dart';
 
 class AddCategories extends StatelessWidget {
   const AddCategories({super.key});
@@ -14,23 +14,23 @@ class AddCategories extends StatelessWidget {
     final CategoryController controller = Get.find<CategoryController>();
 
     return Scaffold(
+      appBar: CustomAppBar(
+        title: Text(AppConstants.addCat),
+        showBackArrow: true,
+        actions: [
+          CustomTextButton(
+            text: AppConstants.reset,
+            onPressed: () {
+              controller.clearForm();
+            },
+          )
+        ],
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             children: [
-              CustomAppBar(
-                title: AppConstants.addCat,
-                showBackButton: true,
-                actions: [
-                  CustomTextButton(
-                    text: AppConstants.reset,
-                    onPressed: () {
-                      controller.clearForm();
-                    },
-                  )
-                ],
-              ),
               const SizedBox(height: 12),
               Expanded(
                 child: SingleChildScrollView(
