@@ -230,6 +230,7 @@ class AppConstants {
   static const String tryAnotherProductName =
       'Try another product name or barcode.';
   static const String viewCart = 'View Cart';
+  static const String cartDetail = 'Cart Detail';
 
   /// Auth Alerts & Messages
   static const String warningTitle = 'Warning';

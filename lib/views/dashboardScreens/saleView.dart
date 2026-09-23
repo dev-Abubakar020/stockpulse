@@ -143,7 +143,7 @@ class SaleView extends StatelessWidget {
           elevation: 0,
           icon: const Icon(Icons.add),
           label: const Text(
-            AppConstants.addPurchase,
+            AppConstants.addSale,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,

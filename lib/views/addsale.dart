@@ -148,10 +148,18 @@ class _AddSaleState extends State<AddSale> {
         ),
       );
     }
+    if (_currentStep == 1) {
+      return CustomAppBar(
+        title: const Text(AppConstants.cartDetail),
+        showBackArrow: true,
+        leadingOnPressed: _handleBack,
+      );
+    }
 
-    return const CustomAppBar(
+    return CustomAppBar(
       title: Text('New ${AppConstants.saleTitle}'),
       showBackArrow: true,
+      leadingOnPressed: _handleBack,
     );
   }
 
@@ -740,7 +748,6 @@ class _AddSaleState extends State<AddSale> {
   Widget _buildStep3Payment() {
     final paymentMethods = [
       {'id': 'Cash', 'icon': Icons.payments_outlined},
-      {'id': 'Card', 'icon': Icons.credit_card_rounded},
     ];
 
     return SingleChildScrollView(
