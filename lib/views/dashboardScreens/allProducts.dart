@@ -92,7 +92,7 @@ class AllProducts extends GetView<ProductController>  {
                 if (products.isEmpty) {
                   final bool isSearching = controller.searchQuery.value.isNotEmpty;
                   return Padding(
-                    padding: const EdgeInsets.only(left: 8,right: 8,bottom: 6),
+                    padding: const EdgeInsets.only(left: 20,right: 20,bottom: 6),
                     child: EmptyStateWidget(
                       isSearching: isSearching,
                       title: isSearching ? AppConstants.queryNotFoundTitle : AppConstants.noProductsFoundTitle,
@@ -295,7 +295,7 @@ class AllProducts extends GetView<ProductController>  {
       /// Floating Action Button
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12,right: 18),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [

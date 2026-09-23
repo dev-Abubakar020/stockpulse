@@ -87,8 +87,8 @@ class SaleView extends StatelessWidget {
                       controller.selectedFilter.value != 0;
                   return Padding(
                     padding: const EdgeInsets.only(
-                      left: 8,
-                      right: 8,
+                      left: 20,
+                      right: 20,
                       bottom: 6,
                     ),
                     child: EmptyStateWidget(
@@ -144,7 +144,7 @@ class SaleView extends StatelessWidget {
       /// Floating Action Button
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12,right: 18),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
