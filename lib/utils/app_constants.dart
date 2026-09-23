@@ -27,7 +27,7 @@ class AppConstants {
       "https://raw.githubusercontent.com/muhxdan/Flutter-Onboarding-Screen/refs/heads/master/assets/images/image2.png";
   static const String onboardingImage3 =
       "https://github.com/muhxdan/Flutter-Onboarding-Screen/blob/master/assets/images/image3.png?raw=true";
-
+  static const String defaultUserIcon = 'https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=';
   /// OnBoarding Screen Constants
   static const String onboardingTitle1 = "Manage Your Store with Ease";
   static const String onboardingTitle2 = "View Analytic And Track Success";
@@ -170,7 +170,7 @@ class AppConstants {
   static const String createYourShop = 'Create your shop';
   static const String toggleTheme = 'Toggle theme';
   static const String workspaceSubtitle =
-      'Set up your workspace before entering the dashboard.';
+      'Set up your workspace';
   static const String shopDetails = 'Shop details';
   static const String ownerName = 'Owner name';
   static const String shopName = 'Shop name';

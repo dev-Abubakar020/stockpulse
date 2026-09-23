@@ -23,10 +23,6 @@ class _AddPurchaseState extends State<AddPurchase> {
   final PurchaseController purchaseController =
   Get.find<PurchaseController>();
 
-  // ============================================================
-  // SAVE PURCHASE
-  // ============================================================
-
   Future<void> _savePurchase() async {
     FocusScope.of(context).unfocus();
 
@@ -53,11 +49,6 @@ class _AddPurchaseState extends State<AddPurchase> {
       ),
     );
   }
-
-  // ============================================================
-  // PRODUCT PICKER
-  // ============================================================
-
   void _showProductPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -83,9 +74,6 @@ class _AddPurchaseState extends State<AddPurchase> {
     );
   }
 
-  // ============================================================
-  // BUILD
-  // ============================================================
 
   @override
   Widget build(BuildContext context) {

@@ -21,6 +21,19 @@ class ShopRepository {
     return shop != null;
   }
 
+  Future<Map<String, dynamic>?> getShop() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return null;
+
+    final shop = await _supabase
+        .from('shops')
+        .select()
+        .eq('auth_uid', user.id)
+        .limit(1)
+        .maybeSingle();
+    return shop;
+  }
+
   Future<void> createShop({
     required String ownerName,
     required String shopName,
@@ -29,7 +42,8 @@ class ShopRepository {
     required String currencySymbol,
     required String currencyCode,
     XFile? image,
-  }) async {
+  }) async
+  {
     final user = _supabase.auth.currentUser;
     if (user == null) {
       throw StateError(AppConstants.mustBeSignIn);
@@ -69,5 +83,55 @@ class ShopRepository {
       'createdat': now,
       'updatedat': now,
     });
+  }
+
+  Future<Map<String, dynamic>> updateShop({
+    required String shopName,
+    required String ownerName,
+    required String address,
+    XFile? image,
+    String? existingImageUrl,
+  }) async {
+    final user = _supabase.auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not authenticated');
+    }
+
+    String? imageUrl = existingImageUrl;
+    if (image != null) {
+      final extension = image.name.contains('.')
+          ? image.name.split('.').last.toLowerCase()
+          : 'jpg';
+      final path =
+          '${user.id}/${DateTime.now().microsecondsSinceEpoch}.$extension';
+
+      await _supabase.storage
+          .from('shop-images')
+          .uploadBinary(
+            path,
+            await image.readAsBytes(),
+            fileOptions: FileOptions(
+              contentType: 'image/$extension',
+              upsert: false,
+            ),
+          );
+      imageUrl = _supabase.storage.from('shop-images').getPublicUrl(path);
+    }
+
+    final response = await _supabase
+        .from('shops')
+        .update({
+      'shopename': shopName.trim(),
+      'ownerame': ownerName.trim(),
+      'address': address.trim(),
+      'shopimg': imageUrl,
+      'updatedat': DateTime.now().toUtc().toIso8601String(),
+    })
+        .eq('auth_uid', user.id)
+        .select()
+        .single();
+
+    return response;
   }
 }

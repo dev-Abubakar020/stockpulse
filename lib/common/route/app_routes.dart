@@ -4,6 +4,7 @@ abstract class Routes {
   static const onboarding = '/onboarding';
   static const login = '/login';
   static const register = '/register';
+  static const editBDetails = '/editBusinessDetail';
   static const forgotPassword = '/forgotPassword';
   static const resetPassword = '/resetPassword';
   static const phoneDetails = '/phoneDetails';
@@ -18,7 +19,6 @@ abstract class Routes {
   static const allCategories = '/allCategory';
   static const addCategories = '/addCategory';
   static const allPurchase = '/allPurchase';
-  static const settingPage = '/settingPage';
 
   static const addProductWizard = '/addProductWizard';
   static const addSale = '/addSale';

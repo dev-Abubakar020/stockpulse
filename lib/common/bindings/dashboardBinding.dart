@@ -7,11 +7,15 @@ import '../../controllers/purchase_controller.dart';
 import '../../repositories/purchase_repo.dart';
 import '../../controllers/sale_controller.dart';
 import '../../repositories/sale_repository.dart';
+import '../../repositories/auth_repository.dart';
+import '../../controllers/loginController.dart';
 
 class DashboardBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<DashboardController>(() => DashboardController());
+    Get.lazyPut<AuthRepository>(() => AuthRepository());
+    Get.lazyPut<LoginController>(() => LoginController(Get.find<AuthRepository>()));
 
     Get.lazyPut<ProductRepository>(() => ProductRepository());
     Get.lazyPut<ProductController>(() => ProductController(Get.find<ProductRepository>()));

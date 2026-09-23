@@ -25,6 +25,9 @@ class ShopCreateController extends GetxController {
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   final imagePicker = ImagePicker();
+  final isUpdating = false.obs;
+  final isEditable = false.obs;
+  final shopImageUrl = ''.obs;
 
   final selectedCountry = countries
       .firstWhere((country) => country.isoCode == 'PK')
@@ -38,15 +41,52 @@ class ShopCreateController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final user = Supabase.instance.client.auth.currentUser;
-    final metadata = user?.userMetadata ?? <String, dynamic>{};
-    ownerController.text =
-        (metadata['name'] ??
-                metadata['full_name'] ??
-                metadata['display_name'] ??
-                user?.email?.split('@').first ??
-                '')
-            .toString();
+    fetchShopDetails();
+  }
+
+  void toggleEditable() {
+    isEditable.toggle();
+  }
+
+  Future<void> fetchShopDetails() async {
+    try {
+      final shop = await shopRepository.getShop();
+      if (shop != null) {
+        ownerController.text = shop['ownerame'] ?? '';
+        shopController.text = shop['shopename'] ?? '';
+        addressController.text = shop['address'] ?? '';
+        shopImageUrl.value = shop['shopimg'] ?? '';
+        final currencyCode = shop['selectedcurrency'];
+        if (currencyCode != null) {
+          final country = countries.firstWhereOrNull(
+            (c) => getCurrency(c.isoCode).code == currencyCode,
+          );
+          if (country != null) {
+            selectedCountry.value = country;
+          }
+        }
+      } else {
+        final user = Supabase.instance.client.auth.currentUser;
+        final metadata = user?.userMetadata ?? <String, dynamic>{};
+        ownerController.text =
+            (metadata['name'] ??
+                    metadata['full_name'] ??
+                    metadata['display_name'] ??
+                    user?.email?.split('@').first ??
+                    '')
+                .toString();
+      }
+    } catch (_) {
+      final user = Supabase.instance.client.auth.currentUser;
+      final metadata = user?.userMetadata ?? <String, dynamic>{};
+      ownerController.text =
+          (metadata['name'] ??
+                  metadata['full_name'] ??
+                  metadata['display_name'] ??
+                  user?.email?.split('@').first ??
+                  '')
+              .toString();
+    }
   }
 
   Future<void> pickImage() async {
@@ -141,6 +181,82 @@ class ShopCreateController extends GetxController {
       );
     } finally {
       isSaving.value = false;
+    }
+  }
+
+  Future<void> updateShop() async {
+    final ownerName = ownerController.text.trim();
+    final shopName = shopController.text.trim();
+    final address = addressController.text.trim();
+
+    final ownerError = CustomValidator.validateEmptyText(
+      AppConstants.ownerName,
+      ownerName,
+    );
+    if (ownerError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: ownerError,
+      );
+      return;
+    }
+
+    final shopError = CustomValidator.validateEmptyText(
+      AppConstants.shopName,
+      shopName,
+    );
+    if (shopError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: shopError,
+      );
+      return;
+    }
+
+    final addressError = CustomValidator.validateEmptyText(
+      AppConstants.completeAddress,
+      address,
+    );
+    if (addressError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: addressError,
+      );
+      return;
+    }
+
+    if (!await NetworkManager.instance.checkInternet()) return;
+
+    try {
+      isUpdating.value = true;
+
+      final updatedShop = await shopRepository.updateShop(
+        shopName: shopName,
+        ownerName: ownerName,
+        address: address,
+        image: selectedImage.value,
+        existingImageUrl: shopImageUrl.value.isEmpty ? null : shopImageUrl.value,
+      );
+
+      shopController.text = updatedShop['shopename'] ?? '';
+      ownerController.text = updatedShop['ownerame'] ?? '';
+      addressController.text = updatedShop['address'] ?? '';
+      shopImageUrl.value = updatedShop['shopimg'] ?? '';
+      isEditable.value = false;
+
+      CustomSnackBar.successSnackBar(
+        title: 'Profile Updated',
+        message: 'Your business profile has been updated successfully.',
+      );
+    } catch (e) {
+      final exception = AppException.fromException(e);
+
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
+    } finally {
+      isUpdating.value = false;
     }
   }
 }

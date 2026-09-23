@@ -17,7 +17,7 @@ import '../../views/addexpenses.dart';
 import '../../views/addpurchase.dart';
 import '../../views/addsale.dart';
 import '../../views/allcategories.dart';
-import '../../views/dashboardScreens/Setting.dart';
+import '../../views/authScreens/editshop.dart';
 import '../../views/dashboardScreens/allProducts.dart';
 import '../../views/dashboardScreens/homeView.dart';
 import '../../views/dashboardScreens/morescreen.dart';
@@ -30,9 +30,7 @@ import '../bindings/PurchaseBinding.dart';
 import '../bindings/dashboardBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
 import '../bindings/saleBinding.dart';
-import '../bindings/settingBinding.dart';
 import 'app_routes.dart';
-
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
@@ -74,6 +72,11 @@ class AppPages {
       binding: LoginBinding(),
     ),
     GetPage(
+      name: Routes.editBDetails,
+      page: () => const EditShopDetails(),
+      binding: ShopCreateBinding(),
+    ),
+    GetPage(
         name: Routes.dashboard,
         binding:DashboardBinding(),
         page: () => const DashboardScreen(),
@@ -95,11 +98,6 @@ class AppPages {
     GetPage(
       name: Routes.moreScreen,
       page: () =>  MoreScreen(),
-    ),
-    GetPage(
-      name: Routes.settingPage,
-      page: () =>  SettingPage(),
-      binding: SettingBinding(),
     ),
     GetPage(
       name: Routes.allCategories,
