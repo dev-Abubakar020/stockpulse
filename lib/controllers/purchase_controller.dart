@@ -28,6 +28,8 @@ class PurchaseController extends GetxController {
   final RxList<PurchaseModel> purchases = <PurchaseModel>[].obs;
 
   final RxBool isPurchasesLoading = false.obs;
+  final RxBool isPurchaseItemsLoading = false.obs;
+  final RxList<PurchaseItemModel> currentPurchaseItems = <PurchaseItemModel>[].obs;
 
   final RxString searchQuery = ''.obs;
 
@@ -284,6 +286,26 @@ class PurchaseController extends GetxController {
       );
     } finally {
       isPurchasesLoading.value = false;
+    }
+  }
+
+  Future<void> fetchPurchaseItems(String purchaseId) async {
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
+
+    try {
+      isPurchaseItemsLoading.value = true;
+      final items = await repository.getPurchaseItems(purchaseId);
+      currentPurchaseItems.assignAll(items);
+    } catch (e) {
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
+    } finally {
+      isPurchaseItemsLoading.value = false;
     }
   }
 

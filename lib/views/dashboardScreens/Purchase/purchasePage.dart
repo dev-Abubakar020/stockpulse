@@ -129,8 +129,7 @@ class PurchasePage extends StatelessWidget {
                         statusType: _statusType(purchase.status),
 
                         onTap: () {
-                          // Purchase details will be
-                          // implemented next.
+                          Get.toNamed(Routes.purchaseDetail, arguments: purchase);
                         },
                       );
                     },

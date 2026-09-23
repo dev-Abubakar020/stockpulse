@@ -129,7 +129,7 @@ class SaleView extends StatelessWidget {
                         status: sale.status,
                         statusType: statusType,
                         onTap: () {
-                          // Optional: Navigate to detail view
+                          Get.toNamed(Routes.saleDetail, arguments: sale);
                         },
                       );
                     },

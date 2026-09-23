@@ -27,6 +27,8 @@ import '../../views/dashboardScreens/More/morescreen.dart';
 import '../../views/dashboardScreens/Purchase/purchasePage.dart';
 import '../../views/dashboardScreens/Sale/saleView.dart';
 import '../../views/dashboardScreens/Product/productDetailView.dart';
+import '../../views/dashboardScreens/Sale/saleDetailView.dart';
+import '../../views/dashboardScreens/Purchase/purchaseDetailView.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
 import '../bindings/dashboardBinding.dart';
@@ -130,6 +132,16 @@ class AppPages {
       name: Routes.productDetail,
       page: () => const ProductDetailView(),
       binding: AllProductsBinding(),
+    ),
+    GetPage(
+      name: Routes.saleDetail,
+      page: () => const SaleDetailView(),
+      binding: SaleBinding(),
+    ),
+    GetPage(
+      name: Routes.purchaseDetail,
+      page: () => const PurchaseDetailView(),
+      binding: PurchaseBinding(),
     ),
     // GetPage(name: Routes.onboarding, page: () => const OnboardingScreen()),
   ];

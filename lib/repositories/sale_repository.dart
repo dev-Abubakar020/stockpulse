@@ -118,6 +118,37 @@ class SaleRepository {
   }
 
   // ============================================================
+  // GET SALE ITEMS
+  // ============================================================
+
+  Future<List<SaleItemModel>> getSaleItems(String saleId) async {
+    try {
+      final response = await _supabase
+          .from('sale_items')
+          .select('''
+            *,
+            products (
+              article,
+              color,
+              size,
+              unit
+            )
+          ''')
+          .eq('sale_id', saleId);
+
+      return (response as List)
+          .map(
+            (json) => SaleItemModel.fromJson(
+              Map<String, dynamic>.from(json),
+            ),
+          )
+          .toList();
+    } on PostgrestException catch (e) {
+      throw Exception(e.message);
+    }
+  }
+
+  // ============================================================
   // CLEAN NOTES
   // ============================================================
 

@@ -265,10 +265,14 @@ class AuthRepository {
     );
   }
 
-  Future<UserResponse> resetPassword(String newPassword) async {
-    return await _supabase.auth.updateUser(
+  Future<void> resetPassword(String newPassword) async {
+    await _supabase.auth.updateUser(
       UserAttributes(password: newPassword),
     );
+
+    // Recovery completed → now logout
+    await _supabase.auth.signOut();
+    Get.offAllNamed(Routes.login);
   }
 
   User? get currentUser => _supabase.auth.currentUser;

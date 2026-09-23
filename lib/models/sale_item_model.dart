@@ -19,6 +19,29 @@ class SaleItemModel {
   });
 
   // ============================================================
+  // FROM JSON (SUPABASE)
+  // ============================================================
+
+  factory SaleItemModel.fromJson(Map<String, dynamic> json) {
+    final productJson = json['products'] as Map<String, dynamic>?;
+    return SaleItemModel(
+      productId: json['product_id'] as String,
+      article: productJson?['article'] as String? ?? json['article'] as String? ?? '',
+      color: productJson?['color'] as String? ?? json['color'] as String?,
+      size: productJson?['size'] as String? ?? json['size'] as String?,
+      unit: productJson?['unit'] as String? ?? json['unit'] as String? ?? 'pcs',
+      quantity: _toDouble(json['quantity']),
+      salePrice: _toDouble(json['sale_price']),
+    );
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString()) ?? 0;
+  }
+
+  // ============================================================
   // LINE TOTAL
   // ============================================================
 

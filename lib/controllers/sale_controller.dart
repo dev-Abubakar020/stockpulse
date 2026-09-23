@@ -21,6 +21,8 @@ class SaleController extends GetxController {
 
   final RxBool isLoading = false.obs;
   final RxBool isSalesLoading = false.obs;
+  final RxBool isSaleItemsLoading = false.obs;
+  final RxList<SaleItemModel> currentSaleItems = <SaleItemModel>[].obs;
 
   /// productId -> quantity
   final RxMap<String, double> quantities = <String, double>{}.obs;
@@ -301,6 +303,26 @@ class SaleController extends GetxController {
       );
     } finally {
       isSalesLoading.value = false;
+    }
+  }
+
+  Future<void> fetchSaleItems(String saleId) async {
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
+
+    try {
+      isSaleItemsLoading.value = true;
+      final items = await repository.getSaleItems(saleId);
+      currentSaleItems.assignAll(items);
+    } catch (e) {
+      final exception = AppException.fromException(e);
+      CustomSnackBar.errorSnackBar(
+        title: AppConstants.errorTitle,
+        message: exception.message,
+      );
+    } finally {
+      isSaleItemsLoading.value = false;
     }
   }
 

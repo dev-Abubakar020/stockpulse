@@ -119,6 +119,37 @@ class PurchaseRepository {
     }
   }
 
+  // ============================================================
+  // GET PURCHASE ITEMS
+  // ============================================================
+
+  Future<List<PurchaseItemModel>> getPurchaseItems(String purchaseId) async {
+    try {
+      final response = await _supabase
+          .from('purchase_items')
+          .select('''
+            *,
+            products (
+              article,
+              color,
+              size,
+              unit
+            )
+          ''')
+          .eq('purchase_id', purchaseId);
+
+      return (response as List)
+          .map(
+            (json) => PurchaseItemModel.fromJson(
+              Map<String, dynamic>.from(json),
+            ),
+          )
+          .toList();
+    } on PostgrestException catch (e) {
+      throw Exception(e.message);
+    }
+  }
+
   String? _cleanNotes(String? notes) {
     final value = notes?.trim();
 
