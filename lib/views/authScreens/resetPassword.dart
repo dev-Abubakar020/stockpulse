@@ -8,7 +8,6 @@ import 'package:stockpulse/controllers/forgotPasswordController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/appbar.dart';
-
 class ResetPasswordScreen extends GetView<ForgotPasswordController> {
   const ResetPasswordScreen({super.key});
 

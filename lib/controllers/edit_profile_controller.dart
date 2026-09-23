@@ -60,14 +60,18 @@ class EditProfileController extends GetxController {
       if (user != null) {
         final profile = await authRepository.getProfile(user.id);
         if (profile != null) {
-          if (profile['name'] != null && profile['name'].toString().isNotEmpty) {
+          if (profile['name'] != null &&
+              profile['name'].toString().isNotEmpty) {
             name = profile['name'].toString();
-          } else if (profile['full_name'] != null && profile['full_name'].toString().isNotEmpty) {
+          } else if (profile['full_name'] != null &&
+              profile['full_name'].toString().isNotEmpty) {
             name = profile['full_name'].toString();
           }
-          if (profile['profile_img'] != null && profile['profile_img'].toString().isNotEmpty) {
+          if (profile['profile_img'] != null &&
+              profile['profile_img'].toString().isNotEmpty) {
             img = profile['profile_img'].toString();
-          } else if (profile['avatar_url'] != null && profile['avatar_url'].toString().isNotEmpty) {
+          } else if (profile['avatar_url'] != null &&
+              profile['avatar_url'].toString().isNotEmpty) {
             img = profile['avatar_url'].toString();
           }
         }
