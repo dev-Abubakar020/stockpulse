@@ -5,8 +5,8 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/models/category_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import '../common/widgets/Custom_filter.dart';
-import '../common/widgets/appbar.dart';
+import '../../../common/widgets/Custom_filter.dart';
+import '../../../common/widgets/appbar.dart';
 
 class AllCategories extends StatelessWidget {
   const AllCategories({super.key});

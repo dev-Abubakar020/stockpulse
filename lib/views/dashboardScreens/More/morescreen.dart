@@ -5,13 +5,13 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../common/widgets/alertDialog.dart';
-import '../../common/widgets/appbar.dart';
-import '../../common/widgets/custom_MenuTile.dart';
-import '../../common/widgets/custom_shimmer.dart';
-import '../../controllers/allProductsController.dart';
-import '../../controllers/loginController.dart';
-import '../../controllers/shopCreateController.dart';
+import '../../../common/widgets/alertDialog.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/custom_MenuTile.dart';
+import '../../../common/widgets/custom_shimmer.dart';
+import '../../../controllers/allProductsController.dart';
+import '../../../controllers/loginController.dart';
+import '../../../controllers/shopCreateController.dart';
 
 class MoreScreen extends StatelessWidget {
   MoreScreen({super.key});

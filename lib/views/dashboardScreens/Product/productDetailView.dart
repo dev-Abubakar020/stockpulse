@@ -8,11 +8,11 @@ import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import '../common/route/app_routes.dart';
-import '../common/widgets/alertDialog.dart';
-import '../common/widgets/appbar.dart';
-import '../controllers/allProductsController.dart';
-import '../models/productItemModel.dart';
+import '../../../common/route/app_routes.dart';
+import '../../../common/widgets/alertDialog.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../controllers/allProductsController.dart';
+import '../../../models/productItemModel.dart';
 
 class ProductDetailView extends GetView<ProductController> {
   const ProductDetailView({super.key});

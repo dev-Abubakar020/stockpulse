@@ -9,9 +9,9 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
-import '../common/widgets/appbar.dart';
-import '../controllers/sale_controller.dart';
-import '../models/productItemModel.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../controllers/sale_controller.dart';
+import '../../../models/productItemModel.dart';
 
 class AddSale extends StatefulWidget {
   const AddSale({super.key});

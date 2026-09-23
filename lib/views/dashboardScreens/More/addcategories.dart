@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import '../common/widgets/appbar.dart';
-import '../common/widgets/custome_textbutton.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/custome_textbutton.dart';
 
 class AddCategories extends StatelessWidget {
   const AddCategories({super.key});

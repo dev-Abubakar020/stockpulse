@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/custom_statuschip.dart';
+import 'package:stockpulse/controllers/sale_controller.dart';
+import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
-import '../../common/widgets/CustomSearchField.dart';
-import '../../common/widgets/Custom_filter.dart';
-import '../../common/widgets/alertDialog.dart';
-import '../../common/widgets/appbar.dart';
-import '../../common/widgets/custom_statuschip.dart';
-import '../../common/widgets/cutom_TransactionTile.dart';
+import '../../../common/widgets/CustomSearchField.dart';
+import '../../../common/widgets/Custom_filter.dart';
+import '../../../common/widgets/alertDialog.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/cutom_TransactionTile.dart';
+import '../../../common/widgets/emptyfilter.dart';
+import '../../../common/widgets/product_shimmer.dart';
 
-import '../../common/widgets/emptyfilter.dart';
-import '../../common/widgets/product_shimmer.dart';
-import '../../controllers/purchase_controller.dart';
-import '../../controllers/loginController.dart';
-
-class PurchasePage extends StatelessWidget {
-  const PurchasePage({super.key});
+class SaleView extends StatelessWidget {
+  SaleView({super.key});
+  final SaleController controller = Get.find<SaleController>();
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
 
-    final PurchaseController controller = Get.find<PurchaseController>();
-
     return Scaffold(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
-        title: Text(AppConstants.purchaseTitle),
+        title: Text(AppConstants.saleTitle),
         actions: [
           IconButton(
             onPressed: () {
@@ -59,12 +56,11 @@ class PurchasePage extends StatelessWidget {
                 children: [
                   CustomSearchField(
                     controller: controller.searchController,
-                    hintText: AppConstants.searchHint2,
+                    hintText: AppConstants.searchHint3,
                     showScanner: false,
-                    onChanged: controller.searchPurchases,
+                    onChanged: controller.searchSales,
                   ),
                   const SizedBox(height: 14),
-
                   Obx(
                     () => CustomFilterTabs(
                       items: controller.filters,
@@ -75,17 +71,17 @@ class PurchasePage extends StatelessWidget {
                 ],
               ),
             ),
-
             Expanded(
               child: Obx(() {
-                if (controller.isPurchasesLoading.value) {
+                if (controller.isSalesLoading.value) {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                     child: const ProductListShimmer(),
                   );
                 }
-                final purchases = controller.filteredPurchases;
-                if (purchases.isEmpty) {
+                final salesList = controller.filteredSales;
+
+                if (salesList.isEmpty) {
                   final bool isSearching =
                       controller.searchQuery.value.isNotEmpty ||
                       controller.selectedFilter.value != 0;
@@ -98,39 +94,42 @@ class PurchasePage extends StatelessWidget {
                     child: EmptyStateWidget(
                       isSearching: isSearching,
                       title: isSearching
-                          ? AppConstants.noPurchasesFoundTitle
-                          : AppConstants.noPurchasesYetTitle,
+                          ? AppConstants.noSalesFound
+                          : AppConstants.noSalesYet,
                       subtitle: isSearching
-                          ? AppConstants.noPurchasesFoundSubtitle
-                          : AppConstants.noPurchasesYetSubtitle,
+                          ? AppConstants.changeSearchOrFilter
+                          : AppConstants.completedSalesAppearHere,
                     ),
                   );
                 }
-
                 return RefreshIndicator(
-                  onRefresh: controller.fetchPurchases,
+                  onRefresh: controller.fetchSales,
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                    itemCount: purchases.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemCount: salesList.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
-                      final purchase = purchases[index];
+                      final sale = salesList[index];
+
+                      StatusType statusType = StatusType.neutral;
+                      if (sale.status.toLowerCase() == 'completed') {
+                        statusType = StatusType.success;
+                      } else if (sale.status.toLowerCase() == 'void' ||
+                          sale.status.toLowerCase() == 'cancelled') {
+                        statusType = StatusType.error;
+                      }
+
+                      final dateStr =
+                          "${sale.saleDate.day}/${sale.saleDate.month}/${sale.saleDate.year}";
 
                       return CustomTransactionTile(
-                        reference: purchase.purchaseNo,
-
-                        dateTime: _formatPurchaseDate(purchase.purchaseDate),
-
-                        amount:
-                            'Rs. ${purchase.totalAmount.toStringAsFixed(2)}',
-
-                        status: _statusLabel(purchase.status),
-
-                        statusType: _statusType(purchase.status),
-
+                        reference: sale.saleNo,
+                        dateTime: dateStr,
+                        amount: 'Rs. ${sale.totalAmount.toInt()}',
+                        status: sale.status,
+                        statusType: statusType,
                         onTap: () {
-                          // Purchase details will be
-                          // implemented next.
+                          // Optional: Navigate to detail view
                         },
                       );
                     },
@@ -155,93 +154,17 @@ class PurchasePage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton.extended(
-          onPressed: () => Get.toNamed(Routes.addPurchase),
+          onPressed: () => Get.toNamed(Routes.addSale),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           elevation: 0,
           icon: const Icon(Icons.add),
           label: const Text(
-            AppConstants.addPurchase,
+            AppConstants.addSale,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
         ),
       ),
     );
-  }
-
-  // ============================================================
-  // STATUS
-  // ============================================================
-
-  String _statusLabel(String status) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return AppConstants.completedLabel;
-
-      case 'void':
-        return AppConstants.cancelledLabel;
-
-      default:
-        return status;
-    }
-  }
-
-  StatusType _statusType(String status) {
-    switch (status.toLowerCase()) {
-      case AppConstants.completedLabel:
-        return StatusType.success;
-
-      case 'void':
-        return StatusType.error;
-
-      default:
-        return StatusType.info;
-    }
-  }
-
-  // ============================================================
-  // DATE FORMAT
-  // ============================================================
-
-  String _formatPurchaseDate(DateTime date) {
-    final localDate = date.toLocal();
-
-    final now = DateTime.now();
-
-    final today = DateTime(now.year, now.month, now.day);
-
-    final purchaseDay = DateTime(
-      localDate.year,
-      localDate.month,
-      localDate.day,
-    );
-
-    final yesterday = today.subtract(const Duration(days: 1));
-
-    String day;
-
-    if (purchaseDay == today) {
-      day = 'Today';
-    } else if (purchaseDay == yesterday) {
-      day = 'Yesterday';
-    } else {
-      day =
-          '${localDate.day.toString().padLeft(2, '0')}/'
-          '${localDate.month.toString().padLeft(2, '0')}/'
-          '${localDate.year}';
-    }
-
-    final hour12 = localDate.hour == 0
-        ? 12
-        : localDate.hour > 12
-        ? localDate.hour - 12
-        : localDate.hour;
-
-    final minute = localDate.minute.toString().padLeft(2, '0');
-
-    final period = localDate.hour >= 12 ? 'PM' : 'AM';
-
-    return '$day, '
-        '${hour12.toString().padLeft(2, '0')}:$minute $period';
   }
 }

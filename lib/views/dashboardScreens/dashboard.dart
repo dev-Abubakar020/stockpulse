@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import 'package:stockpulse/views/dashboardScreens/allProducts.dart';
+import 'package:stockpulse/views/dashboardScreens/Product/allProducts.dart';
 import 'package:stockpulse/views/dashboardScreens/homeView.dart';
-import 'package:stockpulse/views/dashboardScreens/purchasePage.dart';
-import 'package:stockpulse/views/dashboardScreens/saleView.dart';
-import 'package:stockpulse/views/dashboardScreens/morescreen.dart';
+import 'package:stockpulse/views/dashboardScreens/Purchase/purchasePage.dart';
+import 'package:stockpulse/views/dashboardScreens/Sale/saleView.dart';
+import 'package:stockpulse/views/dashboardScreens/More/morescreen.dart';
 import '../../controllers/dashboardController.dart';
 
 

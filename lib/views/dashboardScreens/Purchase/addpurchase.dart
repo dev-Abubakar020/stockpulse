@@ -8,9 +8,9 @@ import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 
-import '../common/widgets/appbar.dart';
-import '../controllers/purchase_controller.dart';
-import '../models/productItemModel.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../controllers/purchase_controller.dart';
+import '../../../models/productItemModel.dart';
 
 class AddPurchase extends StatefulWidget {
   const AddPurchase({super.key});
