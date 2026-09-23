@@ -9,6 +9,7 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../common/route/app_routes.dart';
+import '../common/widgets/alertDialog.dart';
 import '../common/widgets/appbar.dart';
 import '../controllers/allProductsController.dart';
 import '../models/productItemModel.dart';
@@ -559,25 +560,35 @@ class ProductDetailView extends GetView<ProductController> {
 
   void _confirmDelete(BuildContext context, ProductItemModel product) {
     Get.dialog(
-      AlertDialog(
-        title: const Text('${AppConstants.delProduct}?'),
-        content: Text('Are you sure you want to delete ${product.article}? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text(AppConstants.cancelTitle),
-          ),
-          TextButton(
-            onPressed: () async {
-              Get.back();
-              await controller.deleteProduct(product);
-              Get.back(); // Return to All Products list
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text(AppConstants.delTitle),
-          ),
-        ],
+      CustomConfirmDialog(
+        title: '${AppConstants.delProduct}?',
+        subtitle: 'Are you sure you want to delete ${product.article}? This action cannot be undone.',
+        confirmText: 'Logout',
+        onConfirm: () async {
+          Get.back();
+          await controller.deleteProduct(product);
+          Get.back(); // Return to All Products list
+        },
       ),
+      // AlertDialog(
+      //   title: const Text('${AppConstants.delProduct}?'),
+      //   content: Text('Are you sure you want to delete ${product.article}? This action cannot be undone.'),
+      //   actions: [
+      //     TextButton(
+      //       onPressed: () => Get.back(),
+      //       child: const Text(AppConstants.cancelTitle),
+      //     ),
+      //     TextButton(
+      //       onPressed: () async {
+      //         Get.back();
+      //         await controller.deleteProduct(product);
+      //         Get.back(); // Return to All Products list
+      //       },
+      //       style: TextButton.styleFrom(foregroundColor: Colors.red),
+      //       child: const Text(AppConstants.delTitle),
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

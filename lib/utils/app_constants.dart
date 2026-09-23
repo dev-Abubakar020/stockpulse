@@ -78,6 +78,7 @@ class AppConstants {
   static const String recoveryEmailSubtitle =
       'No worries! Choose your recovery channel and we will send a secure verification code.';
   static const String loginSlug = "Enter your credentials to access your Shop";
+  static const String logoutAlertSubTitle = "Are you sure you want to logout from your account?";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
   static const String morningGreeting = "Good Morning ☀️";

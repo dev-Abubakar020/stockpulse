@@ -1,9 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
@@ -12,10 +9,12 @@ import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/alertDialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/emptyfilter.dart';
 import '../../common/widgets/product_shimmer.dart';
 import '../../controllers/allProductsController.dart';
+import '../../controllers/loginController.dart';
 
 
 
@@ -31,7 +30,19 @@ class AllProducts extends GetView<ProductController>  {
       appBar: CustomAppBar(
         title: Text(AppConstants.productTitle),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.logout,color: Colors.red,))
+          IconButton(onPressed: (){
+            Get.dialog(
+              CustomConfirmDialog(
+                title: AppConstants.logout,
+                subtitle: AppConstants.logoutAlertSubTitle,
+                confirmText: AppConstants.logout,
+                onConfirm: () {
+                  Get.back();
+                  Get.find<LoginController>().logout();
+                },
+              ),
+            );
+          }, icon: Icon(Icons.logout,color: Colors.red,))
         ],
       ),
       body: SafeArea(

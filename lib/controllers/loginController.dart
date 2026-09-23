@@ -207,6 +207,7 @@ class LoginController extends GetxController {
   Future<void> logout() async {
     if (!await NetworkManager.instance.checkInternet()) return;
     try {
+
       await Supabase.instance.client.auth.signOut();
       Get.find<LocalStorageService>().setLoggedIn(false);
       Get.offAllNamed(Routes.login);

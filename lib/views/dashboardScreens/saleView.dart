@@ -5,10 +5,12 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/controllers/sale_controller.dart';
+import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/alertDialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/cutom_TransactionTile.dart';
 import '../../common/widgets/emptyfilter.dart';
@@ -28,7 +30,19 @@ class SaleView extends StatelessWidget {
       appBar: CustomAppBar(
         title: Text(AppConstants.saleTitle),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.logout,color: Colors.red,))
+          IconButton(onPressed: (){
+            Get.dialog(
+              CustomConfirmDialog(
+                title: AppConstants.logout,
+                subtitle: AppConstants.logoutAlertSubTitle,
+                confirmText: AppConstants.logout,
+                onConfirm: () {
+                  Get.back();
+                  Get.find<LoginController>().logout();
+                },
+              ),
+            );
+          }, icon: Icon(Icons.logout,color: Colors.red,))
         ],
       ),
       body: SafeArea(

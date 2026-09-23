@@ -8,6 +8,7 @@ import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/CustomSearchField.dart';
 import '../../common/widgets/Custom_filter.dart';
+import '../../common/widgets/alertDialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/custom_statuschip.dart';
 import '../../common/widgets/cutom_TransactionTile.dart';
@@ -15,6 +16,7 @@ import '../../common/widgets/cutom_TransactionTile.dart';
 import '../../common/widgets/emptyfilter.dart';
 import '../../common/widgets/product_shimmer.dart';
 import '../../controllers/purchase_controller.dart';
+import '../../controllers/loginController.dart';
 
 class PurchasePage extends StatelessWidget {
   const PurchasePage({super.key});
@@ -31,7 +33,22 @@ class PurchasePage extends StatelessWidget {
       appBar: CustomAppBar(
         title: Text(AppConstants.purchaseTitle),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.logout,color: Colors.red,))
+          IconButton(
+              onPressed: (){
+                Get.dialog(
+                  CustomConfirmDialog(
+                    title: AppConstants.logout,
+                    subtitle: AppConstants.logoutAlertSubTitle,
+                    confirmText: AppConstants.logout,
+                    onConfirm: () {
+                      Get.back();
+                      Get.find<LoginController>().logout();
+                    },
+                  ),
+                );
+              },
+              icon: Icon(Icons.logout,color: Colors.red,)
+          )
         ],
       ),
       body: SafeArea(
