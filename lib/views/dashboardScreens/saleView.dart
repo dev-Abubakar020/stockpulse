@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
@@ -16,7 +15,6 @@ import '../../common/widgets/cutom_TransactionTile.dart';
 import '../../common/widgets/emptyfilter.dart';
 import '../../common/widgets/product_shimmer.dart';
 
-
 class SaleView extends StatelessWidget {
   SaleView({super.key});
   final SaleController controller = Get.find<SaleController>();
@@ -30,19 +28,22 @@ class SaleView extends StatelessWidget {
       appBar: CustomAppBar(
         title: Text(AppConstants.saleTitle),
         actions: [
-          IconButton(onPressed: (){
-            Get.dialog(
-              CustomConfirmDialog(
-                title: AppConstants.logout,
-                subtitle: AppConstants.logoutAlertSubTitle,
-                confirmText: AppConstants.logout,
-                onConfirm: () {
-                  Get.back();
-                  Get.find<LoginController>().logout();
-                },
-              ),
-            );
-          }, icon: Icon(Icons.logout,color: Colors.red,))
+          IconButton(
+            onPressed: () {
+              Get.dialog(
+                CustomConfirmDialog(
+                  title: AppConstants.logout,
+                  subtitle: AppConstants.logoutAlertSubTitle,
+                  confirmText: AppConstants.logout,
+                  onConfirm: () {
+                    Get.back();
+                    Get.find<LoginController>().logout();
+                  },
+                ),
+              );
+            },
+            icon: Icon(Icons.logout, color: Colors.red),
+          ),
         ],
       ),
       body: SafeArea(
@@ -81,12 +82,20 @@ class SaleView extends StatelessWidget {
                 final salesList = controller.filteredSales;
 
                 if (salesList.isEmpty) {
-                  final bool isSearching = controller.searchQuery.value.isNotEmpty || controller.selectedFilter.value != 0;
+                  final bool isSearching =
+                      controller.searchQuery.value.isNotEmpty ||
+                      controller.selectedFilter.value != 0;
                   return Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8, bottom: 6),
+                    padding: const EdgeInsets.only(
+                      left: 8,
+                      right: 8,
+                      bottom: 6,
+                    ),
                     child: EmptyStateWidget(
                       isSearching: isSearching,
-                      title: isSearching ? AppConstants.noSalesFound : AppConstants.noSalesYet,
+                      title: isSearching
+                          ? AppConstants.noSalesFound
+                          : AppConstants.noSalesYet,
                       subtitle: isSearching
                           ? AppConstants.changeSearchOrFilter
                           : AppConstants.completedSalesAppearHere,
@@ -96,12 +105,7 @@ class SaleView extends StatelessWidget {
                 return RefreshIndicator(
                   onRefresh: controller.fetchSales,
                   child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(
-                      20,
-                      4,
-                      20,
-                      24,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                     itemCount: salesList.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
@@ -110,11 +114,13 @@ class SaleView extends StatelessWidget {
                       StatusType statusType = StatusType.neutral;
                       if (sale.status.toLowerCase() == 'completed') {
                         statusType = StatusType.success;
-                      } else if (sale.status.toLowerCase() == 'void' || sale.status.toLowerCase() == 'cancelled') {
+                      } else if (sale.status.toLowerCase() == 'void' ||
+                          sale.status.toLowerCase() == 'cancelled') {
                         statusType = StatusType.error;
                       }
 
-                      final dateStr = "${sale.saleDate.day}/${sale.saleDate.month}/${sale.saleDate.year}";
+                      final dateStr =
+                          "${sale.saleDate.day}/${sale.saleDate.month}/${sale.saleDate.year}";
 
                       return CustomTransactionTile(
                         reference: sale.saleNo,
@@ -141,10 +147,7 @@ class SaleView extends StatelessWidget {
         margin: EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [
-              Color(0xFF0F766E),
-              Color(0xFF14B8A6),
-            ],
+            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
@@ -158,10 +161,7 @@ class SaleView extends StatelessWidget {
           icon: const Icon(Icons.add),
           label: const Text(
             AppConstants.addSale,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
         ),
       ),

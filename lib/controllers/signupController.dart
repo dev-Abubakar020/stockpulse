@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
@@ -19,10 +22,32 @@ class SignupController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  final imagePicker = ImagePicker();
+  final selectedImage = Rxn<XFile>();
+  final imageBytes = Rxn<Uint8List>();
+
   final isLoading = false.obs;
   final isGoogleLoading = false.obs;
   final obscurePassword = true.obs;
   final obscureConfirmPassword = true.obs;
+
+  Future<void> pickImage() async {
+    final image = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1200,
+    );
+    if (image == null) return;
+
+    selectedImage.value = image;
+    final bytes = await image.readAsBytes();
+    imageBytes.value = bytes;
+  }
+
+  void removeImage() {
+    selectedImage.value = null;
+    imageBytes.value = null;
+  }
 
   Future<void> _handlePostSignupNavigation() async {
     Get.find<LocalStorageService>().setLoggedIn(true);
@@ -94,6 +119,7 @@ class SignupController extends GetxController {
         name: name,
         email: email,
         password: password,
+        image: selectedImage.value,
       );
 
       if (response.user == null) {

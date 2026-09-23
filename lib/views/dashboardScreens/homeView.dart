@@ -10,7 +10,6 @@ import 'package:stockpulse/controllers/homecontroller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../controllers/dashboardController.dart';
-import '../../controllers/allProductsController.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -60,10 +59,7 @@ class HomeView extends GetView<HomeController> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text(
-                                '👋',
-                                style: TextStyle(fontSize: 20),
-                              ),
+                              const Text('👋', style: TextStyle(fontSize: 20)),
                             ],
                           ),
                         ],
@@ -80,39 +76,43 @@ class HomeView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 12),
-                      Obx(() => Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                Get.find<DashboardController>().changePage(1);
-                              },
-                              child: CardSummary(
-                                title: AppConstants.saleTitle,
-                                value: 'Rs. ${controller.totalSales.value.toInt()}',
-                                icon: Icons.receipt_long_outlined,
-                                iconColor: const Color(0xFF00796B),
-                                iconBackgroundColor: const Color(0xFFE0F2F1),
+                      Obx(
+                        () => Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  Get.find<DashboardController>().changePage(1);
+                                },
+                                child: CardSummary(
+                                  title: AppConstants.saleTitle,
+                                  value:
+                                      'Rs. ${controller.totalSales.value.toInt()}',
+                                  icon: Icons.receipt_long_outlined,
+                                  iconColor: const Color(0xFF00796B),
+                                  iconBackgroundColor: const Color(0xFFE0F2F1),
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                Get.find<DashboardController>().changePage(3);
-                              },
-                              child: CardSummary(
-                                title: AppConstants.purchaseTitle,
-                                value: 'Rs. ${controller.totalPurchases.value.toInt()}',
-                                icon: Icons.trending_up_rounded,
-                                iconColor: const Color(0xFF2E7D32),
-                                iconBackgroundColor: const Color(0xFFE8F5E9),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  Get.find<DashboardController>().changePage(3);
+                                },
+                                child: CardSummary(
+                                  title: AppConstants.purchaseTitle,
+                                  value:
+                                      'Rs. ${controller.totalPurchases.value.toInt()}',
+                                  icon: Icons.trending_up_rounded,
+                                  iconColor: const Color(0xFF2E7D32),
+                                  iconBackgroundColor: const Color(0xFFE8F5E9),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      )),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -121,32 +121,39 @@ class HomeView extends GetView<HomeController> {
                               onTap: () {
                                 Get.find<DashboardController>().changePage(2);
                               },
-                              child: Obx(() => CardSummary(
-                                    title: AppConstants.totalProduct,
-                                    value: controller.productController.products.length.toString(),
-                                    icon: Icons.grid_view_rounded,
-                                    iconColor: const Color(0xFF1565C0),
-                                    iconBackgroundColor: const Color(0xFFE3F2FD),
-                                  )),
+                              child: Obx(
+                                () => CardSummary(
+                                  title: AppConstants.totalProduct,
+                                  value: controller
+                                      .productController
+                                      .products
+                                      .length
+                                      .toString(),
+                                  icon: Icons.grid_view_rounded,
+                                  iconColor: const Color(0xFF1565C0),
+                                  iconBackgroundColor: const Color(0xFFE3F2FD),
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
-                            child: Obx(() => CardSummary(
-                              title: AppConstants.lowStockTitle,
-                              value: '${controller.lowStockCount.value} Items',
-                              icon: Icons.warning_amber_rounded,
-                              iconColor: const Color(0xFFC62828),
-                              iconBackgroundColor: const Color(0xFFFFEBEE),
-                            )),
+                            child: Obx(
+                              () => CardSummary(
+                                title: AppConstants.lowStockTitle,
+                                value:
+                                    '${controller.lowStockCount.value} Items',
+                                icon: Icons.warning_amber_rounded,
+                                iconColor: const Color(0xFFC62828),
+                                iconBackgroundColor: const Color(0xFFFFEBEE),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 18),
                       // --- Quick Actions Section ---
-                      CustomHeading(
-                        title: AppConstants.quickAction,
-                      ),
+                      CustomHeading(title: AppConstants.quickAction),
                       const SizedBox(height: 14),
                       Row(
                         children: [
@@ -227,15 +234,18 @@ class HomeView extends GetView<HomeController> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: controller.recentSales.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 10),
                           itemBuilder: (context, index) {
                             final sale = controller.recentSales[index];
-                            final dateStr = "${sale.saleDate.day}/${sale.saleDate.month} ${sale.saleDate.hour}:${sale.saleDate.minute.toString().padLeft(2, '0')}";
+                            final dateStr =
+                                "${sale.saleDate.day}/${sale.saleDate.month} ${sale.saleDate.hour}:${sale.saleDate.minute.toString().padLeft(2, '0')}";
 
                             StatusType statusType = StatusType.neutral;
                             if (sale.status.toLowerCase() == 'completed') {
                               statusType = StatusType.success;
-                            } else if (sale.status.toLowerCase() == 'void' || sale.status.toLowerCase() == 'cancelled') {
+                            } else if (sale.status.toLowerCase() == 'void' ||
+                                sale.status.toLowerCase() == 'cancelled') {
                               statusType = StatusType.error;
                             }
 
@@ -267,7 +277,8 @@ class HomeView extends GetView<HomeController> {
                                   ),
                                   const SizedBox(width: 12),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         sale.saleNo,
@@ -356,11 +367,7 @@ class _QuickActionItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: color.withValues(alpha: 0.12)),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 8),
             Text(

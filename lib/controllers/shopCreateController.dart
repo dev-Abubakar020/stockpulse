@@ -29,6 +29,8 @@ class ShopCreateController extends GetxController {
   final isEditable = false.obs;
   final isProfileLoading = false.obs;
   final shopImageUrl = ''.obs;
+  final userProfileImageUrl = ''.obs;
+  final userName = ''.obs;
 
   final selectedCountry = countries
       .firstWhere((country) => country.isoCode == 'PK')
@@ -52,9 +54,47 @@ class ShopCreateController extends GetxController {
   Future<void> fetchShopDetails() async {
     try {
       isProfileLoading.value = true;
+      final user = Supabase.instance.client.auth.currentUser;
+      final metadata = user?.userMetadata ?? <String, dynamic>{};
+      userName.value =
+          (metadata['name'] ??
+                  metadata['full_name'] ??
+                  metadata['display_name'] ??
+                  user?.email?.split('@').first ??
+                  '')
+              .toString();
+      userProfileImageUrl.value =
+          (metadata['profile_img'] ??
+                  metadata['avatar_url'] ??
+                  metadata['picture'] ??
+                  '')
+              .toString();
+
+      if (user != null) {
+        try {
+          final profile = await Supabase.instance.client
+              .from('profiles')
+              .select()
+              .eq('id', user.id)
+              .maybeSingle();
+          if (profile != null) {
+            if (profile['name'] != null && profile['name'].toString().isNotEmpty) {
+              userName.value = profile['name'].toString();
+            } else if (profile['full_name'] != null && profile['full_name'].toString().isNotEmpty) {
+              userName.value = profile['full_name'].toString();
+            }
+            if (profile['profile_img'] != null && profile['profile_img'].toString().isNotEmpty) {
+              userProfileImageUrl.value = profile['profile_img'].toString();
+            } else if (profile['avatar_url'] != null && profile['avatar_url'].toString().isNotEmpty) {
+              userProfileImageUrl.value = profile['avatar_url'].toString();
+            }
+          }
+        } catch (_) {}
+      }
+
       final shop = await shopRepository.getShop();
       if (shop != null) {
-        ownerController.text = shop['ownerame'] ?? '';
+        ownerController.text = shop['ownerame'] ?? userName.value;
         shopController.text = shop['shopename'] ?? '';
         addressController.text = shop['address'] ?? '';
         shopImageUrl.value = shop['shopimg'] ?? '';
@@ -68,26 +108,25 @@ class ShopCreateController extends GetxController {
           }
         }
       } else {
-        final user = Supabase.instance.client.auth.currentUser;
-        final metadata = user?.userMetadata ?? <String, dynamic>{};
-        ownerController.text =
-            (metadata['name'] ??
-                    metadata['full_name'] ??
-                    metadata['display_name'] ??
-                    user?.email?.split('@').first ??
-                    '')
-                .toString();
+        ownerController.text = userName.value;
       }
     } catch (_) {
       final user = Supabase.instance.client.auth.currentUser;
       final metadata = user?.userMetadata ?? <String, dynamic>{};
-      ownerController.text =
+      userName.value =
           (metadata['name'] ??
                   metadata['full_name'] ??
                   metadata['display_name'] ??
                   user?.email?.split('@').first ??
                   '')
               .toString();
+      userProfileImageUrl.value =
+          (metadata['profile_img'] ??
+                  metadata['avatar_url'] ??
+                  metadata['picture'] ??
+                  '')
+              .toString();
+      ownerController.text = userName.value;
     } finally {
       isProfileLoading.value = false;
     }
@@ -239,7 +278,9 @@ class ShopCreateController extends GetxController {
         ownerName: ownerName,
         address: address,
         image: selectedImage.value,
-        existingImageUrl: shopImageUrl.value.isEmpty ? null : shopImageUrl.value,
+        existingImageUrl: shopImageUrl.value.isEmpty
+            ? null
+            : shopImageUrl.value,
       );
 
       shopController.text = updatedShop['shopename'] ?? '';

@@ -27,7 +27,9 @@ class AppConstants {
       "https://raw.githubusercontent.com/muhxdan/Flutter-Onboarding-Screen/refs/heads/master/assets/images/image2.png";
   static const String onboardingImage3 =
       "https://github.com/muhxdan/Flutter-Onboarding-Screen/blob/master/assets/images/image3.png?raw=true";
-  static const String defaultUserIcon = 'https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=';
+  static const String defaultUserIcon =
+      'https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=';
+
   /// OnBoarding Screen Constants
   static const String onboardingTitle1 = "Manage Your Store with Ease";
   static const String onboardingTitle2 = "View Analytic And Track Success";
@@ -78,7 +80,6 @@ class AppConstants {
   static const String recoveryEmailSubtitle =
       'No worries! Choose your recovery channel and we will send a secure verification code.';
   static const String loginSlug = "Enter your credentials to access your Shop";
-  static const String logoutAlertSubTitle = "Are you sure you want to logout from your account?";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
   static const String morningGreeting = "Good Morning ☀️";
@@ -169,8 +170,7 @@ class AppConstants {
 
   static const String createYourShop = 'Create your shop';
   static const String toggleTheme = 'Toggle theme';
-  static const String workspaceSubtitle =
-      'Set up your workspace';
+  static const String workspaceSubtitle = 'Set up your workspace';
   static const String shopDetails = 'Shop details';
   static const String ownerName = 'Owner name';
   static const String shopName = 'Shop name';
@@ -469,4 +469,19 @@ class AppConstants {
   static const String notificationSnackTitle = 'ⓘ Notification Service';
   static const String featureUnavailableTitle = 'Feature Unavailable';
   static const String featureComingSoonMsg = 'This feature is coming Soon';
+
+  // Profile & Edit Profile Constants
+  static const String editProfileTitle = 'Edit Profile';
+  static const String profileUpdatedSuccessMsg =
+      'Profile updated successfully.';
+  static const String emailCannotBeChanged =
+      'Email address is permanent and cannot be modified.';
+  static const String updateProfileBtn = 'Update Profile';
+  static const String addProfilePhoto = 'Add Profile Photo';
+  static const String changeProfilePhoto = 'Change Photo';
+  static const String logoutAlertSubTitle =
+      'Are you sure you want to log out from StockPulse?';
+  static const String personalInfo = 'Personal Information';
+  static const String editProfileSubtitle =
+      'Update your account name and avatar.';
 }

@@ -4,9 +4,10 @@ abstract class Routes {
   static const onboarding = '/onboarding';
   static const login = '/login';
   static const register = '/register';
+  static const editProfile = '/editProfile';
   static const editBDetails = '/editBusinessDetail';
   static const forgotPassword = '/forgotPassword';
-  static const resetPassword = '/resetPassword';
+  static const resetPassword = '/reset-password';
   static const phoneDetails = '/phoneDetails';
   static const otpVerification = '/otpVerification';
 

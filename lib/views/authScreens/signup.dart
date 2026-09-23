@@ -241,6 +241,8 @@ class _SignupCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Center(child: _SignupProfileImagePicker(controller: controller)),
+          const SizedBox(height: 20),
           CustomTextField(
             controller: controller.nameController,
             labelText: AppConstants.nameLabel,
@@ -481,5 +483,109 @@ class _SocialTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _SignupProfileImagePicker extends StatelessWidget {
+  const _SignupProfileImagePicker({required this.controller});
+
+  final SignupController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.appTheme;
+
+    return Obx(() {
+      final bytes = controller.imageBytes.value;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              GestureDetector(
+                onTap: controller.pickImage,
+                child: Container(
+                  width: 90,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.surfaceMuted,
+                    border: Border.all(
+                      color: theme.primary.withValues(alpha: 0.35),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.primary.withValues(alpha: 0.12),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: bytes != null
+                        ? Image.memory(
+                            bytes,
+                            fit: BoxFit.cover,
+                            width: 90,
+                            height: 90,
+                          )
+                        : Icon(
+                            Icons.person_outline_rounded,
+                            size: 44,
+                            color: theme.primary.withValues(alpha: 0.7),
+                          ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: bytes != null
+                      ? controller.removeImage
+                      : controller.pickImage,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: bytes != null ? Colors.redAccent : theme.primary,
+                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      bytes != null
+                          ? Icons.close_rounded
+                          : Icons.camera_alt_rounded,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            bytes != null
+                ? AppConstants.changeProfilePhoto
+                : AppConstants.addProfilePhoto,
+            style: GoogleFonts.plusJakartaSans(
+              color: theme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
