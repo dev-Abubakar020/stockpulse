@@ -307,7 +307,7 @@ class AllProducts extends GetView<ProductController>  {
 
       /// Floating Action Button
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12,right: 18),
+        margin: EdgeInsets.only(bottom: 12,right: AppConstants.spaceSM),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [

@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -79,40 +79,142 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription<AuthState>? _authSubscription;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  final AppLinks _appLinks = AppLinks();
+
+  bool _isRecoveryProcessing = false;
   bool _isAuthErrorShowing = false;
+
   @override
   void initState() {
     super.initState();
 
-    _listenToAuthChanges();
+    _initializeDeepLinks();
   }
 
   // ============================================================
   // SUPABASE AUTH LISTENER
   // ============================================================
 
-  void _listenToAuthChanges() {
-    _authSubscription =
-        Supabase.instance.client.auth.onAuthStateChange.listen(
-          _handleAuthStateChange,
-          onError: _handleAuthError,
+  Future<void> _initializeDeepLinks() async {
+    // App already running → link clicked
+    _linkSubscription = _appLinks.uriLinkStream.listen(
+          (uri) {
+        _handleDeepLink(uri);
+      },
+      onError: (error) {
+        debugPrint('Deep Link Error: $error');
+      },
+    );
+
+    // App closed → opened from recovery link
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+
+      if (initialUri != null) {
+        await _handleDeepLink(initialUri);
+      }
+    } catch (e) {
+      debugPrint('Initial Deep Link Error: $e');
+    }
+  }
+
+  Future<void> _handleDeepLink(Uri uri) async {
+    debugPrint('Incoming Deep Link: $uri');
+
+    // Ignore unrelated links
+    if (uri.scheme != 'com.autosmart.stockpulse' ||
+        uri.host != 'reset-password') {
+      return;
+    }
+
+    if (_isRecoveryProcessing) return;
+
+    final tokenHash = uri.queryParameters['token_hash'];
+    final type = uri.queryParameters['type'];
+
+    if (tokenHash == null ||
+        tokenHash.isEmpty ||
+        type != 'recovery') {
+      _showRecoveryError('Invalid password reset link.');
+      return;
+    }
+
+    _isRecoveryProcessing = true;
+
+    try {
+      debugPrint('Verifying password recovery token...');
+
+      final response =
+      await Supabase.instance.client.auth.verifyOTP(
+        tokenHash: tokenHash,
+        type: OtpType.recovery,
+      );
+
+      if (response.user == null ||
+          response.session == null) {
+        throw const AuthException(
+          'Unable to verify password reset link.',
         );
+      }
+
+      debugPrint(
+        'Recovery user verified: ${response.user!.email}',
+      );
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.offAllNamed(Routes.resetPassword);
+      });
+    } on AuthException catch (e) {
+      debugPrint('Recovery Auth Error: $e');
+
+      _showRecoveryError(
+        'This password reset link is invalid or has expired. '
+            'Please request a new one.',
+      );
+    } catch (e) {
+      debugPrint('Recovery Error: $e');
+
+      _showRecoveryError(
+        'Unable to verify password reset link. '
+            'Please request a new one.',
+      );
+    } finally {
+      _isRecoveryProcessing = false;
+    }
   }
 
   // ============================================================
   // AUTH STATE
   // ============================================================
 
-  void _handleAuthStateChange(AuthState data) {
-    debugPrint('Auth Event: ${data.event}');
+  void _showRecoveryError(String message) {
+    if (_isAuthErrorShowing) return;
 
-    // Password recovery link successfully verified
-    if (data.event == AuthChangeEvent.passwordRecovery) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.offAllNamed(Routes.resetPassword);
-      });
-    }
+    _isAuthErrorShowing = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      if (Get.currentRoute != Routes.login) {
+        Get.offAllNamed(Routes.login);
+      }
+
+      Future.delayed(
+        const Duration(milliseconds: 300),
+            () {
+          if (!mounted) return;
+
+          CustomSnackBar.warningSnackBar(
+            title: AppConstants.warningTitle,
+            message: message,
+          );
+
+          _isAuthErrorShowing = false;
+        },
+      );
+    });
   }
 
   // ============================================================
@@ -170,7 +272,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    _authSubscription?.cancel();
+    _linkSubscription?.cancel();
     super.dispose();
   }
 

@@ -154,7 +154,7 @@ class PurchasePage extends StatelessWidget {
 
       /// Floating Action Button
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12,right: 18),
+        margin: EdgeInsets.only(bottom: 12,right: AppConstants.spaceSM),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],

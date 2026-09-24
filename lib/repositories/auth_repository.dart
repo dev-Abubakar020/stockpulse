@@ -254,6 +254,18 @@ class AuthRepository {
     );
   }
 
+  /// Verify password recovery token from email deep link
+  Future<AuthResponse> verifyRecoveryToken(String tokenHash) async {
+    if (tokenHash.trim().isEmpty) {
+      throw const AppException('Invalid password reset link.');
+    }
+
+    return await _supabase.auth.verifyOTP(
+      tokenHash: tokenHash.trim(),
+      type: OtpType.recovery,
+    );
+  }
+
   Future<void> resetPassword(String newPassword) async {
 
     await _supabase.auth.updateUser(
@@ -261,7 +273,7 @@ class AuthRepository {
     );
     //first logout
     await _supabase.auth.signOut();
-    Get.offAllNamed(Routes.login);
+    // Get.offAllNamed(Routes.login);
   }
 
   User? get currentUser => _supabase.auth.currentUser;

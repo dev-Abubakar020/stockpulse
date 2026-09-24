@@ -180,7 +180,7 @@ class AllExpenses extends GetView<ExpenseController> {
   }
 }
 
-class ExpenseCard extends StatelessWidget {
+class ExpenseCard extends StatefulWidget {
   final ExpenseModel expense;
 
   const ExpenseCard({
@@ -189,107 +189,275 @@ class ExpenseCard extends StatelessWidget {
   });
 
   @override
+  State<ExpenseCard> createState() => _ExpenseCardState();
+}
+
+class _ExpenseCardState extends State<ExpenseCard> {
+  bool isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final controller = Get.find<ExpenseController>();
+    final expense = widget.expense;
+
     final meta = ExpenseController.getCategoryMeta(expense.category);
+
     final date = expense.expenseDate;
     final dateStr =
-        '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+        '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onLongPress: () {
-        Get.dialog(
-          CustomConfirmDialog(
-            title: 'Delete Expense',
-            subtitle: 'Are you sure you want to delete this expense?',
-            confirmText: 'Delete',
-            onConfirm: () {
-              Get.back();
-              controller.deleteExpense(expense);
-            },
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: isExpanded
+              ? AppColors.expense.withValues(alpha: 0.30)
+              : const Color(0xFFE2E8F0),
+          width: isExpanded ? 1.4 : 1,
         ),
-        child: Row(
-          children: [
-            // Category Icon Container
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: meta.color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                meta.icon,
-                color: meta.color,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          /// ================= HEADER =================
+          InkWell(
+            onTap: () {
+              setState(() {
+                isExpanded = !isExpanded;
+              });
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Row(
+              children: [
+                /// Category Icon
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: meta.color.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    meta.icon,
+                    color: meta.color,
+                    size: 21,
+                  ),
+                ),
 
-            // Category & Date / Description
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    expense.category,
+                const SizedBox(width: 12),
+
+                /// Category + Date
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        expense.category,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.sora(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        dateStr,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                /// Amount
+                Obx(
+                      () => Text(
+                    '${controller.currencySymbol.value} '
+                        '${expense.amount.toStringAsFixed(0)}',
                     style: GoogleFonts.sora(
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0F172A),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 3),
-                  if (expense.description != null &&
-                      expense.description!.isNotEmpty) ...[
-                    Text(
-                      expense.description!,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        color: const Color(0xFF64748B),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                  ],
-                  Text(
-                    dateStr,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11,
-                      color: const Color(0xFF94A3B8),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.expense,
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            // Amount
-            Obx(
-              () => Text(
-                '${controller.currencySymbol.value} ${expense.amount.toStringAsFixed(0)}',
-                style: GoogleFonts.sora(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.expense,
+                const SizedBox(width: 8),
+
+                /// Expand Arrow
+                AnimatedRotation(
+                  turns: isExpanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  child: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 22,
+                    color: Color(0xFF94A3B8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          /// ================= EXPANDED CONTENT =================
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            child: isExpanded
+                ? Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.expense.withValues(alpha: 0.035),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: AppColors.expense.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Note heading
+                    Row(
+                      children: [
+                        Text(
+                          'EXPENSE NOTE',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            color: const Color(0xFF475569),
+                          ),
+                        ),
+
+                        const Spacer(),
+
+                        /// You can connect this with
+                        /// expense.memo/reference field later.
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.expense
+                                  .withValues(alpha: 0.20),
+                            ),
+                          ),
+                          child: Text(
+                            AppConstants.expenseDetails,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 8,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.expense,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /// Description
+                    if (expense.description != null &&
+                        expense.description!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        expense.description!,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          height: 1.7,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF334155),
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 12),
+
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: AppColors.expense.withValues(alpha: 0.10),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    /// Bottom Section
+                    Row(
+                      children: [
+                        /// Delete
+                        InkWell(
+                          onTap: () {
+                            Get.dialog(
+                              CustomConfirmDialog(
+                                title: 'Delete Expense',
+                                subtitle:
+                                'Are you sure you want to delete this expense?',
+                                confirmText: 'Delete',
+                                onConfirm: () {
+                                  Get.back();
+                                  controller.deleteExpense(expense);
+                                },
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 4,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.delete_outline_rounded,
+                                  size: 15,
+                                  color: AppColors.expense,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Delete Expense',
+                                  style:
+                                  GoogleFonts.plusJakartaSans(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.expense,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
+            )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
