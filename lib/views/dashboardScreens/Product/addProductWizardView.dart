@@ -1095,7 +1095,8 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
       String text,
       AppThemeHelper theme, {
         bool isRequired = false,
-      }) {
+      })
+  {
     return Text.rich(
       TextSpan(
         children: [

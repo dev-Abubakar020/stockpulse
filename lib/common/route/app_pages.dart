@@ -13,9 +13,9 @@ import 'package:stockpulse/views/authScreens/phonedetailScreen.dart';
 import 'package:stockpulse/views/authScreens/resetPassword.dart';
 import 'package:stockpulse/views/dashboardScreens/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
-
 import '../../views/dashboardScreens/More/addcategories.dart';
-import '../../views/addexpenses.dart';
+import '../../views/expense/addexpenses.dart';
+import '../../views/expense/allexpense.dart';
 import '../../views/dashboardScreens/Purchase/addpurchase.dart';
 import '../../views/dashboardScreens/Product/addProductWizardView.dart';
 import '../../views/dashboardScreens/Sale/addsale.dart';
@@ -33,6 +33,7 @@ import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
 import '../bindings/categoryBinding.dart';
 import '../bindings/dashboardBinding.dart';
+import '../bindings/expenseBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
 import '../bindings/saleBinding.dart';
 import 'app_routes.dart';
@@ -136,7 +137,16 @@ class AppPages {
       page: () => const AddPurchase(),
       binding: PurchaseBinding(),
     ),
-    GetPage(name: Routes.addExpense, page: () => const AddExpenses()),
+    GetPage(
+      name: Routes.addExpense,
+      page: () => const AddExpenses(),
+      binding: ExpenseBinding(),
+    ),
+    GetPage(
+      name: Routes.allExpenses,
+      page: () => const AllExpenses(),
+      binding: ExpenseBinding(),
+    ),
     GetPage(
       name: Routes.productDetail,
       page: () => const ProductDetailView(),

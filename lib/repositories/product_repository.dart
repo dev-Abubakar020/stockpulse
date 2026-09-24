@@ -166,11 +166,5 @@ class ProductRepository {
   Future<void> deleteProduct(String productId) async {
     await _supabase
         .from('products').delete().eq('id', productId);
-    //     .update({
-    //   'is_active': false,
-    //   'updated_by': _supabase.auth.currentUser!.id,
-    //   'updated_at': DateTime.now().toIso8601String(),
-    // })
-    //     .eq('id', productId);
   }
 }

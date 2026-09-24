@@ -11,7 +11,6 @@ import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_MenuTile.dart';
 import '../../../common/widgets/custom_shimmer.dart';
-import '../../../controllers/allProductsController.dart';
 import '../../../controllers/loginController.dart';
 import '../../../controllers/shopCreateController.dart';
 
@@ -219,7 +218,7 @@ class MoreScreen extends StatelessWidget {
                     icon: Icons.receipt_long_outlined,
                     title: AppConstants.expensesTitle,
                     onTap: () {
-                      Get.toNamed(Routes.addExpense);
+                      Get.toNamed(Routes.allExpenses);
                     },
                   ),
                   MoreMenuTile(

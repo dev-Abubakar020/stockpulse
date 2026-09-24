@@ -107,6 +107,11 @@ class AppConstants {
   static const String wholeSaleP = "Wholesale Purchase";
   static const String costBasis = "cost basis";
   static const String addCat = 'Add Category';
+  static const String addExpense = 'Add Expense';
+  static const String dateNotes = 'Date and Notes';
+  static const String dateFormat = 'D/MM/YYYY';
+  static const String descExpense = 'Describe the expense...';
+
   static const String reset = 'Reset';
   static const String categoryName = 'Category Name ';
   static const String requiredAsterisk = '*';
@@ -125,7 +130,9 @@ class AppConstants {
 
   static const String searchCat = 'Search Categories';
   static const String allCat = 'All Categories';
+  static const String allExpenses = 'All Expenses';
   static const String noCatFound = 'No categories found.';
+  static const String noExpenseFound = 'No Expenses found.';
   static const String customer = "Customer";
   static const String addNote = "Add Note (Optional)";
   static const String noteHint = "Write a note...";
@@ -459,6 +466,14 @@ class AppConstants {
   static const String othersOptionsTitle = 'Others Options';
   static const String categoriesTitle = 'Categories';
   static const String expensesTitle = 'Expenses';
+  static const String expenseDetails = 'Expense Details';
+  static const String expenseCategoryLabel = 'Category';
+  static const String expenseAmountLabel = 'Amount *';
+  static const String expenseDateLabel = 'Expense Date *';
+  static const String expenseNotesLabel = 'Notes / Description (Optional)';
+  static const String saveExpenseBtn = 'Save Expense';
+  static const String expenseAddedSuccess = 'Expense added successfully';
+  static const String validAmountWarning = 'Please enter a valid amount';
   static const String reportsTitle = 'Reports';
   static const String staffTitle = 'Staff';
   static const String aboutTitle = 'About Profile';
