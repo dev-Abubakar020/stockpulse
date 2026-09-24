@@ -249,6 +249,8 @@ class AppConstants {
       'Your account was created. Please confirm your email before signing in.';
   static const String resetLinkSentMsg =
       'Password reset link sent to your email.';
+  static const String emailLinkExpiredMsg =
+      'Email link has expired or is invalid. Please request a new one.';
   static const String passwordUpdatedSuccessMsg =
       'Password updated successfully.';
   static const String verificationFailedTitle = 'Verification Failed';

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/Custom_card.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
@@ -25,24 +27,76 @@ class HomeView extends GetView<HomeController> {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: AppBar(
-        title: Row(
+        backgroundColor: AppColors.onboardingLight,
+        elevation: 5,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
-              child: Text(
-                controller.userName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.sora(
-                  fontSize: nameFontSize,
-                  fontWeight: FontWeight.w700,
-                  color: theme.textPrimary,
+            Text(
+              controller.getGreetingMessage(),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 14,
+                color: theme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    controller.userName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.sora(
+                      fontSize: nameFontSize,
+                      fontWeight: FontWeight.w700,
+                      color: theme.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Text('👋', style: TextStyle(fontSize: 20)),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                Get.dialog(
+                  CustomConfirmDialog(
+                    title: AppConstants.logout,
+                    subtitle: AppConstants.logoutAlertSubTitle,
+                    confirmText: AppConstants.logout,
+                    onConfirm: () {
+                      Get.back();
+                      Get.find<LoginController>().logout();
+                    },
+                  ),
+                );
+              },
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.20),
+                  ),
+                ),
+                child: Icon(
+                  Icons.logout,
+                  size: 20,
+                  color: Colors.red.withValues(alpha: 0.7),
                 ),
               ),
             ),
-            const SizedBox(width: 4),
-            const Text('👋', style: TextStyle(fontSize: 20)),
-          ],
-        ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -53,72 +107,94 @@ class HomeView extends GetView<HomeController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          controller.getGreetingMessage(),
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14,
-                            color: theme.textSecondary,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Overview',
+                        style: GoogleFonts.sora(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: theme.textPrimary,
                         ),
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                controller.userName,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.sora(
-                                  fontSize: nameFontSize,
-                                  fontWeight: FontWeight.w700,
-                                  color: theme.textPrimary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Text('👋', style: TextStyle(fontSize: 20)),
-                          ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Track your performance',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          color: theme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Filter here
+                  Obx(
+                    () => PopupMenuButton<String>(
+                      onSelected: controller.changeDashboardFilter,
+                      offset: const Offset(0, 45),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      color: theme.card,
+
+                      itemBuilder: (context) => [
+                        _filterItem('today', 'Today', Icons.today_rounded),
+                        _filterItem('yesterday', 'Yesterday', Icons.history_rounded),
+                        _filterItem('week', 'This Week', Icons.date_range_rounded),
+                        _filterItem('month', 'This Month', Icons.calendar_month_rounded),
+                        _filterItem(
+                          'custom',
+                          'Custom Range',
+                          Icons.tune_rounded,
                         ),
                       ],
-                    ),
-                  ),
-                  IconButton(onPressed: (){
-                    Get.dialog(
-                      CustomConfirmDialog(
-                        title: AppConstants.logout,
-                        subtitle: AppConstants.logoutAlertSubTitle,
-                        confirmText: AppConstants.logout,
-                        onConfirm: () {
-                          Get.back();
-                          Get.find<LoginController>().logout();
-                        },
-                      ),
-                    );
-                  },
-                    icon: Material(
-                      color: Colors.transparent,
+
                       child: Container(
-                        width: 42,
-                        height: 42,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 9,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.10),
+                          color: theme.primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.red
-                                .withValues(alpha: 0.20),
+                            color: theme.primary.withValues(alpha: 0.18),
                           ),
                         ),
-                        child: Icon(
-                          Icons.logout,
-                          size: 20,
-                          color: Colors.red.withValues(alpha: 0.7),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: 16,
+                              color: theme.primary,
+                            ),
+
+                            const SizedBox(width: 7),
+
+                            Text(
+                              controller.dashboardFilterLabel,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: theme.primary,
+                              ),
+                            ),
+
+                            const SizedBox(width: 4),
+
+                            Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              size: 18,
+                              color: theme.primary,
+                            ),
+                          ],
                         ),
                       ),
-                    ),),
+                    ),
+                  ),
                 ],
               ),
 
@@ -128,81 +204,85 @@ class HomeView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 12),
-                      Obx(
-                        () => Row(
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return _buildShimmerCards();
+                        }
+
+                        return Column(
                           children: [
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  Get.find<DashboardController>().changePage(1);
-                                },
-                                child: CardSummary(
-                                  title: AppConstants.saleTitle,
-                                  value:
-                                      'Rs. ${controller.totalSales.value.toInt()}',
-                                  icon: Icons.receipt_long_outlined,
-                                  iconColor: const Color(0xFF00796B),
-                                  iconBackgroundColor: const Color(0xFFE0F2F1),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Get.find<DashboardController>().changePage(1);
+                                    },
+                                    child: CardSummary(
+                                      title: AppConstants.saleTitle,
+                                      value:
+                                          'Rs. ${controller.totalSales.value.toInt()}',
+                                      icon: Icons.receipt_long_outlined,
+                                      iconColor: const Color(0xFF00796B),
+                                      iconBackgroundColor: const Color(0xFFE0F2F1),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Get.find<DashboardController>().changePage(3);
+                                    },
+                                    child: CardSummary(
+                                      title: AppConstants.purchaseTitle,
+                                      value:
+                                          'Rs. ${controller.totalPurchases.value.toInt()}',
+                                      icon: Icons.trending_up_rounded,
+                                      iconColor: const Color(0xFF2E7D32),
+                                      iconBackgroundColor: const Color(0xFFE8F5E9),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  Get.find<DashboardController>().changePage(3);
-                                },
-                                child: CardSummary(
-                                  title: AppConstants.purchaseTitle,
-                                  value:
-                                      'Rs. ${controller.totalPurchases.value.toInt()}',
-                                  icon: Icons.trending_up_rounded,
-                                  iconColor: const Color(0xFF2E7D32),
-                                  iconBackgroundColor: const Color(0xFFE8F5E9),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Get.find<DashboardController>().changePage(2);
+                                    },
+                                    child: CardSummary(
+                                      title: AppConstants.totalProduct,
+                                      value: controller
+                                          .productController
+                                          .products
+                                          .length
+                                          .toString(),
+                                      icon: Icons.grid_view_rounded,
+                                      iconColor: const Color(0xFF1565C0),
+                                      iconBackgroundColor: const Color(0xFFE3F2FD),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: CardSummary(
+                                    title: AppConstants.lowStockTitle,
+                                    value:
+                                        '${controller.lowStockCount.value} Items',
+                                    icon: Icons.warning_amber_rounded,
+                                    iconColor: const Color(0xFFC62828),
+                                    iconBackgroundColor: const Color(0xFFFFEBEE),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                Get.find<DashboardController>().changePage(2);
-                              },
-                              child: Obx(
-                                () => CardSummary(
-                                  title: AppConstants.totalProduct,
-                                  value: controller
-                                      .productController
-                                      .products
-                                      .length
-                                      .toString(),
-                                  icon: Icons.grid_view_rounded,
-                                  iconColor: const Color(0xFF1565C0),
-                                  iconBackgroundColor: const Color(0xFFE3F2FD),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Obx(
-                              () => CardSummary(
-                                title: AppConstants.lowStockTitle,
-                                value:
-                                    '${controller.lowStockCount.value} Items',
-                                icon: Icons.warning_amber_rounded,
-                                iconColor: const Color(0xFFC62828),
-                                iconBackgroundColor: const Color(0xFFFFEBEE),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      }),
                       const SizedBox(height: 18),
                       // --- Quick Actions Section ---
                       CustomHeading(title: AppConstants.quickAction),
@@ -268,6 +348,10 @@ class HomeView extends GetView<HomeController> {
 
                       // --- Recent Sales List ---
                       Obx(() {
+                        if (controller.isLoading.value) {
+                          return _buildShimmerRecentSales();
+                        }
+
                         if (controller.recentSales.isEmpty) {
                           return Center(
                             child: Padding(
@@ -286,7 +370,7 @@ class HomeView extends GetView<HomeController> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: controller.recentSales.length,
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (BuildContext context, int index) =>
                               const SizedBox(height: 10),
                           itemBuilder: (context, index) {
                             final sale = controller.recentSales[index];
@@ -385,6 +469,106 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
+
+  Widget _buildShimmerCards() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 90,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Container(
+                  height: 90,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 90,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Container(
+                  height: 90,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerRecentSales() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Column(
+        children: List.generate(
+          3,
+          (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+PopupMenuItem<String> _filterItem(
+    String value,
+    String label,
+    IconData icon,
+    ) {
+  return PopupMenuItem<String>(
+    value: value,
+    child: Row(
+      children: [
+        Icon(
+          icon,
+          size: 18,
+        ),
+        const SizedBox(width: 10),
+        Text(label),
+      ],
+    ),
+  );
 }
 
 class _QuickActionItem extends StatelessWidget {

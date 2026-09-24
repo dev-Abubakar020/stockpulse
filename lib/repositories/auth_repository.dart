@@ -5,11 +5,8 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../common/exceptional/platform_exceptions.dart';
-
 import 'package:image_picker/image_picker.dart';
-
 import '../common/route/app_routes.dart';
 
 class AuthRepository {
@@ -23,17 +20,9 @@ class AuthRepository {
           clientId: defaultTargetPlatform == TargetPlatform.iOS
               ? AppConstants.googleIosClientId
               : null,
-        ) {
-    _listenToAuthChanges();
-  }
+        );
 
-  void _listenToAuthChanges() {
-    _supabase.auth.onAuthStateChange.listen((data) {
-      if (data.event == AuthChangeEvent.passwordRecovery) {
-        Get.offAllNamed(Routes.resetPassword);
-      }
-    });
-  }
+
   Future<AuthResponse> login({
     required String email,
     required String password,
@@ -266,14 +255,12 @@ class AuthRepository {
   }
 
   Future<void> resetPassword(String newPassword) async {
-    //first logout
-    await _supabase.auth.signOut();
 
-    //
     await _supabase.auth.updateUser(
       UserAttributes(password: newPassword),
     );
-
+    //first logout
+    await _supabase.auth.signOut();
     Get.offAllNamed(Routes.login);
   }
 
