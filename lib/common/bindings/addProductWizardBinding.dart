@@ -6,6 +6,6 @@ class AddProductWizardBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<AddProductWizardController>(() => AddProductWizardController());
-    Get.lazyPut<CategoryController>(() => CategoryController());
+    Get.lazyPut<CategoryController>(() => CategoryController(), fenix: true);
   }
 }

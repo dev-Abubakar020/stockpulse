@@ -26,17 +26,57 @@ class EditShopDetails extends GetView<ShopCreateController> {
         title: const Text(AppConstants.businessInfo),
         showBackArrow: true,
         actions: [
-          Obx(() => TextButton.icon(
-                onPressed: controller.toggleEditable,
-                icon: Icon(
-                  controller.isEditable.value ? Icons.close : Icons.edit_outlined,
-                  size: 18,
+          Obx(() {
+            final isEditing = controller.isEditable.value;
+
+            final color = isEditing
+                ? theme.error
+                : const Color(0xFF0F766E);
+
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: controller.toggleEditable,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: isEditing? 90:82,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: color.withValues(alpha: 0.20),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isEditing
+                            ? Icons.close_rounded
+                            : Icons.edit_outlined,
+                        size: 18,
+                        color: color.withValues(alpha: 0.8),
+                      ),
+
+                      const SizedBox(width: 6),
+
+                      Text(
+                        isEditing
+                            ? AppConstants.cancelTitle
+                            : AppConstants.edit,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                label: Text(
-                  controller.isEditable.value ? AppConstants.cancelTitle : AppConstants.edit,
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
-                ),
-              )),
+              ),
+            );
+          }),
         ],
       ),
       body: SingleChildScrollView(

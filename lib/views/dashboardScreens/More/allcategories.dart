@@ -2,85 +2,84 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/widgets/CustomSearchField.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/models/category_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../../common/widgets/Custom_filter.dart';
 import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/product_shimmer.dart';
 
 class AllCategories extends StatelessWidget {
   const AllCategories({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Inject the CategoryController
-    final CategoryController controller = Get.put(CategoryController());
+    // Find the injected CategoryController
+    final CategoryController controller = Get.find<CategoryController>();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-          child: Column(
-            children: [
-              const CustomAppBar(title: Text(AppConstants.allCat), showBackArrow: true),
-              const SizedBox(height: 10),
-              CustomSearchField(
-                hintText: AppConstants.searchCat,
-                showScanner: false,
-                onChanged: (value) {
-                  controller.searchQuery.value = value;
-                },
-              ),
-              const SizedBox(height: 12),
-              Obx(
-                () => CustomFilterTabs(
-                  items: const [AppConstants.all, AppConstants.statusActive, AppConstants.statusInActive],
-                  selectedIndex: controller.selectedFilterIndex.value,
-                  onChanged: controller.changeFilter,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: Obx(() {
-                  if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final categories = controller.filteredCategories;
-
-                  if (categories.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        AppConstants.noCatFound,
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    );
-                  }
-
-                  return RefreshIndicator(
-                    onRefresh: () => controller.fetchCategories(),
-                    child: ListView.builder(
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        return CategoryCard(
-                          category: category,
-                          onStatusChanged: (isActive) {
-                            controller.changeCategoryStatus(category, isActive);
-                          },
-                        );
-                      },
-                    ),
-                  );
-                }),
-              ),
-            ],
+    return CustomScreen(
+      appBar: const CustomAppBar(title: Text(AppConstants.allCat), showBackArrow: true),
+      body: Column(
+        mainAxisAlignment: .start,
+        children: [
+          CustomSearchField(
+            hintText: AppConstants.searchCat,
+            showScanner: false,
+            onChanged: (value) {
+              controller.searchQuery.value = value;
+            },
           ),
-        ),
+          const SizedBox(height: 12),
+          Obx(
+            () => CustomFilterTabs(
+              items: const [AppConstants.all, AppConstants.statusActive, AppConstants.statusInActive],
+              selectedIndex: controller.selectedFilterIndex.value,
+              onChanged: controller.changeFilter,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return Padding(
+                  padding: const EdgeInsets.only(top:12),
+                  child: const ProductListShimmer(),
+                );
+              }
+
+              final categories = controller.filteredCategories;
+
+              if (categories.isEmpty) {
+                return const Center(
+                  child: Text(
+                    AppConstants.noCatFound,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: () => controller.fetchCategories(),
+                child: ListView.builder(
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return CategoryCard(
+                      category: category,
+                      onStatusChanged: (isActive) {
+                        controller.changeCategoryStatus(category, isActive);
+                      },
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+        ],
       ),
 
       /// Floating Action Button
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           controller.clearForm();

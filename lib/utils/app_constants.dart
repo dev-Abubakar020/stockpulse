@@ -79,7 +79,7 @@ class AppConstants {
   static const String dangerZineSubtitle =
       'Deleting this product will immediately remove it from the active POS register and transaction quick-picks. Past receipts remain archived.';
   static const String recoveryEmailSubtitle =
-      'No worries! Choose your recovery channel and we will send a secure verification code.';
+      'No worries! Enter your email address and we will send you a secure password reset link.';
   static const String loginSlug = "Enter your credentials to access your Shop";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
@@ -99,7 +99,7 @@ class AppConstants {
   static const String unit = "/unit";
   static const String defaultCurrency = "Rs. ";
   static const String todayCardSummary = "Today's Sales";
-  static const String addSale = "New Sale";
+  static const String addSale = "Add Sale";
   static const String add = "Add";
   static const String edit = "Edit";
   static const String priceMargin = "Pricing & Margins";
@@ -147,7 +147,7 @@ class AppConstants {
   static const String defaultBarCode = '5449000000996';
   static const String barcodeCopied = 'Barcode copied to clipboard!';
   static const String defaultTitle = '1.5 Litre (Family Bottle)';
-  static const String loginForgotPassword = 'Forgot password?';
+  static const String loginForgotPassword = 'Forgot password';
   static const String rememberMe = 'Remember me';
   static const String rememberPassword = 'Remember your password?';
   static const String loginButton = 'Sign In';
@@ -163,7 +163,7 @@ class AppConstants {
   static const String loginSignUp = 'Sign Up >';
   static const String recoveryChannel = 'Email Address';
   static const String regEmailAddress = 'Registered Email';
-  static const String sendVerificationCode = 'Send Verification Code';
+  static const String sendVerificationCode = 'Send Reset Link';
   static const String logout = 'Log out';
 
   static const String exitAppTitle = 'Exit App';

@@ -145,6 +145,7 @@ class LoginController extends GetxController {
           );
         },
       );
+
     } catch (e) {
       isPhoneLoading.value = false;
       final exception = AppException.fromException(e);

@@ -31,6 +31,7 @@ import '../../views/dashboardScreens/Sale/saleDetailView.dart';
 import '../../views/dashboardScreens/Purchase/purchaseDetailView.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
+import '../bindings/categoryBinding.dart';
 import '../bindings/dashboardBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
 import '../bindings/saleBinding.dart';
@@ -99,8 +100,16 @@ class AppPages {
     GetPage(name: Routes.home, page: () => const HomeView()),
     GetPage(name: Routes.sale, page: () => SaleView()),
     GetPage(name: Routes.moreScreen, page: () => MoreScreen()),
-    GetPage(name: Routes.allCategories, page: () => AllCategories()),
-    GetPage(name: Routes.addCategories, page: () => AddCategories()),
+    GetPage(
+      name: Routes.allCategories,
+      page: () => AllCategories(),
+      binding: CategoryBinding(),
+    ),
+    GetPage(
+      name: Routes.addCategories,
+      page: () => AddCategories(),
+      binding: CategoryBinding(),
+    ),
     GetPage(
       name: Routes.allProducts,
       page: () => AllProducts(),

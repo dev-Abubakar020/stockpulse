@@ -24,6 +24,26 @@ class HomeView extends GetView<HomeController> {
 
     return CustomScreen(
       backgroundColor: theme.background,
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Flexible(
+              child: Text(
+                controller.userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.sora(
+                  fontSize: nameFontSize,
+                  fontWeight: FontWeight.w700,
+                  color: theme.textPrimary,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Text('👋', style: TextStyle(fontSize: 20)),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: controller.fetchHomeData,
@@ -80,25 +100,25 @@ class HomeView extends GetView<HomeController> {
                     );
                   },
                     icon: Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.red
-                              .withValues(alpha: 0.20),
+                      color: Colors.transparent,
+                      child: Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.red
+                                .withValues(alpha: 0.20),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.logout,
+                          size: 20,
+                          color: Colors.red.withValues(alpha: 0.7),
                         ),
                       ),
-                      child: Icon(
-                        Icons.logout,
-                        size: 20,
-                        color: Colors.red.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ),),
+                    ),),
                 ],
               ),
 

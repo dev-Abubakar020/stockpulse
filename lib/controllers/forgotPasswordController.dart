@@ -68,6 +68,7 @@ class ForgotPasswordController extends GetxController {
           title: AppConstants.successTitle,
           message: AppConstants.resetLinkSentMsg,
         );
+        emailOrPhoneController.clear();
         Get.toNamed(Routes.login);
       } else {
         // Phone Recovery
