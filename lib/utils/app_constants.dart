@@ -46,7 +46,7 @@ class AppConstants {
   static const String signupTitle = 'Create Account';
   static const String saleTitle = 'Sale';
   static const String newSale = 'New \nSale';
-  static const String productTitle = 'All Products';
+  static const String productTitle = 'All Inventory';
   static const String businessTitle = 'Business Management';
   static const String totalProduct = 'Total Products';
   static const String quickAction = "Quick Actions";
@@ -277,7 +277,7 @@ class AppConstants {
   static const String backToSignIn = 'Back to Sign In';
   static const String newVendorReg = 'NEW VENDOR REGISTRATION';
   static const String signupDesc =
-      'Create your secure account to manage inventory & sales';
+      'Create your account to manage inventories';
   static const String passwordsDoNotMatch = 'Passwords do not match.';
   static const String passwordLengthError =
       'Password must be at least 8 characters.';
@@ -289,7 +289,7 @@ class AppConstants {
   static const String phoneEncryptedMsg =
       'Your phone number is encrypted & never shared.';
   static const String resetPasswordDesc =
-      'Your new password must be different from previously used passwords.';
+      'Create you StockPulse Account Password';
 
   /// Platform & Exception Messages
   static const String defaultErrorMessage =
@@ -486,4 +486,13 @@ class AppConstants {
   static const String personalInfo = 'Personal Information';
   static const String editProfileSubtitle =
       'Update your account name and avatar.';
+
+  // Spacing
+  static const double spaceXS = 6.0;
+  static const double spaceSM = 8.0;
+  static const double spaceMD = 12.0;
+  static const double spaceLG = 16.0;
+  static const double spaceXL = 22.0;
+  static const double spaceXXL = 24.0;
+  static const double maxWidth = 440.0;
 }

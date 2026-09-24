@@ -314,7 +314,7 @@ class AllProducts extends GetView<ProductController>  {
           elevation: 0,
           icon: const Icon(Icons.add),
           label: const Text(
-            AppConstants.addPurchase,
+            AppConstants.addProducts,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,

@@ -54,7 +54,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                   padding: const EdgeInsets.only(right: 16.0),
                   child: Center(
                     child: Text(
-                      'Drafts',
+                      '',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

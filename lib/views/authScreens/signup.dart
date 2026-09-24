@@ -11,6 +11,7 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/signupController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
 class SignupView extends StatefulWidget {
@@ -28,98 +29,56 @@ class _SignupViewState extends State<SignupView> {
     final controller = Get.find<SignupController>();
     final theme = context.appTheme;
 
-    return Scaffold(
-      backgroundColor: theme.background,
-      body: Stack(
-        children: [
-          // Ambient background orbs
-          Positioned(
-            top: -120,
-            left: -80,
-            child: Container(
-              width: 320,
-              height: 320,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [theme.glow, theme.glow.withValues(alpha: 0.0)],
+    return CustomScreen(
+      glowColor: theme.glow,
+      body: Center(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: AppConstants.spaceXXL,),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: const ThemeToggleButton(),
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -80,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    theme.glow.withValues(alpha: 0.6),
-                    theme.glow.withValues(alpha: 0.0),
+                const SizedBox(height: 8),
+                const _BrandHeader(),
+                const SizedBox(height: 24),
+                _SignupCard(
+                  controller: controller,
+                  agreeToTerms: agreeToTerms,
+                  onTermsChanged: (val) {
+                    setState(() => agreeToTerms = val ?? false);
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppConstants.signupSignIn,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: theme.textSecondary,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    CustomTextButton(
+                      text: AppConstants.loginButton,
+                      fontSize: 14,
+                      color: theme.primary,
+                      onPressed: () => Get.toNamed(Routes.login),
+                    ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
-
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 20,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: const ThemeToggleButton(),
-                      ),
-                      const SizedBox(height: 8),
-                      const _BrandHeader(),
-                      const SizedBox(height: 24),
-                      _SignupCard(
-                        controller: controller,
-                        agreeToTerms: agreeToTerms,
-                        onTermsChanged: (val) {
-                          setState(() => agreeToTerms = val ?? false);
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppConstants.signupSignIn,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: theme.textSecondary,
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          CustomTextButton(
-                            text: AppConstants.loginButton,
-                            fontSize: 14,
-                            color: theme.primary,
-                            onPressed: () => Get.toNamed(Routes.login),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -194,7 +153,6 @@ class _BrandHeader extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 6),
         Text(
           AppConstants.signupDesc,
           textAlign: TextAlign.center,

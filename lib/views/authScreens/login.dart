@@ -11,6 +11,7 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,21 +28,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final controller = Get.find<LoginController>();
     final theme = context.appTheme;
-
-    return Scaffold(
-      backgroundColor: theme.background,
+    return CustomScreen(
       body: Stack(
         children: [
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 20,
-                ),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
+                  constraints: const BoxConstraints(maxWidth: AppConstants.maxWidth),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       const _BrandHeader(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
                       _LoginCard(
                         controller: controller,
                         rememberMe: rememberMe,
@@ -61,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() => rememberMe = val ?? false);
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppConstants.spaceSM),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -120,7 +115,7 @@ class _BrandHeader extends StatelessWidget {
           ),
           child: Image.asset(AppConstants.splashImage, fit: BoxFit.contain),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppConstants.spaceLG),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -133,13 +128,13 @@ class _BrandHeader extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF10B981),
-                    blurRadius: 8,
+                    blurRadius: AppConstants.spaceSM,
                     spreadRadius: 1.5,
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppConstants.spaceSM),
             Text(
               AppConstants.stockpulseWorkspace,
               style: GoogleFonts.sora(
@@ -151,7 +146,7 @@ class _BrandHeader extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppConstants.spaceSM),
         Text(
           AppConstants.loginWelcomeTitle,
           textAlign: TextAlign.center,
@@ -162,7 +157,7 @@ class _BrandHeader extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        // const SizedBox(height: 6),
         Text(
           AppConstants.loginSlug,
           textAlign: TextAlign.center,
@@ -193,7 +188,7 @@ class _LoginCard extends StatelessWidget {
     final theme = context.appTheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppConstants.spaceXL, vertical: AppConstants.spaceXXL),
       decoration: BoxDecoration(
         color: theme.card,
         borderRadius: BorderRadius.circular(22),

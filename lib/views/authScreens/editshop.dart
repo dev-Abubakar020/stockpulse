@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/appbar.dart';
 
 import '../../common/data/countries_data.dart';
@@ -20,7 +21,7 @@ class EditShopDetails extends GetView<ShopCreateController> {
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    return Scaffold(
+    return CustomScreen(
       appBar: CustomAppBar(
         title: const Text(AppConstants.businessInfo),
         showBackArrow: true,
@@ -38,190 +39,189 @@ class EditShopDetails extends GetView<ShopCreateController> {
               )),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(22, 16, 22, 28),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    AppConstants.workspaceSubtitle,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: theme.textSecondary,
-                      fontSize: 13,
-                    ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppConstants.workspaceSubtitle,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: theme.textSecondary,
+                    fontSize: 13,
                   ),
-                  const SizedBox(height: 20),
-                  _FormCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _SectionTitle(
-                          icon: Icons.storefront_outlined,
-                          title: AppConstants.shopDetails,
-                          theme: theme,
-                        ),
-                        const SizedBox(height: 16),
-                        Obx(() => CustomTextField(
-                              controller: controller.ownerController,
-                              labelText: AppConstants.ownerName,
-                              hintText: AppConstants.nameHint,
-                              prefixIcon: Icon(
-                                Icons.person_outline,
-                                color: theme.primary,
-                              ),
-                              readOnly: !controller.isEditable.value,
-                            )),
-                        const SizedBox(height: 14),
-                        Obx(() => CustomTextField(
-                              controller: controller.shopController,
-                              labelText: AppConstants.shopName,
-                              hintText: AppConstants.enterShopName,
-                              prefixIcon: Icon(
-                                Icons.store_outlined,
-                                color: theme.primary,
-                              ),
-                              readOnly: !controller.isEditable.value,
-                            )),
-                        const SizedBox(height: 14),
-                        Obx(() => CustomTextField(
-                              controller: controller.addressController,
-                              labelText: AppConstants.completeAddress,
-                              hintText: AppConstants.addressHint,
-                              prefixIcon: Icon(
-                                Icons.location_on_outlined,
-                                color: theme.primary,
-                              ),
-                              keyboardType: TextInputType.streetAddress,
-                              readOnly: !controller.isEditable.value,
-                            )),
-                        const SizedBox(height: 18),
-                        _SectionTitle(
-                          icon: Icons.payments_outlined,
-                          title: AppConstants.currency,
-                          theme: theme,
-                        ),
-                        const SizedBox(height: 12),
-                        Obx(() => DropdownButtonFormField<CountryModel>(
-                              value: controller.selectedCountry.value,
-                              isExpanded: true,
-                              disabledHint: Text(controller.selectedCountry.value.name),
-                              decoration: InputDecoration(
-                                labelText: AppConstants.country,
-                                prefixIcon: const Icon(Icons.public),
-                                filled: true,
-                                fillColor: theme.surfaceMuted,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(color: theme.border),
-                                ),
-                              ),
-                              items: controller.isEditable.value
-                                  ? countries
-                                      .map(
-                                        (country) => DropdownMenuItem(
-                                          value: country,
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                country.flagEmoji,
-                                                style: const TextStyle(fontSize: 18),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              SizedBox(
-                                                width: 220,
-                                                child: Text(
-                                                  country.name,
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                      .toList()
-                                  : [],
-                              onChanged: controller.isEditable.value
-                                  ? (country) {
-                                      if (country != null) {
-                                        controller.selectedCountry.value = country;
-                                      }
-                                    }
-                                  : null,
-                            )),
-                        const SizedBox(height: 12),
-                        Obx(() => Row(
-                              children: [
-                                Expanded(
-                                  child: _ReadOnlyValue(
-                                    label: AppConstants.symbol,
-                                    value: controller.currency.symbol,
-                                    theme: theme,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _ReadOnlyValue(
-                                    label: AppConstants.currencyCode,
-                                    value: controller.currency.code,
-                                    theme: theme,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        const SizedBox(height: 18),
-                        Obx(() {
-                          if (!controller.isEditable.value &&
-                              controller.shopImageUrl.value.isEmpty &&
-                              controller.imageBytes.value == null) {
-                            return const SizedBox.shrink();
-                          }
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              if (controller.isEditable.value)
-                                _ImagePickerTile(
-                                  imageBytes: controller.imageBytes.value,
-                                  onPressed: controller.pickImage,
-                                  theme: theme,
-                                )
-                              else if (controller.shopImageUrl.value.isNotEmpty)
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    controller.shopImageUrl.value,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              const SizedBox(height: 22),
-                            ],
-                          );
-                        }),
-                        Obx(() {
-                          if (!controller.isEditable.value) {
-                            return const SizedBox.shrink();
-                          }
-                          return AppButton(
-                            text: AppConstants.updateBusiness,
-                            onPressed: controller.updateShop,
-                            isLoading: controller.isUpdating.value,
-                            suffixIcon: const Icon(
-                              Icons.check_rounded,
-                              color: Colors.white,
-                              size: 18,
+                ),
+                const SizedBox(height: 20),
+                _FormCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionTitle(
+                        icon: Icons.storefront_outlined,
+                        title: AppConstants.shopDetails,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 16),
+                      Obx(() => CustomTextField(
+                            controller: controller.ownerController,
+                            labelText: AppConstants.ownerName,
+                            hintText: AppConstants.nameHint,
+                            prefixIcon: Icon(
+                              Icons.person_outline,
+                              color: theme.primary,
                             ),
-                          );
-                        }),
-                      ],
-                    ),
+                            readOnly: !controller.isEditable.value,
+                          )),
+                      const SizedBox(height: 14),
+                      Obx(() => CustomTextField(
+                            controller: controller.shopController,
+                            labelText: AppConstants.shopName,
+                            hintText: AppConstants.enterShopName,
+                            prefixIcon: Icon(
+                              Icons.store_outlined,
+                              color: theme.primary,
+                            ),
+                            readOnly: !controller.isEditable.value,
+                          )),
+                      const SizedBox(height: 14),
+                      Obx(() => CustomTextField(
+                            controller: controller.addressController,
+                            labelText: AppConstants.completeAddress,
+                            hintText: AppConstants.addressHint,
+                            prefixIcon: Icon(
+                              Icons.location_on_outlined,
+                              color: theme.primary,
+                            ),
+                            keyboardType: TextInputType.streetAddress,
+                            readOnly: !controller.isEditable.value,
+                          )),
+                      const SizedBox(height: 18),
+                      _SectionTitle(
+                        icon: Icons.payments_outlined,
+                        title: AppConstants.currency,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 12),
+                      Obx(
+                            () => DropdownButtonFormField<CountryModel>(
+                          value: controller.selectedCountry.value,
+                          isExpanded: true,
+
+                          decoration: InputDecoration(
+                            labelText: AppConstants.country,
+                            prefixIcon: const Icon(Icons.public),
+                            filled: true,
+                            fillColor: theme.surfaceMuted,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide(color: theme.border),
+                            ),
+                          ),
+
+                          items: countries.map((country) {
+                            return DropdownMenuItem<CountryModel>(
+                              value: country,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    country.flagEmoji,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  Expanded(
+                                    child: Text(
+                                      country.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: theme.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+
+                          onChanged: (country) {
+                            if (country != null) {
+                              controller.selectedCountry.value = country;
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Obx(() => Row(
+                            children: [
+                              Expanded(
+                                child: _ReadOnlyValue(
+                                  label: AppConstants.symbol,
+                                  value: controller.currency.symbol,
+                                  theme: theme,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _ReadOnlyValue(
+                                  label: AppConstants.currencyCode,
+                                  value: controller.currency.code,
+                                  theme: theme,
+                                ),
+                              ),
+                            ],
+                          )),
+                      const SizedBox(height: 18),
+                      Obx(() {
+                        if (!controller.isEditable.value &&
+                            controller.shopImageUrl.value.isEmpty &&
+                            controller.imageBytes.value == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (controller.isEditable.value)
+                              _ImagePickerTile(
+                                imageBytes: controller.imageBytes.value,
+                                onPressed: controller.pickImage,
+                                theme: theme,
+                              )
+                            else if (controller.shopImageUrl.value.isNotEmpty)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  controller.shopImageUrl.value,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            const SizedBox(height: 22),
+                          ],
+                        );
+                      }),
+                      Obx(() {
+                        if (!controller.isEditable.value) {
+                          return const SizedBox.shrink();
+                        }
+                        return AppButton(
+                          text: AppConstants.updateBusiness,
+                          onPressed: controller.updateShop,
+                          isLoading: controller.isUpdating.value,
+                          suffixIcon: const Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        );
+                      }),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

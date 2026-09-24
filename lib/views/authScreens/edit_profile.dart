@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/appbar.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
@@ -15,149 +16,146 @@ class EditProfileView extends GetView<EditProfileController> {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
 
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
         title: Text(AppConstants.editProfileTitle),
         showBackArrow: true,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(22, 16, 22, 28),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    AppConstants.editProfileSubtitle,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: theme.textSecondary,
-                      fontSize: 13,
-                    ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: AppConstants.maxWidth),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppConstants.editProfileSubtitle,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: theme.textSecondary,
+                    fontSize: 13,
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(22),
-                    decoration: BoxDecoration(
-                      color: theme.card,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: theme.border),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.cardShadow,
-                          blurRadius: 24,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Avatar Section
-                        Center(
-                          child: _ProfileAvatarSection(controller: controller),
-                        ),
-                        const SizedBox(height: 24),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: theme.card,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: theme.border),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.cardShadow,
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Avatar Section
+                      Center(
+                        child: _ProfileAvatarSection(controller: controller),
+                      ),
+                      const SizedBox(height: 24),
 
-                        // Section Title
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.badge_outlined,
-                              color: theme.primary,
-                              size: 20,
+                      // Section Title
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.badge_outlined,
+                            color: theme.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppConstants.personalInfo,
+                            style: GoogleFonts.sora(
+                              color: theme.textPrimary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppConstants.personalInfo,
-                              style: GoogleFonts.sora(
-                                color: theme.textPrimary,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Name Field
+                      CustomTextField(
+                        controller: controller.nameController,
+                        labelText: AppConstants.nameLabel,
+                        hintText: AppConstants.nameHint,
+                        prefixIcon: Icon(
+                          Icons.person_outline_rounded,
+                          color: theme.primary,
+                        ),
+                        keyboardType: TextInputType.name,
+                        autofillHints: const [AutofillHints.name],
+                        textInputAction: TextInputAction.done,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Email Field (Read Only)
+                      CustomTextField(
+                        controller: controller.emailController,
+                        labelText: AppConstants.loginEmailLabel,
+                        hintText: AppConstants.loginEmailHint,
+                        prefixIcon: Icon(
+                          Icons.mail_outline_rounded,
+                          color: theme.primary,
+                        ),
+                        suffixIcon: Tooltip(
+                          message: AppConstants.emailCannotBeChanged,
+                          child: Icon(
+                            Icons.lock_outline_rounded,
+                            color: theme.textHint,
+                            size: 18,
+                          ),
+                        ),
+                        enabled: false,
+                        readOnly: true,
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline_rounded,
+                            size: 14,
+                            color: theme.textHint,
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              AppConstants.emailCannotBeChanged,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: theme.textHint,
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
 
-                        // Name Field
-                        CustomTextField(
-                          controller: controller.nameController,
-                          labelText: AppConstants.nameLabel,
-                          hintText: AppConstants.nameHint,
-                          prefixIcon: Icon(
-                            Icons.person_outline_rounded,
-                            color: theme.primary,
-                          ),
-                          keyboardType: TextInputType.name,
-                          autofillHints: const [AutofillHints.name],
-                          textInputAction: TextInputAction.done,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Email Field (Read Only)
-                        CustomTextField(
-                          controller: controller.emailController,
-                          labelText: AppConstants.loginEmailLabel,
-                          hintText: AppConstants.loginEmailHint,
-                          prefixIcon: Icon(
-                            Icons.mail_outline_rounded,
-                            color: theme.primary,
-                          ),
-                          suffixIcon: Tooltip(
-                            message: AppConstants.emailCannotBeChanged,
-                            child: Icon(
-                              Icons.lock_outline_rounded,
-                              color: theme.textHint,
-                              size: 18,
-                            ),
-                          ),
-                          enabled: false,
-                          readOnly: true,
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline_rounded,
-                              size: 14,
-                              color: theme.textHint,
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                AppConstants.emailCannotBeChanged,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: theme.textHint,
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 28),
-
-                        // Update Button
-                        Obx(
-                          () => AppButton(
-                            text: AppConstants.updateProfileBtn,
-                            onPressed: controller.updateProfile,
-                            isLoading: controller.isSaving.value,
-                            suffixIcon: const Icon(
-                              Icons.check_rounded,
-                              color: Colors.white,
-                              size: 18,
-                            ),
+                      // Update Button
+                      Obx(
+                        () => AppButton(
+                          text: AppConstants.updateProfileBtn,
+                          onPressed: controller.updateProfile,
+                          isLoading: controller.isSaving.value,
+                          suffixIcon: const Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                            size: 18,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

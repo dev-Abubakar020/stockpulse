@@ -21,9 +21,18 @@ class ForgotPasswordController extends GetxController {
   final isLoading = false.obs;
   final isOtpSent = false.obs;
   final selectedRecoveryMethod = 0.obs;
-
+  final obscurePassword = true.obs;
+  final obscureConfirmPassword = true.obs;
   String? _verificationId;
   String phoneNumberForOtp = '';
+
+  void togglePassword() {
+    obscurePassword.toggle();
+  }
+
+  void toggleConfirmPassword() {
+    obscureConfirmPassword.toggle();
+  }
 
   Future<void> sendRecoveryCode() async {
     final input = emailOrPhoneController.text.trim();

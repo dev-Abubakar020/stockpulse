@@ -112,7 +112,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   vertical: 16,
                 ),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
+                  constraints: const BoxConstraints(maxWidth: AppConstants.maxWidth),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,

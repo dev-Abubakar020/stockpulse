@@ -10,15 +10,18 @@ import 'package:stockpulse/controllers/shopCreateController.dart';
 import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../common/widgets/StandardScreen.dart';
+import '../common/widgets/appbar.dart';
+
 class CreateShop extends GetView<ShopCreateController> {
   const CreateShop({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: Text(
           AppConstants.createYourShop,
           style: GoogleFonts.sora(fontWeight: FontWeight.w700),
@@ -30,172 +33,174 @@ class CreateShop extends GetView<ShopCreateController> {
             icon: Icon(
               theme.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
             ),
-            padding: EdgeInsets.only(right: 24),
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(22, 16, 22, 28),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    AppConstants.workspaceSubtitle,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: theme.textSecondary,
-                      fontSize: 13,
-                    ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppConstants.workspaceSubtitle,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: theme.textSecondary,
+                    fontSize: 13,
                   ),
-                  const SizedBox(height: 20),
-                  _FormCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _SectionTitle(
-                          icon: Icons.storefront_outlined,
-                          title: AppConstants.shopDetails,
-                          theme: theme,
+                ),
+                const SizedBox(height: 20),
+                _FormCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionTitle(
+                        icon: Icons.storefront_outlined,
+                        title: AppConstants.shopDetails,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        controller: controller.ownerController,
+                        labelText: AppConstants.ownerName,
+                        hintText: AppConstants.nameHint,
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: theme.primary,
                         ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: controller.ownerController,
-                          labelText: AppConstants.ownerName,
-                          hintText: AppConstants.nameHint,
-                          prefixIcon: Icon(
-                            Icons.person_outline,
-                            color: theme.primary,
+                        readOnly: true,
+                      ),
+                      const SizedBox(height: 14),
+                      CustomTextField(
+                        controller: controller.shopController,
+                        labelText: AppConstants.shopName,
+                        hintText: AppConstants.enterShopName,
+                        prefixIcon: Icon(
+                          Icons.store_outlined,
+                          color: theme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      CustomTextField(
+                        controller: controller.phoneController,
+                        labelText: AppConstants.phoneOptional,
+                        hintText: AppConstants.enterPhoneNumber,
+                        prefixIcon: Icon(
+                          Icons.phone_outlined,
+                          color: theme.primary,
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 14),
+                      CustomTextField(
+                        controller: controller.addressController,
+                        labelText: AppConstants.completeAddress,
+                        hintText: AppConstants.addressHint,
+                        prefixIcon: Icon(
+                          Icons.location_on_outlined,
+                          color: theme.primary,
+                        ),
+                        keyboardType: TextInputType.streetAddress,
+                      ),
+                      const SizedBox(height: 18),
+                      _SectionTitle(
+                        icon: Icons.payments_outlined,
+                        title: AppConstants.currency,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 12),
+                      Obx(
+                            () => DropdownButtonFormField<CountryModel>(
+                          value: controller.selectedCountry.value,
+                          isExpanded: true,
+
+                          decoration: InputDecoration(
+                            labelText: AppConstants.country,
+                            prefixIcon: const Icon(Icons.public),
+                            filled: true,
+                            fillColor: theme.surfaceMuted,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide(color: theme.border),
+                            ),
                           ),
-                          readOnly: true,
-                        ),
-                        const SizedBox(height: 14),
-                        CustomTextField(
-                          controller: controller.shopController,
-                          labelText: AppConstants.shopName,
-                          hintText: AppConstants.enterShopName,
-                          prefixIcon: Icon(
-                            Icons.store_outlined,
-                            color: theme.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        CustomTextField(
-                          controller: controller.phoneController,
-                          labelText: AppConstants.phoneOptional,
-                          hintText: AppConstants.enterPhoneNumber,
-                          prefixIcon: Icon(
-                            Icons.phone_outlined,
-                            color: theme.primary,
-                          ),
-                          keyboardType: TextInputType.phone,
-                        ),
-                        const SizedBox(height: 14),
-                        CustomTextField(
-                          controller: controller.addressController,
-                          labelText: AppConstants.completeAddress,
-                          hintText: AppConstants.addressHint,
-                          prefixIcon: Icon(
-                            Icons.location_on_outlined,
-                            color: theme.primary,
-                          ),
-                          keyboardType: TextInputType.streetAddress,
-                        ),
-                        const SizedBox(height: 18),
-                        _SectionTitle(
-                          icon: Icons.payments_outlined,
-                          title: AppConstants.currency,
-                          theme: theme,
-                        ),
-                        const SizedBox(height: 12),
-                        Obx(() => DropdownButtonFormField<CountryModel>(
-                              //  ignore: deprecated_member_use
-                              value: controller.selectedCountry.value,
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                labelText: AppConstants.country,
-                                prefixIcon: const Icon(Icons.public),
-                                filled: true,
-                                fillColor: theme.surfaceMuted,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(color: theme.border),
-                                ),
-                              ),
-                              items: countries
-                                  .map(
-                                    (country) => DropdownMenuItem(
-                                      value: country,
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            country.flagEmoji,
-                                            style: const TextStyle(fontSize: 18),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          SizedBox(
-                                            width: 220,
-                                            child: Text(
-                                              country.name,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
+
+                          items: countries.map((country) {
+                            return DropdownMenuItem<CountryModel>(
+                              value: country,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    country.flagEmoji,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  Expanded(
+                                    child: Text(
+                                      country.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: theme.textPrimary,
                                       ),
                                     ),
-                                  )
-                                  .toList(),
-                              onChanged: (country) {
-                                if (country != null) {
-                                  controller.selectedCountry.value = country;
-                                }
-                              },
-                            )),
-                        const SizedBox(height: 12),
-                        Obx(() => Row(
-                              children: [
-                                Expanded(
-                                  child: _ReadOnlyValue(
-                                    label: AppConstants.symbol,
-                                    value: controller.currency.symbol,
-                                    theme: theme,
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _ReadOnlyValue(
-                                    label: AppConstants.currencyCode,
-                                    value: controller.currency.code,
-                                    theme: theme,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        const SizedBox(height: 18),
-                        Obx(() => _ImagePickerTile(
-                              imageBytes: controller.imageBytes.value,
-                              onPressed: controller.pickImage,
-                              theme: theme,
-                            )),
-                        const SizedBox(height: 22),
-                        Obx(() => AppButton(
-                              text: AppConstants.saveAndContinue,
-                              onPressed: controller.saveShop,
-                              isLoading: controller.isSaving.value,
-                              suffixIcon: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.white,
-                                size: 18,
+                                ],
                               ),
-                            )),
-                      ],
-                    ),
+                            );
+                          }).toList(),
+
+                          onChanged: (country) {
+                            if (country != null) {
+                              controller.selectedCountry.value = country;
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Obx(() => Row(
+                            children: [
+                              Expanded(
+                                child: _ReadOnlyValue(
+                                  label: AppConstants.symbol,
+                                  value: controller.currency.symbol,
+                                  theme: theme,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _ReadOnlyValue(
+                                  label: AppConstants.currencyCode,
+                                  value: controller.currency.code,
+                                  theme: theme,
+                                ),
+                              ),
+                            ],
+                          )),
+                      const SizedBox(height: 18),
+                      Obx(() => _ImagePickerTile(
+                            imageBytes: controller.imageBytes.value,
+                            onPressed: controller.pickImage,
+                            theme: theme,
+                          )),
+                      const SizedBox(height: 22),
+                      Obx(() => AppButton(
+                            text: AppConstants.saveAndContinue,
+                            onPressed: controller.saveShop,
+                            isLoading: controller.isSaving.value,
+                            suffixIcon: const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          )),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
