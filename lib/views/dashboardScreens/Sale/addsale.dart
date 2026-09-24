@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
@@ -93,62 +94,64 @@ class _AddSaleState extends State<AddSale> {
         if (didPop) return;
         _handleBack();
       },
-      child: Scaffold(
+      child: CustomScreen(
         backgroundColor: theme.background,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildTopBar(),
-              Expanded(child: _buildCurrentStepContent()),
-              if (_currentStep != 3)
-                Obx(() {
-                  final _ = saleController.quantities.length;
-                  final _discount = saleController.discount.value;
-                  return _buildBottomBar();
-                }),
-            ],
-          ),
+        appBar: _buildTopBar(),
+
+        body: Column(
+          children: [
+            Expanded(
+              child: _buildCurrentStepContent(),
+            ),
+
+            if (_currentStep != 3)
+              Obx(() {
+                final _ = saleController.quantities.length;
+                final _discount = saleController.discount.value;
+
+                return _buildBottomBar();
+              }),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTopBar() {
+  PreferredSizeWidget _buildTopBar() {
+    // Step 3
     if (_currentStep == 3) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close_rounded, color: textDark),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-      );
-    }
-    if (_currentStep == 1) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: CustomAppBar(
-          title: const Text('Cart Details'),
-          showBackArrow: true,
-          leadingOnPressed: _handleBack,
-          actions: [CustomTextButton(text: 'Reset', onPressed: _resetSale)],
-        ),
+      return CustomAppBar(
+        leadingIcon: Icons.close_rounded,
+        leadingOnPressed: () => Navigator.of(context).pop(),
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: CustomAppBar(
-        title: Text('New ${AppConstants.saleTitle}'),
+    // Step 1
+    if (_currentStep == 1) {
+      return CustomAppBar(
+        title: const Text('Cart Details'),
         showBackArrow: true,
         leadingOnPressed: _handleBack,
-        actions: [CustomTextButton(text: 'Reset', onPressed: _resetSale)],
-      ),
+        actions: [
+          CustomTextButton(
+            text: 'Reset',
+            onPressed: _resetSale,
+          ),
+        ],
+      );
+    }
+
+    // Default / Step 0, 2
+    return CustomAppBar(
+      title: Text('New ${AppConstants.saleTitle}'),
+      showBackArrow: true,
+      leadingOnPressed: _handleBack,
+      actions: [
+        CustomTextButton(
+          text: 'Reset',
+          onPressed: _resetSale,
+        ),
+      ],
     );
   }
 
@@ -198,7 +201,6 @@ class _AddSaleState extends State<AddSale> {
     final isDark = context.isDark;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Obx(() {
         final selectedProducts = saleController.products.where((product) {
           return saleController.isSelected(product.id);
@@ -278,7 +280,6 @@ class _AddSaleState extends State<AddSale> {
     final isDark = context.isDark;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Obx(() {
         final _ = saleController.quantities.length;
         final _discount = saleController.discount.value;
@@ -288,8 +289,6 @@ class _AddSaleState extends State<AddSale> {
 
         return Column(
           children: [
-            const SizedBox(height: 8),
-
             // 1. Cart Items Section
             _SectionCard(
               icon: Icons.inventory_2_rounded,
@@ -499,7 +498,6 @@ class _AddSaleState extends State<AddSale> {
     ];
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -664,7 +662,7 @@ class _AddSaleState extends State<AddSale> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

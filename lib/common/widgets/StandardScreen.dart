@@ -63,7 +63,7 @@ class CustomScreen extends StatelessWidget {
           content,
         ],
       ),
-
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
     );

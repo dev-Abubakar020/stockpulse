@@ -9,6 +9,7 @@ import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../../common/widgets/CustomSearchField.dart';
 import '../../../common/widgets/Custom_filter.dart';
+import '../../../common/widgets/StandardScreen.dart';
 import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/cutom_TransactionTile.dart';
@@ -23,7 +24,7 @@ class SaleView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.appTheme;
 
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
         title: Text(AppConstants.saleTitle),
@@ -63,103 +64,95 @@ class SaleView extends StatelessWidget {
             ),),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomSearchField(
-                    controller: controller.searchController,
-                    hintText: AppConstants.searchHint3,
-                    showScanner: false,
-                    onChanged: controller.searchSales,
-                  ),
-                  const SizedBox(height: 14),
-                  Obx(
-                    () => CustomFilterTabs(
-                      items: controller.filters,
-                      selectedIndex: controller.selectedFilter.value,
-                      onChanged: controller.changeFilter,
-                    ),
-                  ),
-                ],
+      body: Column(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomSearchField(
+                controller: controller.searchController,
+                hintText: AppConstants.searchHint3,
+                showScanner: false,
+                onChanged: controller.searchSales,
               ),
-            ),
-            Expanded(
-              child: Obx(() {
-                if (controller.isSalesLoading.value) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                    child: const ProductListShimmer(),
-                  );
-                }
-                final salesList = controller.filteredSales;
+              const SizedBox(height: 14),
+              Obx(
+                () => CustomFilterTabs(
+                  items: controller.filters,
+                  selectedIndex: controller.selectedFilter.value,
+                  onChanged: controller.changeFilter,
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Obx(() {
+              if (controller.isSalesLoading.value) {
+                return Padding(
+                  padding: const EdgeInsets.only(top:12),
+                  child: const ProductListShimmer(),
+                );
+              }
+              final salesList = controller.filteredSales;
 
-                if (salesList.isEmpty) {
-                  final bool isSearching =
-                      controller.searchQuery.value.isNotEmpty ||
-                      controller.selectedFilter.value != 0;
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 6,
-                    ),
-                    child: EmptyStateWidget(
-                      isSearching: isSearching,
-                      title: isSearching
-                          ? AppConstants.noSalesFound
-                          : AppConstants.noSalesYet,
-                      subtitle: isSearching
-                          ? AppConstants.changeSearchOrFilter
-                          : AppConstants.completedSalesAppearHere,
-                    ),
-                  );
-                }
-                return RefreshIndicator(
-                  onRefresh: controller.fetchSales,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                    itemCount: salesList.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final sale = salesList[index];
-
-                      StatusType statusType = StatusType.neutral;
-                      if (sale.status.toLowerCase() == 'completed') {
-                        statusType = StatusType.success;
-                      } else if (sale.status.toLowerCase() == 'void' ||
-                          sale.status.toLowerCase() == 'cancelled') {
-                        statusType = StatusType.error;
-                      }
-
-                      final dateStr =
-                          "${sale.saleDate.day}/${sale.saleDate.month}/${sale.saleDate.year}";
-
-                      return CustomTransactionTile(
-                        reference: sale.saleNo,
-                        dateTime: dateStr,
-                        amount: 'Rs. ${sale.totalAmount.toInt()}',
-                        status: sale.status,
-                        statusType: statusType,
-                        onTap: () {
-                          Get.toNamed(Routes.saleDetail, arguments: sale);
-                        },
-                      );
-                    },
+              if (salesList.isEmpty) {
+                final bool isSearching =
+                    controller.searchQuery.value.isNotEmpty ||
+                    controller.selectedFilter.value != 0;
+                return Padding(
+                  padding: const EdgeInsets.only(
+                  top: 12
+                  ),
+                  child: EmptyStateWidget(
+                    isSearching: isSearching,
+                    title: isSearching
+                        ? AppConstants.noSalesFound
+                        : AppConstants.noSalesYet,
+                    subtitle: isSearching
+                        ? AppConstants.changeSearchOrFilter
+                        : AppConstants.completedSalesAppearHere,
                   ),
                 );
-              }),
-            ),
-          ],
-        ),
+              }
+              return RefreshIndicator(
+                onRefresh: controller.fetchSales,
+                child: ListView.separated(
+                  padding: const EdgeInsets.only(top:12),
+                  itemCount: salesList.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final sale = salesList[index];
+
+                    StatusType statusType = StatusType.neutral;
+                    if (sale.status.toLowerCase() == 'completed') {
+                      statusType = StatusType.success;
+                    } else if (sale.status.toLowerCase() == 'void' ||
+                        sale.status.toLowerCase() == 'cancelled') {
+                      statusType = StatusType.error;
+                    }
+
+                    final dateStr =
+                        "${sale.saleDate.day}/${sale.saleDate.month}/${sale.saleDate.year}";
+
+                    return CustomTransactionTile(
+                      reference: sale.saleNo,
+                      dateTime: dateStr,
+                      amount: 'Rs. ${sale.totalAmount.toInt()}',
+                      status: sale.status,
+                      statusType: statusType,
+                      onTap: () {
+                        Get.toNamed(Routes.saleDetail, arguments: sale);
+                      },
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+        ],
       ),
 
       /// Floating Action Button
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Container(
         margin: EdgeInsets.only(bottom: 12,right: 18),
         decoration: BoxDecoration(

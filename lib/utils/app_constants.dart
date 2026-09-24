@@ -223,7 +223,7 @@ class AppConstants {
   static const String viewSales = 'View Sales';
   static const String addAnotherSale = 'Add Another Sale';
   static const String itemsLabel = 'items';
-  static const String proceedToPayment = 'Proceed to Payment';
+  static const String proceedToPayment = 'CheckOut';
   static const String completeSaleLabel = 'Complete Sale';
   static const String noProductsAvailable = 'No products available';
   static const String noProductsFound = 'No products found';
