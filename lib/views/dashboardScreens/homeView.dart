@@ -9,7 +9,10 @@ import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
+import '../../common/widgets/StandardScreen.dart';
+import '../../common/widgets/alertDialog.dart';
 import '../../controllers/dashboardController.dart';
+import '../../controllers/loginController.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -17,9 +20,9 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    final double nameFontSize = controller.userName.length > 16 ? 14 : 18;
+    final double nameFontSize = controller.userName.length > AppConstants.spaceLG ? AppConstants.spaceMLG : AppConstants.spaceLXL;
 
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
       body: SafeArea(
         child: RefreshIndicator(
@@ -27,51 +30,80 @@ class HomeView extends GetView<HomeController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            controller.getGreetingMessage(),
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-                              color: theme.textSecondary,
-                            ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          controller.getGreetingMessage(),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 14,
+                            color: theme.textSecondary,
                           ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  controller.userName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.sora(
-                                    fontSize: nameFontSize,
-                                    fontWeight: FontWeight.w700,
-                                    color: theme.textPrimary,
-                                  ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                controller.userName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.sora(
+                                  fontSize: nameFontSize,
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.textPrimary,
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              const Text('👋', style: TextStyle(fontSize: 20)),
-                            ],
-                          ),
-                        ],
+                            ),
+                            const SizedBox(width: 4),
+                            const Text('👋', style: TextStyle(fontSize: 20)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(onPressed: (){
+                    Get.dialog(
+                      CustomConfirmDialog(
+                        title: AppConstants.logout,
+                        subtitle: AppConstants.logoutAlertSubTitle,
+                        confirmText: AppConstants.logout,
+                        onConfirm: () {
+                          Get.back();
+                          Get.find<LoginController>().logout();
+                        },
+                      ),
+                    );
+                  },
+                    icon: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.red
+                              .withValues(alpha: 0.20),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.logout,
+                        size: 20,
+                        color: Colors.red.withValues(alpha: 0.7),
                       ),
                     ),
-                  ],
-                ),
+                  ),),
+                ],
               ),
 
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

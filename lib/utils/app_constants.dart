@@ -491,7 +491,9 @@ class AppConstants {
   static const double spaceXS = 6.0;
   static const double spaceSM = 8.0;
   static const double spaceMD = 12.0;
+  static const double spaceMLG = 14.0;
   static const double spaceLG = 16.0;
+  static const double spaceLXL = 16.0;
   static const double spaceXL = 22.0;
   static const double spaceXXL = 24.0;
   static const double maxWidth = 440.0;

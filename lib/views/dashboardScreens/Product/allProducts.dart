@@ -42,7 +42,27 @@ class AllProducts extends GetView<ProductController>  {
                 },
               ),
             );
-          }, icon: Icon(Icons.logout,color: Colors.red,))
+          },
+            icon: Material(
+              color: Colors.transparent,
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red
+                        .withValues(alpha: 0.20),
+                  ),
+                ),
+                child: Icon(
+                  Icons.logout,
+                  size: 20,
+                  color: Colors.red.withValues(alpha: 0.7),
+                ),
+              ),
+            ),),
         ],
       ),
       body: SafeArea(
