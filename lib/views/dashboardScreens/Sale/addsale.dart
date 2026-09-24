@@ -98,21 +98,16 @@ class _AddSaleState extends State<AddSale> {
         backgroundColor: theme.background,
         appBar: _buildTopBar(),
 
-        body: Column(
-          children: [
-            Expanded(
-              child: _buildCurrentStepContent(),
-            ),
+        body: _buildCurrentStepContent(),
 
-            if (_currentStep != 3)
-              Obx(() {
-                final _ = saleController.quantities.length;
-                final _discount = saleController.discount.value;
+        bottomNavigationBar: _currentStep != 3
+            ? Obx(() {
+          final _ = saleController.quantities.length;
+          final _discount = saleController.discount.value;
 
-                return _buildBottomBar();
-              }),
-          ],
-        ),
+          return _buildBottomBar();
+        })
+            : null,
       ),
     );
   }

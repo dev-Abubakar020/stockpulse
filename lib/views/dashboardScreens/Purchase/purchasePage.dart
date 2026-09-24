@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../../common/widgets/CustomSearchField.dart';
@@ -26,7 +27,7 @@ class PurchasePage extends StatelessWidget {
 
     final PurchaseController controller = Get.find<PurchaseController>();
 
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
         title: Text(AppConstants.purchaseTitle),
@@ -66,100 +67,92 @@ class PurchasePage extends StatelessWidget {
             ),),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomSearchField(
-                    controller: controller.searchController,
-                    hintText: AppConstants.searchHint2,
-                    showScanner: false,
-                    onChanged: controller.searchPurchases,
-                  ),
-                  const SizedBox(height: 14),
-
-                  Obx(
-                    () => CustomFilterTabs(
-                      items: controller.filters,
-                      selectedIndex: controller.selectedFilter.value,
-                      onChanged: controller.changeFilter,
-                    ),
-                  ),
-                ],
+      body: Column(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomSearchField(
+                controller: controller.searchController,
+                hintText: AppConstants.searchHint2,
+                showScanner: false,
+                onChanged: controller.searchPurchases,
               ),
-            ),
+              const SizedBox(height: 14),
 
-            Expanded(
-              child: Obx(() {
-                if (controller.isPurchasesLoading.value) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                    child: const ProductListShimmer(),
-                  );
-                }
-                final purchases = controller.filteredPurchases;
-                if (purchases.isEmpty) {
-                  final bool isSearching =
-                      controller.searchQuery.value.isNotEmpty ||
-                      controller.selectedFilter.value != 0;
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 6,
-                    ),
-                    child: EmptyStateWidget(
-                      isSearching: isSearching,
-                      title: isSearching
-                          ? AppConstants.noPurchasesFoundTitle
-                          : AppConstants.noPurchasesYetTitle,
-                      subtitle: isSearching
-                          ? AppConstants.noPurchasesFoundSubtitle
-                          : AppConstants.noPurchasesYetSubtitle,
-                    ),
-                  );
-                }
+              Obx(
+                () => CustomFilterTabs(
+                  items: controller.filters,
+                  selectedIndex: controller.selectedFilter.value,
+                  onChanged: controller.changeFilter,
+                ),
+              ),
+            ],
+          ),
 
-                return RefreshIndicator(
-                  onRefresh: controller.fetchPurchases,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                    itemCount: purchases.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final purchase = purchases[index];
-
-                      return CustomTransactionTile(
-                        reference: purchase.purchaseNo,
-
-                        dateTime: _formatPurchaseDate(purchase.purchaseDate),
-
-                        amount:
-                            'Rs. ${purchase.totalAmount.toStringAsFixed(2)}',
-
-                        status: _statusLabel(purchase.status),
-
-                        statusType: _statusType(purchase.status),
-
-                        onTap: () {
-                          Get.toNamed(Routes.purchaseDetail, arguments: purchase);
-                        },
-                      );
-                    },
+          Expanded(
+            child: Obx(() {
+              if (controller.isPurchasesLoading.value) {
+                return Padding(
+                  padding: const EdgeInsets.only(top:12),
+                  child: const ProductListShimmer(),
+                );
+              }
+              final purchases = controller.filteredPurchases;
+              if (purchases.isEmpty) {
+                final bool isSearching =
+                    controller.searchQuery.value.isNotEmpty ||
+                    controller.selectedFilter.value != 0;
+                return Padding(
+                  padding: const EdgeInsets.only(
+                  top:12
+                  ),
+                  child: EmptyStateWidget(
+                    isSearching: isSearching,
+                    title: isSearching
+                        ? AppConstants.noPurchasesFoundTitle
+                        : AppConstants.noPurchasesYetTitle,
+                    subtitle: isSearching
+                        ? AppConstants.noPurchasesFoundSubtitle
+                        : AppConstants.noPurchasesYetSubtitle,
                   ),
                 );
-              }),
-            ),
-          ],
-        ),
+              }
+
+              return RefreshIndicator(
+                onRefresh: controller.fetchPurchases,
+                child: ListView.separated(
+                  padding: const EdgeInsets.only(top:12),
+                  itemCount: purchases.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final purchase = purchases[index];
+
+                    return CustomTransactionTile(
+                      reference: purchase.purchaseNo,
+
+                      dateTime: _formatPurchaseDate(purchase.purchaseDate),
+
+                      amount:
+                          'Rs. ${purchase.totalAmount.toStringAsFixed(2)}',
+
+                      status: _statusLabel(purchase.status),
+
+                      statusType: _statusType(purchase.status),
+
+                      onTap: () {
+                        Get.toNamed(Routes.purchaseDetail, arguments: purchase);
+                      },
+                    );
+                  },
+                ),
+              );
+            }),
+          ),
+        ],
       ),
 
       /// Floating Action Button
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Container(
         margin: EdgeInsets.only(bottom: 12,right: 18),
         decoration: BoxDecoration(

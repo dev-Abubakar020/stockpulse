@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/appbar.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/controllers/purchase_controller.dart';
@@ -41,230 +42,227 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
     final dateStr =
         "${purchase.purchaseDate.day}/${purchase.purchaseDate.month}/${purchase.purchaseDate.year} ${_formatTime(purchase.purchaseDate)}";
 
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
         title: const Text('Purchase Details'),
         showBackArrow: true,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // --- Overview Card ---
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: theme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          purchase.purchaseNo,
-                          style: GoogleFonts.sora(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: theme.textPrimary,
-                          ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // --- Overview Card ---
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: theme.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        purchase.purchaseNo,
+                        style: GoogleFonts.sora(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: theme.textPrimary,
                         ),
-                        CustomStatusChip(
-                          textTitle: purchase.status.capitalizeFirst ??
-                              purchase.status,
-                          type: statusType,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Divider(color: theme.border),
-                    const SizedBox(height: 12),
-                    _buildInfoRow('Date & Time', dateStr, theme),
-                    const SizedBox(height: 8),
-                    Obx(
-                      () => _buildInfoRow(
-                        'Created By',
-                        controller.creatorName.value,
-                        theme,
                       ),
-                    ),
-                    if (purchase.notes != null &&
-                        purchase.notes!.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      _buildInfoRow('Notes', purchase.notes!, theme),
+                      CustomStatusChip(
+                        textTitle: purchase.status.capitalizeFirst ??
+                            purchase.status,
+                        type: statusType,
+                      ),
                     ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // --- Items Section ---
-              Text(
-                'Purchased Items',
-                style: GoogleFonts.sora(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Obx(() {
-                if (controller.isPurchaseItemsLoading.value) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: CircularProgressIndicator(),
+                  ),
+                  const SizedBox(height: 12),
+                  Divider(color: theme.border),
+                  const SizedBox(height: 12),
+                  _buildInfoRow('Date & Time', dateStr, theme),
+                  const SizedBox(height: 8),
+                  Obx(
+                    () => _buildInfoRow(
+                      'Created By',
+                      controller.creatorName.value,
+                      theme,
                     ),
-                  );
-                }
+                  ),
+                  if (purchase.notes != null &&
+                      purchase.notes!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    _buildInfoRow('Notes', purchase.notes!, theme),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
 
-                final items = controller.currentPurchaseItems;
-                if (items.isEmpty) {
+            // --- Items Section ---
+            Text(
+              'Purchased Items',
+              style: GoogleFonts.sora(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: theme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Obx(() {
+              if (controller.isPurchaseItemsLoading.value) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              final items = controller.currentPurchaseItems;
+              if (items.isEmpty) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: theme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: theme.border),
+                  ),
+                  child: Text(
+                    'No items found for this purchase.',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: theme.textSecondary,
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: items.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  final item = items[index];
                   return Container(
-                    padding: const EdgeInsets.all(16),
-                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: theme.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: theme.border),
                     ),
-                    child: Text(
-                      'No items found for this purchase.',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: theme.textSecondary,
-                      ),
-                    ),
-                  );
-                }
-
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: theme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: theme.border),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.article,
-                                  style: GoogleFonts.sora(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.textPrimary,
-                                  ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.article,
+                                style: GoogleFonts.sora(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.textPrimary,
                                 ),
-                                if ((item.color != null &&
-                                        item.color!.isNotEmpty) ||
-                                    (item.size != null &&
-                                        item.size!.isNotEmpty)) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${item.color ?? ''} ${item.size != null ? '• Size: ${item.size}' : ''}'
-                                        .trim(),
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 12,
-                                      color: theme.textSecondary,
-                                    ),
-                                  ),
-                                ],
+                              ),
+                              if ((item.color != null &&
+                                      item.color!.isNotEmpty) ||
+                                  (item.size != null &&
+                                      item.size!.isNotEmpty)) ...[
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Qty: ${_formatQty(item.quantity)} ${item.unit} × Rs. ${item.purchasePrice.toInt()}',
+                                  '${item.color ?? ''} ${item.size != null ? '• Size: ${item.size}' : ''}'
+                                      .trim(),
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     color: theme.textSecondary,
                                   ),
                                 ),
                               ],
-                            ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Qty: ${_formatQty(item.quantity)} ${item.unit} × Rs. ${item.purchasePrice.toInt()}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: theme.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Rs. ${item.lineTotal.toInt()}',
-                            style: GoogleFonts.sora(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: theme.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              }),
-              const SizedBox(height: 20),
-
-              // --- Totals Summary Card ---
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: theme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.border),
-                ),
-                child: Column(
-                  children: [
-                    _buildSummaryRow(
-                      'Subtotal',
-                      'Rs. ${purchase.subtotal.toInt()}',
-                      theme,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildSummaryRow(
-                      'Discount',
-                      '- Rs. ${purchase.discount.toInt()}',
-                      theme,
-                      isDiscount: true,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                        ),
                         Text(
-                          'Total Amount',
+                          'Rs. ${item.lineTotal.toInt()}',
                           style: GoogleFonts.sora(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: theme.textPrimary,
                           ),
                         ),
-                        Text(
-                          'Rs. ${purchase.totalAmount.toInt()}',
-                          style: GoogleFonts.sora(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0F766E),
-                          ),
-                        ),
                       ],
                     ),
-                  ],
-                ),
+                  );
+                },
+              );
+            }),
+            const SizedBox(height: 20),
+
+            // --- Totals Summary Card ---
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: theme.border),
               ),
-            ],
-          ),
+              child: Column(
+                children: [
+                  _buildSummaryRow(
+                    'Subtotal',
+                    'Rs. ${purchase.subtotal.toInt()}',
+                    theme,
+                  ),
+                  const SizedBox(height: 8),
+                  _buildSummaryRow(
+                    'Discount',
+                    '- Rs. ${purchase.discount.toInt()}',
+                    theme,
+                    isDiscount: true,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Amount',
+                        style: GoogleFonts.sora(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: theme.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        'Rs. ${purchase.totalAmount.toInt()}',
+                        style: GoogleFonts.sora(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF0F766E),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

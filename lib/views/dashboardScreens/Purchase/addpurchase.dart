@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
@@ -80,74 +81,49 @@ class _AddPurchaseState extends State<AddPurchase> {
     final theme = context.appTheme;
     final isDark = context.isDark;
 
-    return Scaffold(
+    return CustomScreen(
       backgroundColor: theme.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              child: CustomAppBar(
-                title: Text('New Purchase'),
-                showBackArrow: true,
-                actions: [
-                  CustomTextButton(
-                    text: 'Reset',
-                    onPressed: purchaseController.clearCart,
-                  ),
-                ],
-              ),
-            ),
 
-            // ============= CONTENT
+      appBar: CustomAppBar(
+        title: const Text('New Purchase'),
+        showBackArrow: true,
+        actions: [
+          CustomTextButton(
+            text: 'Reset',
+            onPressed: purchaseController.clearCart,
+          ),
+        ],
+      ),
 
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: Obx(
-                      () => Column(
-                    children: [
-                      const SizedBox(height: 8),
+      body: SingleChildScrollView(
+        child: Obx(
+              () => Column(
+            children: [
+              const SizedBox(height: 8),
 
-                      _buildPurchaseItems(isDark),
+              _buildPurchaseItems(isDark),
 
-                      const SizedBox(height: 14),
+              const SizedBox(height: 14),
 
-                      _buildCostSummary(),
+              _buildCostSummary(),
 
-                      const SizedBox(height: 14),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
 
-                      // _buildNotes(),
-
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // ============= SAVE BAR
-
-            Obx(
-                  () => _BottomSaveBar(
-                label:
-                'Rs. ${purchaseController.totalAmount.toStringAsFixed(2)}',
-                buttonText: 'Save Purchase',
-                buttonColor: const Color(0xFF2563EB),
-                isLoading:
-                purchaseController.isLoading.value,
-                onSave:
-                purchaseController.isLoading.value
-                    ? null
-                    : _savePurchase,
-              ),
-            ),
-          ],
+      // No CustomScreen body padding applied here
+      bottomNavigationBar: Obx(
+            () => _BottomSaveBar(
+          label:
+          'Rs. ${purchaseController.totalAmount.toStringAsFixed(2)}',
+          buttonText: 'Save Purchase',
+          buttonColor: AppColors.primary,
+          isLoading: purchaseController.isLoading.value,
+          onSave: purchaseController.isLoading.value
+              ? null
+              : _savePurchase,
         ),
       ),
     );
@@ -174,7 +150,7 @@ class _AddPurchaseState extends State<AddPurchase> {
             vertical: 7,
           ),
           decoration: BoxDecoration(
-            color: const Color(0xFF2563EB),
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
