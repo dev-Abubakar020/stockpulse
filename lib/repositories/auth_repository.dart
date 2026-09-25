@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../common/exceptional/platform_exceptions.dart';
 import 'package:image_picker/image_picker.dart';
-import '../common/route/app_routes.dart';
+import '../services/local_storage_service.dart';
+import '../services/session_cleanup_service.dart';
 
 class AuthRepository {
   final SupabaseClient _supabase;
@@ -269,6 +269,9 @@ class AuthRepository {
     }
 
     try {
+      // Clear any stale user session data before verifying recovery
+      clearUserSessionData();
+
       final response = await _supabase.auth.verifyOTP(
         tokenHash: tokenHash.trim(),
         type: OtpType.recovery,
@@ -282,11 +285,19 @@ class AuthRepository {
 
       _hasVerifiedRecovery = true;
       _verifiedRecoveryUserId = response.user!.id;
+
+      try {
+        Get.find<LocalStorageService>().setRecoveryInProgress(true);
+      } catch (_) {}
+
       debugPrint('Recovery verified successfully for user ID: $_verifiedRecoveryUserId');
       return response;
     } catch (e) {
       _hasVerifiedRecovery = false;
       _verifiedRecoveryUserId = null;
+      try {
+        Get.find<LocalStorageService>().setRecoveryInProgress(false);
+      } catch (_) {}
       rethrow;
     }
   }
@@ -299,6 +310,9 @@ class AuthRepository {
         currentUser.id != _verifiedRecoveryUserId) {
       _hasVerifiedRecovery = false;
       _verifiedRecoveryUserId = null;
+      try {
+        Get.find<LocalStorageService>().setRecoveryInProgress(false);
+      } catch (_) {}
       throw const AppException(
         'Password recovery session is invalid or has expired.',
       );
@@ -312,13 +326,24 @@ class AuthRepository {
     _hasVerifiedRecovery = false;
     _verifiedRecoveryUserId = null;
 
+    try {
+      Get.find<LocalStorageService>().setRecoveryInProgress(false);
+    } catch (_) {}
+
     // Sign out recovery session
     await _supabase.auth.signOut();
+
+    // Clear user session data
+    clearUserSessionData();
   }
 
   void clearRecoveryState() {
     _hasVerifiedRecovery = false;
     _verifiedRecoveryUserId = null;
+    try {
+      Get.find<LocalStorageService>().setRecoveryInProgress(false);
+    } catch (_) {}
+    clearUserSessionData();
   }
 
   User? get currentUser => _supabase.auth.currentUser;

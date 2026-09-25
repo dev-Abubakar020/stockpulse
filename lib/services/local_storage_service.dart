@@ -5,6 +5,7 @@ class LocalStorageService {
   static const String _firstTimeKey = 'is_first_time';
   static const String _themeKey = 'is_dark_mode';
   static const String _isLoggedInKey = 'is_logged_in';
+  static const String _recoveryInProgressKey = 'recovery_in_progress';
 
 
   static Future<void> init() async {
@@ -37,5 +38,15 @@ class LocalStorageService {
   void setLoggedIn(bool isLoggedIn) {
     _box.write(_isLoggedInKey, isLoggedIn);
   }
+
+  // ---------- Recovery In Progress ----------
+  bool isRecoveryInProgress() {
+    return _box.read(_recoveryInProgressKey) ?? false;
+  }
+
+  void setRecoveryInProgress(bool inProgress) {
+    _box.write(_recoveryInProgressKey, inProgress);
+  }
+
   GetStorage get box => _box;
 }

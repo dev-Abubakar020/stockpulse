@@ -5,6 +5,7 @@ import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/services/session_cleanup_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -208,9 +209,10 @@ class LoginController extends GetxController {
   Future<void> logout() async {
     if (!await NetworkManager.instance.checkInternet()) return;
     try {
-
       await Supabase.instance.client.auth.signOut();
       Get.find<LocalStorageService>().setLoggedIn(false);
+      Get.find<LocalStorageService>().setRecoveryInProgress(false);
+      clearUserSessionData();
       Get.offAllNamed(Routes.login);
     } catch (e) {
       final exception = AppException.fromException(e);

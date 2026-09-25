@@ -18,6 +18,8 @@ import 'package:stockpulse/utils/app_constants.dart';
 import 'package:stockpulse/views/authScreens/login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:stockpulse/services/session_cleanup_service.dart';
+
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
@@ -40,7 +42,7 @@ Future<void> main() async {
   // Local Storage
   await LocalStorageService.init();
 
-  Get.put(
+  final storage = Get.put(
     LocalStorageService(),
     permanent: true,
   );
@@ -59,6 +61,8 @@ Future<void> main() async {
 
   // Cold-start deep link check (Owner of initial recovery-link processing)
   String initialRoute = Routes.login;
+  bool recoveryLinkProcessed = false;
+
   try {
     final appLinks = AppLinks();
     final initialUri = await appLinks.getInitialLink();
@@ -70,17 +74,38 @@ Future<void> main() async {
         final tokenHash = initialUri.queryParameters['token_hash']!;
         debugPrint('Processing cold-start recovery token hash...');
         await authRepo.verifyRecoveryToken(tokenHash);
+        storage.setRecoveryInProgress(true);
         initialRoute = Routes.resetPassword;
+        recoveryLinkProcessed = true;
         debugPrint('Cold-start recovery verification succeeded. Initial route set to resetPassword.');
       }
     }
   } catch (e) {
     debugPrint('Cold-start Deep Link Error: $e');
+    authRepo.clearRecoveryState();
+    storage.setRecoveryInProgress(false);
+    clearUserSessionData();
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (_) {}
+    initialRoute = Routes.login;
+    recoveryLinkProcessed = false;
   }
 
-  // If no valid cold-start recovery link was processed, determine normal initial route
-  if (initialRoute == Routes.login) {
-    initialRoute = await getInitialRoute();
+  // If no recovery link was processed, check if an incomplete recovery session existed (app killed during recovery)
+  if (!recoveryLinkProcessed) {
+    if (storage.isRecoveryInProgress()) {
+      debugPrint('Detected incomplete recovery session from previous run (app killed). Cleaning up...');
+      authRepo.clearRecoveryState();
+      storage.setRecoveryInProgress(false);
+      clearUserSessionData();
+      try {
+        await Supabase.instance.client.auth.signOut();
+      } catch (_) {}
+      initialRoute = Routes.login;
+    } else {
+      initialRoute = await getInitialRoute();
+    }
   }
 
   runApp(
@@ -173,6 +198,7 @@ class _MyAppState extends State<MyApp> {
 
       final authRepo = Get.find<AuthRepository>();
       await authRepo.verifyRecoveryToken(tokenHash);
+      Get.find<LocalStorageService>().setRecoveryInProgress(true);
 
       debugPrint('Recovery user verified successfully.');
 
@@ -184,12 +210,28 @@ class _MyAppState extends State<MyApp> {
     } on AuthException catch (e) {
       debugPrint('Recovery Auth Error: $e');
 
+      try {
+        final authRepo = Get.find<AuthRepository>();
+        authRepo.clearRecoveryState();
+        Get.find<LocalStorageService>().setRecoveryInProgress(false);
+        clearUserSessionData();
+        await Supabase.instance.client.auth.signOut();
+      } catch (_) {}
+
       _showRecoveryError(
         'This password reset link is invalid or has expired. '
             'Please request a new one.',
       );
     } catch (e) {
       debugPrint('Recovery Error: $e');
+
+      try {
+        final authRepo = Get.find<AuthRepository>();
+        authRepo.clearRecoveryState();
+        Get.find<LocalStorageService>().setRecoveryInProgress(false);
+        clearUserSessionData();
+        await Supabase.instance.client.auth.signOut();
+      } catch (_) {}
 
       _showRecoveryError(
         'Unable to verify password reset link. '
