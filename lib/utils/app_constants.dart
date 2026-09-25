@@ -505,7 +505,52 @@ class AppConstants {
   static const String editProfileSubtitle =
       'Update your account name and avatar.';
 
+  // Reports
+  static const String reports = 'Reports';
+  static const String reportsSubtitle =
+      'Get detailed insights about your business performance';
+
+  static const String overview = 'Overview';
+  static const String salesReport = 'Sales Report';
+  static const String purchaseReport = 'Purchase Report';
+  static const String profitLoss = 'Profit & Loss';
+  static const String stockReport = 'Stock Report';
+
+  static const String totalSales = 'Total Sales';
+  static const String totalPurchases = 'Total Purchases';
+  static const String totalProfit = 'Total Profit';
+  static const String totalStockValue = 'Total Stock Value';
+  static const String totalInvoices = 'Total Invoices';
+  static const String averageSale = 'Average Sale';
+  static const String itemsSold = 'Items Sold';
+
+  static const String salesVsPurchases = 'Sales vs Purchases';
+  static const String quickReports = 'Quick Reports';
+  static const String topSellingProducts = 'Top Selling Products';
+
+  static const String salesOverview = 'Sales Overview';
+  static const String salesByCategory = 'Sales by Category';
+
+  static const String purchaseOverview = 'Purchase Overview';
+  static const String purchasesBySupplier = 'Purchases by Supplier';
+  static const String recentPurchases = 'Recent Purchases';
+
+  static const String daily = 'Daily';
+  static const String monthly = 'Monthly';
+  static const String custom = 'Custom';
+  static const String export = 'Export';
+  static const String viewAll = 'View All';
+  static const String last30Days = 'Last 30 Days';
+
+  static const String invoice = 'Invoice';
+  static const String dateTime = 'Date & Time';
+  static const String supplier = 'Supplier';
+  static const String amount = 'Amount';
+
   // Spacing
+  // Extra spacing
+  static const double spaceXXS = 4.0;
+  static const double spaceXXXL = 32.0;
   static const double spaceXS = 6.0;
   static const double spaceSM = 8.0;
   static const double spaceMD = 12.0;
@@ -515,4 +560,24 @@ class AppConstants {
   static const double spaceXL = 22.0;
   static const double spaceXXL = 24.0;
   static const double maxWidth = 440.0;
+
+  // Radius
+  static const double radiusXS = 6.0;
+  static const double radiusSM = 8.0;
+  static const double radiusMD = 12.0;
+  static const double radiusLG = 16.0;
+  static const double radiusXL = 20.0;
+  static const double radiusXXL = 24.0;
+
+  // Report UI
+  static const double reportIconBoxSize = 44.0;
+  static const double reportProductImageSize = 42.0;
+  static const double reportChartHeight = 180.0;
+
+  // Icons
+  static const double iconXS = 16.0;
+  static const double iconSM = 18.0;
+  static const double iconMD = 20.0;
+  static const double iconLG = 24.0;
+  static const double iconXL = 28.0;
 }

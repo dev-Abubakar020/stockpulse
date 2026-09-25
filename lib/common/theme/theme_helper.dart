@@ -110,6 +110,29 @@ class AppThemeHelper {
 
   /// Status error color
   Color get error => isDark ? AppColors.darkError : AppColors.error;
+
+  // ==================== STATUS & BUSINESS COLORS ====================
+
+  /// Success status color
+  Color get success => AppColors.success;
+
+  /// Warning status color
+  Color get warning => AppColors.warning;
+
+  /// Sales business color
+  Color get sales => AppColors.sales;
+
+  /// Purchases business color
+  Color get purchases => AppColors.purchases;
+
+  /// Profit business color
+  Color get profit => AppColors.profit;
+
+  /// Expense business color
+  Color get expense => AppColors.expense;
+
+  /// Low stock warning color
+  Color get lowStock => AppColors.lowStock;
 }
 
 /// BuildContext extension for effortless theme queries

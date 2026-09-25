@@ -8,6 +8,7 @@ import 'package:stockpulse/views/dashboardScreens/Purchase/purchasePage.dart';
 import 'package:stockpulse/views/dashboardScreens/Sale/saleView.dart';
 import 'package:stockpulse/views/dashboardScreens/More/morescreen.dart';
 import '../../controllers/dashboardController.dart';
+import '../reportview.dart';
 
 
 class DashboardScreen extends GetView<DashboardController> {
@@ -20,7 +21,8 @@ class DashboardScreen extends GetView<DashboardController> {
     HomeView(),
     SaleView(),
     AllProducts(),
-    PurchasePage(),
+    ReportView(),
+    // PurchasePage(),
     MoreScreen(),
   ];
 
@@ -68,8 +70,8 @@ class DashboardScreen extends GetView<DashboardController> {
                   label: AppConstants.homeTitle,
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.receipt_long_outlined),
-                  activeIcon: Icon(Icons.receipt_long),
+                  icon: Icon(Icons.shopping_cart_outlined),
+                  activeIcon: Icon(Icons.shopping_cart),
                   label: '${AppConstants.saleTitle}s',
                 ),
                 BottomNavigationBarItem(
@@ -78,9 +80,9 @@ class DashboardScreen extends GetView<DashboardController> {
                   label: AppConstants.productLabel,
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.shopping_cart_outlined),
-                  activeIcon: Icon(Icons.shopping_cart),
-                  label: '${AppConstants.purchaseTitle}s',
+                  icon: Icon(Icons.signal_cellular_alt_outlined ),
+                  activeIcon: Icon(Icons.signal_cellular_alt),
+                  label: AppConstants.report,
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.menu),

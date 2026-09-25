@@ -13,6 +13,7 @@ import '../../../common/widgets/custom_MenuTile.dart';
 import '../../../common/widgets/custom_shimmer.dart';
 import '../../../controllers/loginController.dart';
 import '../../../controllers/shopCreateController.dart';
+import '../Product/allProducts.dart';
 
 class MoreScreen extends StatelessWidget {
   MoreScreen({super.key});
@@ -215,17 +216,17 @@ class MoreScreen extends StatelessWidget {
                     },
                   ),
                   MoreMenuTile(
+                    icon: Icons.shopping_cart_outlined,
+                    title: AppConstants.purchaseTitle,
+                    onTap: () {
+                      Get.toNamed(Routes.allPurchase);
+                    },
+                  ),
+                  MoreMenuTile(
                     icon: Icons.receipt_long_outlined,
                     title: AppConstants.expensesTitle,
                     onTap: () {
                       Get.toNamed(Routes.allExpenses);
-                    },
-                  ),
-                  MoreMenuTile(
-                    icon: Icons.bar_chart_outlined,
-                    title: AppConstants.reportsTitle,
-                    onTap: () {
-                      Get.toNamed(Routes.shopReport);
                     },
                   ),
                   MoreMenuTile(

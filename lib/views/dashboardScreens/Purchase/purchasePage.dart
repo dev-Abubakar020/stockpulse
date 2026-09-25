@@ -30,6 +30,7 @@ class PurchasePage extends StatelessWidget {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
+        showBackArrow: true,
         title: Text(AppConstants.purchaseTitle),
         actions: [
           IconButton(onPressed: (){
