@@ -107,7 +107,7 @@ class SaleReportController extends GetxController {
       previousSales,
     );
 
-    await _generateCategoryReport(
+    await generateCategoryReport(
       currentSales,
     );
 
@@ -203,7 +203,7 @@ class SaleReportController extends GetxController {
   // CATEGORY REPORT
   // ============================================================
 
-  Future<void> _generateCategoryReport(
+  Future<void> generateCategoryReport(
       List<SaleModel> sales,
       ) async {
     final Map<String, double> productTotals = {};

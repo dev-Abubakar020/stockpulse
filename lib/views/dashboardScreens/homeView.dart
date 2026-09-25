@@ -309,8 +309,6 @@ class HomeView extends GetView<HomeController> {
                                     ),
                                   ),
                                 ),
-
-
                               ],
                             ),
 
@@ -336,7 +334,10 @@ class HomeView extends GetView<HomeController> {
 
                             SizedBox(
                               height: AppConstants.reportChartHeight,
-                              child: _SalesPurchaseChart(theme: theme),
+                              child: _SalesPurchaseChart(
+                                controller: controller,
+                                theme: theme,
+                              ),
                             ),
                           ],
                         ),
@@ -344,7 +345,6 @@ class HomeView extends GetView<HomeController> {
 
                       const SizedBox(height: AppConstants.spaceLG),
                       const SizedBox(height: 18),
-
 
                       // --- Recent Sales Section ---
                       _SectionContainer(
@@ -383,22 +383,11 @@ class HomeView extends GetView<HomeController> {
                                   return ListView.separated(
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
-                                    itemCount: controller.recentSales.length,
+                                    itemCount: controller.categorySales.length,
                                     separatorBuilder: (BuildContext context, int index) =>
                                     const SizedBox(height: 10),
                                     itemBuilder: (context, index) {
-                                      final sale = controller.recentSales[index];
-                                      final dateStr =
-                                          "${sale.saleDate.day}/${sale.saleDate.month} ${sale.saleDate.hour}:${sale.saleDate.minute.toString().padLeft(2, '0')}";
-
-                                      StatusType statusType = StatusType.neutral;
-                                      if (sale.status.toLowerCase() == 'completed') {
-                                        statusType = StatusType.success;
-                                      } else if (sale.status.toLowerCase() == 'void' ||
-                                          sale.status.toLowerCase() == 'cancelled') {
-                                        statusType = StatusType.error;
-                                      }
-
+                                      final sale = controller.categorySales[index];
                                       return Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
@@ -412,16 +401,12 @@ class HomeView extends GetView<HomeController> {
                                               width: 40,
                                               height: 40,
                                               decoration: BoxDecoration(
-                                                color: statusType == StatusType.success
-                                                    ? const Color(0xFFE8F5E9)
-                                                    : const Color(0xFFFFF1F0),
+                                                color:  const Color(0xFFE8F5E9),
                                                 borderRadius: BorderRadius.circular(10),
                                               ),
                                               child: Icon(
                                                 Icons.assignment_outlined,
-                                                color: statusType == StatusType.success
-                                                    ? const Color(0xFF2E7D32)
-                                                    : const Color(0xFFC62828),
+                                                color: const Color(0xFF2E7D32),
                                                 size: 20,
                                               ),
                                             ),
@@ -431,7 +416,7 @@ class HomeView extends GetView<HomeController> {
                                               CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  sale.saleNo,
+                                                  sale.name,
                                                   style: GoogleFonts.sora(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
@@ -439,11 +424,15 @@ class HomeView extends GetView<HomeController> {
                                                   ),
                                                 ),
                                                 const SizedBox(height: 3),
-                                                Text(
-                                                  dateStr,
-                                                  style: GoogleFonts.plusJakartaSans(
-                                                    fontSize: 12,
-                                                    color: theme.textSecondary,
+                                                SizedBox(
+                                                  width: 140,
+                                                  child: LinearProgressIndicator(
+                                                    value: (sale.percentage / 100).clamp(0.0, 1.0),
+                                                    minHeight: AppConstants.reportProgressHeight,
+                                                    backgroundColor: theme.surfaceMuted,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                                      AppColors.primary,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
@@ -453,7 +442,7 @@ class HomeView extends GetView<HomeController> {
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  'Rs. ${sale.totalAmount.toInt()}',
+                                                  'Rs. ${sale.amount.toInt()}',
                                                   style: GoogleFonts.sora(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w700,
@@ -461,9 +450,12 @@ class HomeView extends GetView<HomeController> {
                                                   ),
                                                 ),
                                                 const SizedBox(height: 4),
-                                                CustomStatusChip(
-                                                  textTitle: sale.status.capitalizeFirst!,
-                                                  type: statusType,
+                                                Text(
+                                                    '${sale.percentage.toInt()} %',
+                                                  style: GoogleFonts.plusJakartaSans(
+                                                    fontSize: 12,
+                                                    color: theme.textSecondary,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -596,59 +588,6 @@ PopupMenuItem<String> _filterItem(
   );
 }
 
-class _QuickActionItem extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _QuickActionItem({
-    required this.title,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-        child: Column(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: color.withValues(alpha: 0.12)),
-              ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: theme.textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _SectionContainer extends StatelessWidget {
   final Widget child;
   final dynamic theme;
@@ -672,6 +611,7 @@ class _SectionContainer extends StatelessWidget {
     );
   }
 }
+
 class _Legend extends StatelessWidget {
   final String title;
   final Color color;
@@ -708,87 +648,209 @@ class _Legend extends StatelessWidget {
   }
 }
 
-class _SalesPurchaseChart extends StatelessWidget {
+class _CategoryProgress extends StatelessWidget {
+  final String title;
+  final String amount;
+  final int percentage;
+  final Color color;
   final dynamic theme;
 
-  const _SalesPurchaseChart({
+  const _CategoryProgress({
+    required this.title,
+    required this.amount,
+    required this.percentage,
+    required this.color,
     required this.theme,
   });
 
   @override
   Widget build(BuildContext context) {
-    const salesValues = [
-      0.45,
-      0.60,
-      0.78,
-      0.55,
-      0.70,
-      0.92,
-      0.66,
-      0.83,
-    ];
-
-    const purchaseValues = [
-      0.30,
-      0.72,
-      0.48,
-      0.63,
-      0.57,
-      0.76,
-      0.40,
-      0.61,
-    ];
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: List.generate(
-        salesValues.length,
-            (index) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppConstants.spaceXXS,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: FractionallySizedBox(
-                      heightFactor: salesValues[index],
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.success,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(AppConstants.radiusXS),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: AppConstants.spaceXXS),
-
-                  Expanded(
-                    child: FractionallySizedBox(
-                      heightFactor: purchaseValues[index],
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.primary,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(AppConstants.radiusXS),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              width: AppConstants.spaceSM,
+              height: AppConstants.spaceSM,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
               ),
             ),
-          );
-        },
-      ),
+            const SizedBox(width: AppConstants.spaceSM),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textPrimary,
+                ),
+              ),
+            ),
+            Text(
+              amount,
+              style: GoogleFonts.sora(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: theme.textPrimary,
+              ),
+            ),
+            const SizedBox(width: AppConstants.spaceSM),
+            SizedBox(
+              width: 35,
+              child: Text(
+                '$percentage%',
+                textAlign: TextAlign.end,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppConstants.spaceSM),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(
+            AppConstants.radiusXL,
+          ),
+          child: LinearProgressIndicator(
+            value: percentage / 100,
+            minHeight: AppConstants.reportProgressHeight,
+            backgroundColor: theme.surfaceMuted,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              color,
+            ),
+          ),
+        ),
+      ],
     );
+  }
+}
+
+class _SalesPurchaseChart extends StatelessWidget {
+  final HomeController controller;
+  final dynamic theme;
+
+  const _SalesPurchaseChart({
+    required this.controller,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final data = controller.chartData;
+      if (data.isEmpty) {
+        return Center(
+          child: Text(
+            'No chart data available',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              color: theme.textSecondary,
+            ),
+          ),
+        );
+      }
+
+      final maxVal = data.fold<double>(1.0, (prev, e) {
+        final m = e.salesAmount > e.purchaseAmount ? e.salesAmount : e.purchaseAmount;
+        return m > prev ? m : prev;
+      });
+
+      return Column(
+        children: [
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: List.generate(
+                data.length,
+                (index) {
+                  final item = data[index];
+                  final salesHeight = maxVal == 0 ? 0.0 : (item.salesAmount / maxVal);
+                  final purchaseHeight = maxVal == 0 ? 0.0 : (item.purchaseAmount / maxVal);
+
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        final dateStr = "${item.date.day}/${item.date.month}/${item.date.year}";
+                        Get.snackbar(
+                          'Date: $dateStr',
+                          'Sales: Rs ${item.salesAmount.toStringAsFixed(0)}\nPurchases: Rs ${item.purchaseAmount.toStringAsFixed(0)}',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: theme.surface,
+                          colorText: theme.textPrimary,
+                          duration: const Duration(seconds: 3),
+                          margin: const EdgeInsets.all(16),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 1.5),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: FractionallySizedBox(
+                                heightFactor: salesHeight.clamp(0.02, 1.0),
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: theme.success,
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(AppConstants.radiusXS),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 1),
+                            Expanded(
+                              child: FractionallySizedBox(
+                                heightFactor: purchaseHeight.clamp(0.02, 1.0),
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: theme.primary,
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(AppConstants.radiusXS),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                data.isNotEmpty ? "${data.first.date.day}/${data.first.date.month}" : '',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10,
+                  color: theme.textHint,
+                ),
+              ),
+              Text(
+                data.length > 1 ? "${data.last.date.day}/${data.last.date.month}" : '',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10,
+                  color: theme.textHint,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 }

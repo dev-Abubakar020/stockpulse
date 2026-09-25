@@ -507,7 +507,7 @@ class _CategoryProgress extends StatelessWidget {
             AppConstants.radiusXL,
           ),
           child: LinearProgressIndicator(
-            value: percentage / 100,
+            value: (percentage / 100).clamp(0.0, 1.0),
             minHeight: AppConstants.reportProgressHeight,
             backgroundColor: theme.surfaceMuted,
             valueColor: AlwaysStoppedAnimation<Color>(

@@ -40,7 +40,8 @@ class AppConstants {
       "Get Real-time insights And Make Data-Driven Decisions.";
   static const String onboardingDesc3 =
       "Mark your attendance and monitor your daily schedule with ease and accuracy.";
-
+  static const String recError = 'This password reset link is invalid or has expired. Please request a new one.';
+  static const String unableToSentLink = 'Unable to verify password reset link. Please request a new one.';
   static const String loginWelcomeTitle = 'Welcome Back';
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String signupTitle = 'Create Account';

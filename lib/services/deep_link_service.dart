@@ -135,7 +135,7 @@ class DeepLinkService extends GetxService {
         await Supabase.instance.client.auth.signOut();
       } catch (_) {}
 
-      _showRecoveryError('This password reset link is invalid or has expired. Please request a new one.');
+      _showRecoveryError(AppConstants.recError);
     } catch (e) {
       debugPrint('Recovery Error: $e');
       try {
@@ -146,7 +146,7 @@ class DeepLinkService extends GetxService {
         await Supabase.instance.client.auth.signOut();
       } catch (_) {}
 
-      _showRecoveryError('Unable to verify password reset link. Please request a new one.');
+      _showRecoveryError(AppConstants.unableToSentLink);
     } finally {
       _isRecoveryProcessing = false;
     }
