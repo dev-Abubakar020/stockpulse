@@ -224,7 +224,9 @@ class MoreScreen extends StatelessWidget {
                   MoreMenuTile(
                     icon: Icons.bar_chart_outlined,
                     title: AppConstants.reportsTitle,
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(Routes.shopReport);
+                    },
                   ),
                   MoreMenuTile(
                     icon: Icons.badge_outlined,

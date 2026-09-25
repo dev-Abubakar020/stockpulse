@@ -247,6 +247,12 @@ class AuthRepository {
     return userCredential;
   }
 
+  bool _hasVerifiedRecovery = false;
+  String? _verifiedRecoveryUserId;
+
+  bool get hasVerifiedRecovery => _hasVerifiedRecovery;
+  String? get verifiedRecoveryUserId => _verifiedRecoveryUserId;
+
   Future<void> sendPasswordResetEmail(String email) async {
     await _supabase.auth.resetPasswordForEmail(
       email.trim(),
@@ -257,23 +263,62 @@ class AuthRepository {
   /// Verify password recovery token from email deep link
   Future<AuthResponse> verifyRecoveryToken(String tokenHash) async {
     if (tokenHash.trim().isEmpty) {
+      _hasVerifiedRecovery = false;
+      _verifiedRecoveryUserId = null;
       throw const AppException('Invalid password reset link.');
     }
 
-    return await _supabase.auth.verifyOTP(
-      tokenHash: tokenHash.trim(),
-      type: OtpType.recovery,
-    );
+    try {
+      final response = await _supabase.auth.verifyOTP(
+        tokenHash: tokenHash.trim(),
+        type: OtpType.recovery,
+      );
+
+      if (response.user == null || response.session == null) {
+        _hasVerifiedRecovery = false;
+        _verifiedRecoveryUserId = null;
+        throw const AuthException('Unable to verify password reset link.');
+      }
+
+      _hasVerifiedRecovery = true;
+      _verifiedRecoveryUserId = response.user!.id;
+      debugPrint('Recovery verified successfully for user ID: $_verifiedRecoveryUserId');
+      return response;
+    } catch (e) {
+      _hasVerifiedRecovery = false;
+      _verifiedRecoveryUserId = null;
+      rethrow;
+    }
   }
 
   Future<void> resetPassword(String newPassword) async {
+    final currentUser = _supabase.auth.currentUser;
+
+    if (!_hasVerifiedRecovery ||
+        currentUser == null ||
+        currentUser.id != _verifiedRecoveryUserId) {
+      _hasVerifiedRecovery = false;
+      _verifiedRecoveryUserId = null;
+      throw const AppException(
+        'Password recovery session is invalid or has expired.',
+      );
+    }
 
     await _supabase.auth.updateUser(
       UserAttributes(password: newPassword),
     );
-    //first logout
+
+    // Clear recovery state
+    _hasVerifiedRecovery = false;
+    _verifiedRecoveryUserId = null;
+
+    // Sign out recovery session
     await _supabase.auth.signOut();
-    // Get.offAllNamed(Routes.login);
+  }
+
+  void clearRecoveryState() {
+    _hasVerifiedRecovery = false;
+    _verifiedRecoveryUserId = null;
   }
 
   User? get currentUser => _supabase.auth.currentUser;

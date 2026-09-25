@@ -60,6 +60,7 @@ class AppConstants {
   static const String addProducts = 'Add Product';
   static const String uncatProduct = 'Uncategorized';
   static const String addExpenses = 'Add Expense';
+  static const String report = 'Reports';
   static const String lowStockTitle = 'Low Stock';
   static const String profitTitle = 'Profit';
   static const String settingTitle = 'Setting';

@@ -10,6 +10,7 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/app_theme.dart';
 import 'package:stockpulse/common/widgets/custom_snackbar.dart';
 import 'package:stockpulse/firebase_options.dart';
+import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/services/networkManager.dart';
@@ -50,8 +51,37 @@ Future<void> main() async {
     permanent: true,
   );
 
-  // Decide where app should start
-  final initialRoute = await getInitialRoute();
+  // Auth Repository
+  final authRepo = Get.put<AuthRepository>(
+    AuthRepository(),
+    permanent: true,
+  );
+
+  // Cold-start deep link check (Owner of initial recovery-link processing)
+  String initialRoute = Routes.login;
+  try {
+    final appLinks = AppLinks();
+    final initialUri = await appLinks.getInitialLink();
+
+    if (initialUri != null) {
+      debugPrint('Cold-start Deep Link: scheme=${initialUri.scheme}, host=${initialUri.host}, path=${initialUri.path}, hasTokenHash=${initialUri.queryParameters['token_hash'] != null}, type=${initialUri.queryParameters['type']}');
+
+      if (_isRecoveryUri(initialUri)) {
+        final tokenHash = initialUri.queryParameters['token_hash']!;
+        debugPrint('Processing cold-start recovery token hash...');
+        await authRepo.verifyRecoveryToken(tokenHash);
+        initialRoute = Routes.resetPassword;
+        debugPrint('Cold-start recovery verification succeeded. Initial route set to resetPassword.');
+      }
+    }
+  } catch (e) {
+    debugPrint('Cold-start Deep Link Error: $e');
+  }
+
+  // If no valid cold-start recovery link was processed, determine normal initial route
+  if (initialRoute == Routes.login) {
+    initialRoute = await getInitialRoute();
+  }
 
   runApp(
     MyApp(
@@ -60,6 +90,14 @@ Future<void> main() async {
   );
 
   FlutterNativeSplash.remove();
+}
+
+bool _isRecoveryUri(Uri uri) {
+  return uri.scheme == 'https' &&
+      uri.host == 'www.rishtajourney.com' &&
+      uri.path == '/reset-password' &&
+      uri.queryParameters['token_hash']?.isNotEmpty == true &&
+      uri.queryParameters['type'] == 'recovery';
 }
 
 // ============================================================
@@ -98,7 +136,7 @@ class _MyAppState extends State<MyApp> {
   // ============================================================
 
   Future<void> _initializeDeepLinks() async {
-    // App already running → link clicked
+    // App already running → link clicked via stream
     _linkSubscription = _appLinks.uriLinkStream.listen(
           (uri) {
         _handleDeepLink(uri);
@@ -107,25 +145,12 @@ class _MyAppState extends State<MyApp> {
         debugPrint('Deep Link Error: $error');
       },
     );
-
-    // App closed → opened from recovery link
-    try {
-      final initialUri = await _appLinks.getInitialLink();
-
-      if (initialUri != null) {
-        await _handleDeepLink(initialUri);
-      }
-    } catch (e) {
-      debugPrint('Initial Deep Link Error: $e');
-    }
   }
 
   Future<void> _handleDeepLink(Uri uri) async {
-    debugPrint('Incoming Deep Link: $uri');
+    debugPrint('Incoming Deep Link: scheme=${uri.scheme}, host=${uri.host}, path=${uri.path}, hasTokenHash=${uri.queryParameters['token_hash'] != null}, type=${uri.queryParameters['type']}');
 
-    // Ignore unrelated links
-    if (uri.scheme != 'com.autosmart.stockpulse' ||
-        uri.host != 'reset-password') {
+    if (!_isRecoveryUri(uri)) {
       return;
     }
 
@@ -144,27 +169,17 @@ class _MyAppState extends State<MyApp> {
     _isRecoveryProcessing = true;
 
     try {
-      debugPrint('Verifying password recovery token...');
+      debugPrint('Verifying password recovery token from stream...');
 
-      final response =
-      await Supabase.instance.client.auth.verifyOTP(
-        tokenHash: tokenHash,
-        type: OtpType.recovery,
-      );
+      final authRepo = Get.find<AuthRepository>();
+      await authRepo.verifyRecoveryToken(tokenHash);
 
-      if (response.user == null ||
-          response.session == null) {
-        throw const AuthException(
-          'Unable to verify password reset link.',
-        );
-      }
-
-      debugPrint(
-        'Recovery user verified: ${response.user!.email}',
-      );
+      debugPrint('Recovery user verified successfully.');
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.offAllNamed(Routes.resetPassword);
+        if (Get.currentRoute != Routes.resetPassword) {
+          Get.offAllNamed(Routes.resetPassword);
+        }
       });
     } on AuthException catch (e) {
       debugPrint('Recovery Auth Error: $e');
@@ -212,55 +227,6 @@ class _MyAppState extends State<MyApp> {
           );
 
           _isAuthErrorShowing = false;
-        },
-      );
-    });
-  }
-
-  // ============================================================
-  // AUTH / DEEP LINK ERROR
-  // ============================================================
-
-  void _handleAuthError(Object error) {
-    debugPrint('Supabase Auth Error: $error');
-
-    if (error is! AuthException) return;
-
-    final message = error.message.toLowerCase();
-
-    final isExpiredLink =
-        error.code == 'access_denied' ||
-            error.statusCode == 'otp_expired' ||
-            message.contains('email link is invalid or has expired');
-
-    if (isExpiredLink && !_isAuthErrorShowing) {
-      _isAuthErrorShowing = true;
-      _showExpiredLinkWarning();
-    }
-  }
-
-  // ============================================================
-  // EXPIRED LINK
-  // ============================================================
-
-  void _showExpiredLinkWarning() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-
-      // Don't navigate again if already on login
-      if (Get.currentRoute != Routes.login) {
-        Get.offAllNamed(Routes.login);
-      }
-
-      Future.delayed(
-        const Duration(milliseconds: 300),
-            () {
-          if (!mounted) return;
-
-          CustomSnackBar.warningSnackBar(
-            title: AppConstants.warningTitle,
-            message: AppConstants.emailLinkExpiredMsg,
-          );
         },
       );
     });

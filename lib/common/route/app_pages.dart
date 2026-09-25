@@ -29,6 +29,7 @@ import '../../views/dashboardScreens/Sale/saleView.dart';
 import '../../views/dashboardScreens/Product/productDetailView.dart';
 import '../../views/dashboardScreens/Sale/saleDetailView.dart';
 import '../../views/dashboardScreens/Purchase/purchaseDetailView.dart';
+import '../../views/reportview.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
 import '../bindings/categoryBinding.dart';
@@ -146,6 +147,11 @@ class AppPages {
       name: Routes.allExpenses,
       page: () => const AllExpenses(),
       binding: ExpenseBinding(),
+    ),
+    GetPage(
+      name: Routes.shopReport,
+      page: () => const ReportView(),
+      // binding: ExpenseBinding(),
     ),
     GetPage(
       name: Routes.productDetail,

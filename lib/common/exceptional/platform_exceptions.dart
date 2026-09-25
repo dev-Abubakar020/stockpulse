@@ -135,6 +135,10 @@ class AppException implements Exception {
         }
       }
 
+      if (exception.message.isNotEmpty) {
+        return AppException(exception.message);
+      }
+
       return const AppException(AppConstants.authFailed);
     }
 
@@ -148,6 +152,10 @@ class AppException implements Exception {
         if (!_isDefaultMessage(mapped.message)) {
           return mapped;
         }
+      }
+
+      if (exception.message.isNotEmpty) {
+        return AppException(exception.message);
       }
 
       return const AppException(AppConstants.databaseError);

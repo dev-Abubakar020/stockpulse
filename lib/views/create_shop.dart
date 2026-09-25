@@ -11,7 +11,7 @@ import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../common/widgets/StandardScreen.dart';
-import '../common/widgets/appbar.dart';
+  import '../common/widgets/appbar.dart';
 
 class CreateShop extends GetView<ShopCreateController> {
   const CreateShop({super.key});
@@ -22,8 +22,9 @@ class CreateShop extends GetView<ShopCreateController> {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
+        showBackArrow: true,
         title: Text(
-          AppConstants.createYourShop,
+          AppConstants.report,
           style: GoogleFonts.sora(fontWeight: FontWeight.w700),
         ),
         actions: [
