@@ -3,6 +3,9 @@ import 'package:stockpulse/common/bindings/forgotPasswordBinding.dart';
 import 'package:stockpulse/common/bindings/loginBinding.dart';
 import 'package:stockpulse/common/bindings/signUpBinding.dart';
 import 'package:stockpulse/common/bindings/shopCreateBinding.dart';
+import 'package:stockpulse/controllers/purchase_report_Controller.dart';
+import 'package:stockpulse/controllers/sale_report_Controller.dart';
+import 'package:stockpulse/views/PurchaseReport.dart';
 import 'package:stockpulse/views/authScreens/edit_profile.dart';
 import 'package:stockpulse/views/authScreens/login.dart';
 import 'package:stockpulse/views/starterScreens/onboarding.dart';
@@ -29,7 +32,7 @@ import '../../views/dashboardScreens/Sale/saleView.dart';
 import '../../views/dashboardScreens/Product/productDetailView.dart';
 import '../../views/dashboardScreens/Sale/saleDetailView.dart';
 import '../../views/dashboardScreens/Purchase/purchaseDetailView.dart';
-import '../../views/reportview.dart';
+import '../../views/saleReport.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
 import '../bindings/categoryBinding.dart';
@@ -149,9 +152,18 @@ class AppPages {
       binding: ExpenseBinding(),
     ),
     GetPage(
-      name: Routes.shopReport,
-      page: () => const ReportView(),
-      // binding: ExpenseBinding(),
+      name: Routes.saleReport,
+      page: () => SaleReport(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => SaleReportController());
+      }),
+    ),
+    GetPage(
+      name: Routes.purchaseReport,
+      page: () => PurchaseReport(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => PurchaseReportController());
+      }),
     ),
     GetPage(
       name: Routes.productDetail,

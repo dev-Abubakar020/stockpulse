@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ import 'package:stockpulse/views/dashboardScreens/Purchase/purchasePage.dart';
 import 'package:stockpulse/views/dashboardScreens/Sale/saleView.dart';
 import 'package:stockpulse/views/dashboardScreens/More/morescreen.dart';
 import '../../controllers/dashboardController.dart';
-import '../reportview.dart';
+import '../saleReport.dart';
 
 
 class DashboardScreen extends GetView<DashboardController> {
@@ -21,8 +22,7 @@ class DashboardScreen extends GetView<DashboardController> {
     HomeView(),
     SaleView(),
     AllProducts(),
-    ReportView(),
-    // PurchasePage(),
+    PurchasePage(),
     MoreScreen(),
   ];
 
@@ -63,28 +63,28 @@ class DashboardScreen extends GetView<DashboardController> {
                 fontWeight: FontWeight.normal,
                 fontSize: 12,
               ),
-              items: const [
-                BottomNavigationBarItem(
+              items: [
+                const BottomNavigationBarItem(
                   icon: Icon(Icons.home_outlined),
                   activeIcon: Icon(Icons.home),
                   label: AppConstants.homeTitle,
                 ),
-                BottomNavigationBarItem(
+                const BottomNavigationBarItem(
                   icon: Icon(Icons.shopping_cart_outlined),
                   activeIcon: Icon(Icons.shopping_cart),
                   label: '${AppConstants.saleTitle}s',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.inventory_2_outlined),
-                  activeIcon: Icon(Icons.inventory_2),
+                  icon: Icon(CupertinoIcons.cube_box),
+                  activeIcon: const Icon(CupertinoIcons.cube_box_fill),
                   label: AppConstants.productLabel,
                 ),
-                BottomNavigationBarItem(
+                const BottomNavigationBarItem(
                   icon: Icon(Icons.signal_cellular_alt_outlined ),
                   activeIcon: Icon(Icons.signal_cellular_alt),
-                  label: AppConstants.report,
+                  label: AppConstants.purchaseTitle,
                 ),
-                BottomNavigationBarItem(
+                const BottomNavigationBarItem(
                   icon: Icon(Icons.menu),
                   activeIcon: Icon(Icons.menu),
                   label: AppConstants.moreTitle,

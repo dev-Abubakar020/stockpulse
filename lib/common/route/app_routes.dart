@@ -26,7 +26,8 @@ abstract class Routes {
   static const addPurchase = '/addPurchase';
   static const addExpense = '/addExpense';
   static const allExpenses = '/allExpenses';
-  static const shopReport = '/shopReport';
+  static const saleReport = '/saleReport';
+  static const purchaseReport = '/purchaseReport';
   static const productDetail = '/productDetail';
   static const saleDetail = '/saleDetail';
   static const purchaseDetail = '/purchaseDetail';

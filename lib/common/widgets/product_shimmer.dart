@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:stockpulse/utils/app_colors.dart';
 
 class ProductListShimmer extends StatelessWidget {
   final int itemCount;
@@ -26,11 +27,11 @@ class ProductListShimmer extends StatelessWidget {
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
           baseColor: isDark
-              ? const Color(0xFF131D2E)
-              : const Color(0xFFE2E8F0),
+              ? AppColors.darkSurface
+              : AppColors.border,
           highlightColor: isDark
-              ? const Color(0xFF1E2D44)
-              : const Color(0xFFF8FAFC),
+              ? AppColors.darkBorder
+              : AppColors.darkTextPrimary,
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(

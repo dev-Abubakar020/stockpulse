@@ -18,9 +18,6 @@ class SaleItemModel {
     required this.salePrice,
   });
 
-  // ============================================================
-  // FROM JSON (SUPABASE)
-  // ============================================================
 
   factory SaleItemModel.fromJson(Map<String, dynamic> json) {
     final productJson = json['products'] as Map<String, dynamic>?;

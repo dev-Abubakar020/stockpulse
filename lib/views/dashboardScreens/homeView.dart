@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +14,7 @@ import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/alertDialog.dart';
+import '../../common/widgets/premiumdial.dart';
 import '../../controllers/dashboardController.dart';
 import '../../controllers/loginController.dart';
 
@@ -216,15 +218,16 @@ class HomeView extends GetView<HomeController> {
                                 Expanded(
                                   child: InkWell(
                                     onTap: () {
-                                      Get.find<DashboardController>().changePage(1);
+                                      Get.toNamed(Routes.saleReport);
                                     },
-                                    child: CardSummary(
+                                    child: SummaryCard(
                                       title: AppConstants.saleTitle,
                                       value:
                                           'Rs. ${controller.totalSales.value.toInt()}',
-                                      icon: Icons.receipt_long_outlined,
+                                      icon: CupertinoIcons.cart,
                                       iconColor: const Color(0xFF00796B),
-                                      iconBackgroundColor: const Color(0xFFE0F2F1),
+                                      percentage: '',
+                                      theme: theme,
                                     ),
                                   ),
                                 ),
@@ -232,15 +235,16 @@ class HomeView extends GetView<HomeController> {
                                 Expanded(
                                   child: InkWell(
                                     onTap: () {
-                                      Get.find<DashboardController>().changePage(3);
+                                      Get.toNamed(Routes.purchaseReport);
                                     },
-                                    child: CardSummary(
+                                    child: SummaryCard(
                                       title: AppConstants.purchaseTitle,
                                       value:
                                           'Rs. ${controller.totalPurchases.value.toInt()}',
-                                      icon: Icons.trending_up_rounded,
+                                      icon: CupertinoIcons.cube_box,
                                       iconColor: const Color(0xFF2E7D32),
-                                      iconBackgroundColor: const Color(0xFFE8F5E9),
+                                      percentage: '',
+                                      theme: theme,
                                     ),
                                   ),
                                 ),
@@ -254,7 +258,7 @@ class HomeView extends GetView<HomeController> {
                                     onTap: () {
                                       Get.find<DashboardController>().changePage(2);
                                     },
-                                    child: CardSummary(
+                                    child: SummaryCard(
                                       title: AppConstants.totalProduct,
                                       value: controller
                                           .productController
@@ -263,19 +267,21 @@ class HomeView extends GetView<HomeController> {
                                           .toString(),
                                       icon: Icons.grid_view_rounded,
                                       iconColor: const Color(0xFF1565C0),
-                                      iconBackgroundColor: const Color(0xFFE3F2FD),
+                                      percentage: '',
+                                      theme: theme,
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
-                                  child: CardSummary(
+                                  child: SummaryCard(
                                     title: AppConstants.lowStockTitle,
                                     value:
                                         '${controller.lowStockCount.value} Items',
-                                    icon: Icons.warning_amber_rounded,
+                                    icon: CupertinoIcons.cube_box,
                                     iconColor: const Color(0xFFC62828),
-                                    iconBackgroundColor: const Color(0xFFFFEBEE),
+                                    percentage: '',
+                                    theme: theme,
                                   ),
                                 ),
                               ],
@@ -283,188 +289,207 @@ class HomeView extends GetView<HomeController> {
                           ],
                         );
                       }),
-                      const SizedBox(height: 18),
-                      // --- Quick Actions Section ---
-                      CustomHeading(title: AppConstants.quickAction),
-                      const SizedBox(height: 14),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _QuickActionItem(
-                              title: AppConstants.newSale,
-                              icon: Icons.add_shopping_cart_rounded,
-                              color: const Color(0xFF2E7D32),
-                              onTap: () async {
-                                await Get.toNamed(Routes.addSale);
-                                controller.fetchHomeData();
-                              },
+                      SizedBox(height: 18,),
+                      _SectionContainer(
+                        theme: theme,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            SizedBox(height: 12,),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    AppConstants.salesVsPurchases,
+                                    style: GoogleFonts.sora(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: theme.textPrimary,
+                                    ),
+                                  ),
+                                ),
+
+
+                              ],
                             ),
-                          ),
-                          Expanded(
-                            child: _QuickActionItem(
-                              title: AppConstants.addPurchase,
-                              icon: Icons.assignment_turned_in_outlined,
-                              color: const Color(0xFF00796B),
-                              onTap: () async {
-                                await Get.toNamed(Routes.addPurchase);
-                                controller.fetchHomeData();
-                              },
+
+                            const SizedBox(height: AppConstants.spaceLG),
+
+                            Row(
+                              children: [
+                                _Legend(
+                                  title: AppConstants.saleTitle,
+                                  color: theme.success,
+                                  theme: theme,
+                                ),
+                                const SizedBox(width: AppConstants.spaceLG),
+                                _Legend(
+                                  title: AppConstants.purchaseTitle,
+                                  color: theme.primary,
+                                  theme: theme,
+                                ),
+                              ],
                             ),
-                          ),
-                          Expanded(
-                            child: _QuickActionItem(
-                              title: AppConstants.addProducts,
-                              icon: Icons.add_box_outlined,
-                              color: const Color(0xFF1565C0),
-                              onTap: () async {
-                                await Get.toNamed(Routes.addProductWizard);
-                                controller.fetchHomeData();
-                              },
+
+                            const SizedBox(height: AppConstants.spaceXL),
+
+                            SizedBox(
+                              height: AppConstants.reportChartHeight,
+                              child: _SalesPurchaseChart(theme: theme),
                             ),
-                          ),
-                          Expanded(
-                            child: _QuickActionItem(
-                              title: AppConstants.addExpenses,
-                              icon: Icons.account_balance_wallet_outlined,
-                              color: const Color(0xFFEF6C00),
-                              onTap: () {
-                                Get.toNamed(Routes.addExpense);
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 24),
+
+                      const SizedBox(height: AppConstants.spaceLG),
+                      const SizedBox(height: 18),
+
 
                       // --- Recent Sales Section ---
-                      CustomHeading(
-                        title: AppConstants.recentSales,
-                        actionText: AppConstants.seeAll,
-                        onPressed: () {
-                          Get.find<DashboardController>().changePage(1);
-                        },
-                      ),
-                      const SizedBox(height: 12),
-
-                      // --- Recent Sales List ---
-                      Obx(() {
-                        if (controller.isLoading.value) {
-                          return _buildShimmerRecentSales();
-                        }
-
-                        if (controller.recentSales.isEmpty) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 20),
-                              child: Text(
-                                AppConstants.noProductsAvailable,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: theme.textSecondary,
+                      _SectionContainer(
+                        theme: theme,
+                        child: Column(
+                              children: [
+                                CustomHeading(
+                                  title: AppConstants.topSellingProducts,
+                                  actionText: AppConstants.seeAll,
+                                  onPressed: () {
+                                    Get.find<DashboardController>().changePage(2);
+                                  },
                                 ),
-                              ),
-                            ),
-                          );
-                        }
+                                const SizedBox(height: 12),
 
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: controller.recentSales.length,
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            final sale = controller.recentSales[index];
-                            final dateStr =
-                                "${sale.saleDate.day}/${sale.saleDate.month} ${sale.saleDate.hour}:${sale.saleDate.minute.toString().padLeft(2, '0')}";
+                                // --- Recent Sales List ---
+                                Obx(() {
+                                  if (controller.isLoading.value) {
+                                    return _buildShimmerRecentSales();
+                                  }
 
-                            StatusType statusType = StatusType.neutral;
-                            if (sale.status.toLowerCase() == 'completed') {
-                              statusType = StatusType.success;
-                            } else if (sale.status.toLowerCase() == 'void' ||
-                                sale.status.toLowerCase() == 'cancelled') {
-                              statusType = StatusType.error;
-                            }
-
-                            return Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: theme.surface,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: theme.border),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: statusType == StatusType.success
-                                          ? const Color(0xFFE8F5E9)
-                                          : const Color(0xFFFFF1F0),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Icon(
-                                      Icons.assignment_outlined,
-                                      color: statusType == StatusType.success
-                                          ? const Color(0xFF2E7D32)
-                                          : const Color(0xFFC62828),
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        sale.saleNo,
-                                        style: GoogleFonts.sora(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.textPrimary,
+                                  if (controller.recentSales.isEmpty) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 20),
+                                        child: Text(
+                                          AppConstants.noProductsAvailable,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: theme.textSecondary,
+                                          ),
                                         ),
                                       ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        dateStr,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 12,
-                                          color: theme.textSecondary,
+                                    );
+                                  }
+
+                                  return ListView.separated(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemCount: controller.recentSales.length,
+                                    separatorBuilder: (BuildContext context, int index) =>
+                                    const SizedBox(height: 10),
+                                    itemBuilder: (context, index) {
+                                      final sale = controller.recentSales[index];
+                                      final dateStr =
+                                          "${sale.saleDate.day}/${sale.saleDate.month} ${sale.saleDate.hour}:${sale.saleDate.minute.toString().padLeft(2, '0')}";
+
+                                      StatusType statusType = StatusType.neutral;
+                                      if (sale.status.toLowerCase() == 'completed') {
+                                        statusType = StatusType.success;
+                                      } else if (sale.status.toLowerCase() == 'void' ||
+                                          sale.status.toLowerCase() == 'cancelled') {
+                                        statusType = StatusType.error;
+                                      }
+
+                                      return Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: theme.surface,
+                                          borderRadius: BorderRadius.circular(14),
+                                          border: Border.all(color: theme.border),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'Rs. ${sale.totalAmount.toInt()}',
-                                        style: GoogleFonts.sora(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: theme.textPrimary,
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: statusType == StatusType.success
+                                                    ? const Color(0xFFE8F5E9)
+                                                    : const Color(0xFFFFF1F0),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Icon(
+                                                Icons.assignment_outlined,
+                                                color: statusType == StatusType.success
+                                                    ? const Color(0xFF2E7D32)
+                                                    : const Color(0xFFC62828),
+                                                size: 20,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  sale.saleNo,
+                                                  style: GoogleFonts.sora(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: theme.textPrimary,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 3),
+                                                Text(
+                                                  dateStr,
+                                                  style: GoogleFonts.plusJakartaSans(
+                                                    fontSize: 12,
+                                                    color: theme.textSecondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const Spacer(),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  'Rs. ${sale.totalAmount.toInt()}',
+                                                  style: GoogleFonts.sora(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: theme.textPrimary,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                CustomStatusChip(
+                                                  textTitle: sale.status.capitalizeFirst!,
+                                                  type: statusType,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      CustomStatusChip(
-                                        textTitle: sale.status.capitalizeFirst!,
-                                        type: statusType,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      }),
+                                      );
+                                    },
+                                  );
+                                }),
+                              ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(bottom: 12,right: AppConstants.spaceSM),
+        child: PremiumSpeedDial(
+          onRefresh: () async {
+            await controller.fetchHomeData();
+          },
         ),
       ),
     );
@@ -619,6 +644,150 @@ class _QuickActionItem extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SectionContainer extends StatelessWidget {
+  final Widget child;
+  final dynamic theme;
+
+  const _SectionContainer({
+    required this.child,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(bottom:AppConstants.spaceLG,left: AppConstants.spaceLG,right: AppConstants.spaceLG,),
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: BorderRadius.circular(AppConstants.radiusLG),
+        border: Border.all(color: theme.border),
+      ),
+      child: child,
+    );
+  }
+}
+class _Legend extends StatelessWidget {
+  final String title;
+  final Color color;
+  final dynamic theme;
+
+  const _Legend({
+    required this.title,
+    required this.color,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: AppConstants.spaceMD,
+          height: AppConstants.spaceMD,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: AppConstants.spaceXS),
+        Text(
+          title,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 12,
+            color: theme.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SalesPurchaseChart extends StatelessWidget {
+  final dynamic theme;
+
+  const _SalesPurchaseChart({
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const salesValues = [
+      0.45,
+      0.60,
+      0.78,
+      0.55,
+      0.70,
+      0.92,
+      0.66,
+      0.83,
+    ];
+
+    const purchaseValues = [
+      0.30,
+      0.72,
+      0.48,
+      0.63,
+      0.57,
+      0.76,
+      0.40,
+      0.61,
+    ];
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(
+        salesValues.length,
+            (index) {
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.spaceXXS,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: FractionallySizedBox(
+                      heightFactor: salesValues[index],
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: theme.success,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(AppConstants.radiusXS),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: AppConstants.spaceXXS),
+
+                  Expanded(
+                    child: FractionallySizedBox(
+                      heightFactor: purchaseValues[index],
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: theme.primary,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(AppConstants.radiusXS),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

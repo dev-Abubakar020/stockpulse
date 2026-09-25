@@ -45,12 +45,13 @@ class AppConstants {
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String signupTitle = 'Create Account';
   static const String saleTitle = 'Sale';
-  static const String newSale = 'New \nSale';
+  static const String newSale = 'New Sale';
   static const String productTitle = 'All Inventory';
   static const String businessTitle = 'Business Management';
   static const String totalProduct = 'Total Products';
   static const String quickAction = "Quick Actions";
   static const String recentSales = "Recent Sales";
+  static const String recentPurchase = "Recent Purchase";
   static const String homeTitle = 'Home';
   static const String productLabel = 'Products';
   static const String moreTitle = 'More';
@@ -111,6 +112,7 @@ class AppConstants {
   static const String addExpense = 'Add Expense';
   static const String dateNotes = 'Date and Notes';
   static const String dateFormat = 'D/MM/YYYY';
+  static const String dateFormat1 = 'dd MMM, hh:mm a';
   static const String descExpense = 'Describe the expense...';
 
   static const String reset = 'Reset';
@@ -133,6 +135,7 @@ class AppConstants {
   static const String allCat = 'All Categories';
   static const String allExpenses = 'All Expenses';
   static const String noCatFound = 'No categories found.';
+  static const String noData = 'No category data available';
   static const String noExpenseFound = 'No Expenses found.';
   static const String customer = "Customer";
   static const String addNote = "Add Note (Optional)";
@@ -522,6 +525,7 @@ class AppConstants {
   static const String totalStockValue = 'Total Stock Value';
   static const String totalInvoices = 'Total Invoices';
   static const String averageSale = 'Average Sale';
+  static const String averagePurchase = 'Average Purchase';
   static const String itemsSold = 'Items Sold';
 
   static const String salesVsPurchases = 'Sales vs Purchases';
@@ -530,6 +534,7 @@ class AppConstants {
 
   static const String salesOverview = 'Sales Overview';
   static const String salesByCategory = 'Sales by Category';
+  static const String purchaseByCategory = 'Purchase by Category';
 
   static const String purchaseOverview = 'Purchase Overview';
   static const String purchasesBySupplier = 'Purchases by Supplier';
@@ -546,7 +551,8 @@ class AppConstants {
   static const String dateTime = 'Date & Time';
   static const String supplier = 'Supplier';
   static const String amount = 'Amount';
-
+  static const String others = 'Others';
+  static const String salesPerformanceSubtitle = 'Track your sales performance over time';
   // Spacing
   // Extra spacing
   static const double spaceXXS = 4.0;
@@ -570,6 +576,7 @@ class AppConstants {
   static const double radiusXXL = 24.0;
 
   // Report UI
+  static const double reportProgressHeight = 7.0;
   static const double reportIconBoxSize = 44.0;
   static const double reportProductImageSize = 42.0;
   static const double reportChartHeight = 180.0;
