@@ -16,6 +16,7 @@ import 'package:stockpulse/views/authScreens/phonedetailScreen.dart';
 import 'package:stockpulse/views/authScreens/resetPassword.dart';
 import 'package:stockpulse/views/dashboardScreens/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
+import '../../printingview.dart';
 import '../../views/dashboardScreens/More/addcategories.dart';
 import '../../views/expense/addexpenses.dart';
 import '../../views/expense/allexpense.dart';
@@ -179,6 +180,11 @@ class AppPages {
       name: Routes.purchaseDetail,
       page: () => const PurchaseDetailView(),
       binding: PurchaseBinding(),
+    ),
+
+    GetPage(
+      name: Routes.printingSetting,
+      page: () => PrinterSettingsView(),
     ),
     // GetPage(name: Routes.onboarding, page: () => const OnboardingScreen()),
   ];

@@ -257,7 +257,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                           // ───────── IMAGE ─────────
                           if (pickedFile != null)
                             Image.file(
-                              pickedFile as File,
+                              File(pickedFile.path),
                               fit: BoxFit.cover,
                             )
                           else if (networkUrl != null && networkUrl.isNotEmpty)

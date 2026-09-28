@@ -9,6 +9,7 @@ import "package:stockpulse/repositories/shop_repository.dart";
 import "../../controllers/shopCreateController.dart";
 import "../../repositories/product_repository.dart";
 import "../../services/networkManager.dart";
+import "../../services/thermal_printer_service.dart";
 
 class InitialBinding extends Bindings {
   @override
@@ -31,6 +32,11 @@ class InitialBinding extends Bindings {
       () => ProductController(
         Get.find<ProductRepository>(),
       ),
+    );
+
+    Get.put(
+      ThermalPrinterService(),
+      permanent: true,
     );
   }
 }

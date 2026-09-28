@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.fastgen.stockpulse"
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

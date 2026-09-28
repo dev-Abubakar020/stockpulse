@@ -216,17 +216,17 @@ class MoreScreen extends StatelessWidget {
                     },
                   ),
                   MoreMenuTile(
-                    icon: Icons.shopping_cart_outlined,
-                    title: AppConstants.purchaseTitle,
-                    onTap: () {
-                      Get.toNamed(Routes.allPurchase);
-                    },
-                  ),
-                  MoreMenuTile(
                     icon: Icons.receipt_long_outlined,
                     title: AppConstants.expensesTitle,
                     onTap: () {
                       Get.toNamed(Routes.allExpenses);
+                    },
+                  ),
+                  MoreMenuTile(
+                    icon: Icons.print,
+                    title: 'Printing Setting',
+                    onTap: () {
+                      Get.toNamed(Routes.printingSetting);
                     },
                   ),
                   MoreMenuTile(

@@ -80,9 +80,9 @@ class DashboardScreen extends GetView<DashboardController> {
                   label: AppConstants.productLabel,
                 ),
                 const BottomNavigationBarItem(
-                  icon: Icon(Icons.signal_cellular_alt_outlined ),
-                  activeIcon: Icon(Icons.signal_cellular_alt),
-                  label: AppConstants.purchaseTitle,
+                  icon: Icon(Icons.shopping_cart_outlined),
+                  activeIcon: Icon(Icons.shopping_cart),
+                  label: '${AppConstants.purchaseTitle}s',
                 ),
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.menu),

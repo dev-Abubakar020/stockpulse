@@ -7,6 +7,11 @@ import 'package:stockpulse/common/widgets/appbar.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/controllers/purchase_controller.dart';
 import 'package:stockpulse/models/purchasemodel.dart';
+import 'package:stockpulse/utils/app_constants.dart';
+
+import '../../../services/initialpdfview.dart';
+import '../../../services/purchase_pdf_service.dart';
+import '../../thermal_purchase_receipt.dart';
 
 class PurchaseDetailView extends StatefulWidget {
   const PurchaseDetailView({super.key});
@@ -262,6 +267,70 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                 ],
               ),
             ),
+
+            SizedBox(height:10 ,),
+            SizedBox(
+              width: double.infinity,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    Get.to(
+                          () => PrintPreviewScreen(
+                        documentName: purchase.purchaseNo,
+
+                        buildPdf: (format) {
+                          return PurchasePdfService.generatePurchase(
+                            format: format,
+                            purchase: purchase,
+                            items: controller.currentPurchaseItems,
+                            creatorName:
+                            controller.creatorName.value,
+                          );
+                        },
+
+                        thermalWidget: ThermalPurchaseReceipt(
+                          purchase: purchase,
+                          items: controller.currentPurchaseItems,
+                          creatorName:
+                          controller.creatorName.value,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: theme.primary.withValues(alpha: 0.20),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: theme.primary.withValues(alpha: 0.20),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.picture_as_pdf_outlined,
+                          size: 20,
+                          color: theme.primary.withValues(alpha: 0.8),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          AppConstants.viewAsPdf,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: theme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

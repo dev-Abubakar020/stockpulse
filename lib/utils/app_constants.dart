@@ -536,10 +536,35 @@ class AppConstants {
   static const String salesOverview = 'Sales Overview';
   static const String salesByCategory = 'Sales by Category';
   static const String purchaseByCategory = 'Purchase by Category';
-
+  static const String viewAsPdf = 'View as PDF';
   static const String purchaseOverview = 'Purchase Overview';
   static const String purchasesBySupplier = 'Purchases by Supplier';
   static const String recentPurchases = 'Recent Purchases';
+
+  // =========================
+// PRINTER / BLUETOOTH
+// =========================
+
+  static const String bluetoothOff =
+      'Bluetooth is turned off. Please turn on Bluetooth and try again.';
+
+  static const String bluetoothPermissionDenied =
+      'Bluetooth permission is required to find nearby printers.';
+
+  static const String printerNotFound =
+      'No printer found. Make sure your printer is turned on and nearby.';
+
+  static const String printerConnectionFailed =
+      'Unable to connect to the printer. Please try again.';
+
+  static const String printerDisconnected =
+      'The printer is disconnected. Please reconnect and try again.';
+
+  static const String printerPrintFailed =
+      'Unable to print the receipt. Please check the printer and try again.';
+
+  static const String printerError =
+      'Something went wrong with the printer. Please try again.';
 
   static const String daily = 'Daily';
   static const String monthly = 'Monthly';

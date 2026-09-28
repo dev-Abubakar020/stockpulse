@@ -31,4 +31,6 @@ abstract class Routes {
   static const productDetail = '/productDetail';
   static const saleDetail = '/saleDetail';
   static const purchaseDetail = '/purchaseDetail';
+
+  static const printingSetting = '/printingSetting';
 }
