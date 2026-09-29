@@ -51,9 +51,9 @@ class DashboardScreen extends StatelessWidget {
       ),
       DashboardTabConfig(
         page: const AllProducts(),
-        navItem: BottomNavigationBarItem(
-          icon: const Icon(CupertinoIcons.cube_box),
-          activeIcon: const Icon(CupertinoIcons.cube_box_fill),
+        navItem: const BottomNavigationBarItem(
+          icon: Icon(CupertinoIcons.cube_box),
+          activeIcon: Icon(CupertinoIcons.cube_box_fill),
           label: AppConstants.productLabel,
         ),
         isPermitted: true,
@@ -68,7 +68,7 @@ class DashboardScreen extends StatelessWidget {
         isPermitted: roleService.canManagePurchases,
       ),
       DashboardTabConfig(
-        page: MoreScreen(),
+        page: const MoreScreen(),
         navItem: const BottomNavigationBarItem(
           icon: Icon(Icons.menu),
           activeIcon: Icon(Icons.menu),

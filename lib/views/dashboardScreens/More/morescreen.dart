@@ -16,9 +16,9 @@ import '../../../controllers/loginController.dart';
 import '../../../controllers/shopCreateController.dart';
 
 class MoreScreen extends StatelessWidget {
-  MoreScreen({super.key});
-  final Uri _url = Uri.parse('https://flutter.dev');
-  final Uri _url2 = Uri.parse('https://flutter.dev');
+  const MoreScreen({super.key});
+  static final Uri _url = Uri.parse('https://flutter.dev');
+  static final Uri _url2 = Uri.parse('https://flutter.dev');
 
   @override
   Widget build(BuildContext context) {
