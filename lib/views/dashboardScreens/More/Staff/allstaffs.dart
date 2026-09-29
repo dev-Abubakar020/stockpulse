@@ -88,12 +88,6 @@ class AllStaffView extends StatelessWidget {
 
                     return StaffCard(
                       staff: staff,
-                      onStatusChanged: (isActive) {
-                        controller.changeStaffStatus(
-                          staff,
-                          isActive,
-                        );
-                      },
                     );
                   },
                 ),
@@ -128,12 +122,10 @@ class AllStaffView extends StatelessWidget {
 
 class StaffCard extends StatelessWidget {
   final StaffModel staff;
-  final ValueChanged<bool> onStatusChanged;
 
   const StaffCard({
     super.key,
     required this.staff,
-    required this.onStatusChanged,
   });
 
   @override
@@ -185,7 +177,9 @@ class StaffCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          staff.name,
+                          staff.isPending
+                              ? 'Staff Member'
+                              : (staff.name.isNotEmpty ? staff.name : 'Staff Member'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -195,123 +189,48 @@ class StaffCard extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       const SizedBox(width: 8),
-
                       _buildStatusBadge(),
                     ],
                   ),
-
                   const SizedBox(height: 5),
-
-                  // Pending → show email
-                  if (staff.isPending &&
-                      staff.email != null &&
-                      staff.email!.isNotEmpty)
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.email_outlined,
-                          size: 15,
-                          color: Colors.grey.shade500,
-                        ),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Text(
-                            staff.email!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    Row(
-                      children: [
+                  Row(
+                    children: [
+                      if (!staff.isPending) ...[
                         Icon(
                           Icons.badge_outlined,
                           size: 15,
                           color: Colors.grey.shade500,
                         ),
                         const SizedBox(width: 5),
-                        Text(
-                          _roleName(staff.role),
+                      ],
+                      Expanded(
+                        child: Text(
+                          staff.isPending
+                              ? (staff.email?.isNotEmpty ?? false ? staff.email! : 'No Email')
+                              : _roleName(staff.email ?? ''),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.grey.shade600,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
 
-            // Actions
-
-            if (!staff.isPending)
-              PopupMenuButton<bool>(
-                icon: const Icon(
-                  Icons.more_vert,
-                  color: Colors.black54,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                onSelected: onStatusChanged,
-                itemBuilder: (context) => [
-                  PopupMenuItem<bool>(
-                    value: true,
-                    enabled: !staff.isActive,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline,
-                          size: 20,
-                          color: staff.isActive
-                              ? Colors.grey
-                              : Colors.green,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          AppConstants.markActive,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  PopupMenuItem<bool>(
-                    value: false,
-                    enabled: staff.isActive,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.block_outlined,
-                          size: 20,
-                          color: staff.isActive
-                              ? Colors.red
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          AppConstants.markInActive,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            _buildActionsMenu(),
           ],
         ),
       ),
     );
   }
 
-  // STATUS BADGE
+  // STATUS BADGE`
 
   Widget _buildStatusBadge() {
     Color backgroundColor;
@@ -376,29 +295,21 @@ class StaffCard extends StatelessWidget {
   // FALLBACK AVATAR
 
   Widget _buildAvatarFallback() {
-    // For pending invitations show email icon instead of
-    // first letter of email.
-    if (staff.isPending) {
-      return const Center(
-        child: Icon(
-          Icons.mail_outline_rounded,
-          size: 21,
-          color: Color(0xFF9A6700),
-        ),
-      );
-    }
+    final value = staff.isPending ? staff.email : staff.name;
 
-    final initial = staff.name.trim().isNotEmpty
-        ? staff.name.trim()[0].toUpperCase()
+    final initial = value?.trim().isNotEmpty == true
+        ? value!.trim()[0].toUpperCase()
         : 'S';
 
     return Center(
       child: Text(
         initial,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF0F766E),
+          color: staff.isPending
+              ? const Color(0xFF9A6700)
+              : const Color(0xFF0F766E),
         ),
       ),
     );
@@ -417,5 +328,113 @@ class StaffCard extends StatelessWidget {
       default:
         return role;
     }
+  }
+
+  Widget _buildActionsMenu() {
+    final controller = Get.find<StaffController>();
+
+    return PopupMenuButton<String>(
+      icon: const Icon(
+        Icons.more_vert,
+        color: Colors.black54,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      onSelected: (value) {
+        switch (value) {
+          case 'resend':
+            controller.resendInvitation(staff);
+            break;
+
+          case 'cancel':
+            controller.cancelInvitation(staff);
+            break;
+
+          case 'activate':
+            controller.changeStaffStatus(staff, true);
+            break;
+
+          case 'deactivate':
+            controller.changeStaffStatus(staff, false);
+            break;
+        }
+      },
+      itemBuilder: (context) {
+        // Pending
+        if (staff.isPending) {
+          return [
+            if (staff.isInviteExpired)
+              const PopupMenuItem<String>(
+                value: 'resend',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.refresh_rounded,
+                      color: Color(0xFF0F766E),
+                      size: 20,
+                    ),
+                    SizedBox(width: 10),
+                    Text('Resend Invitation'),
+                  ],
+                ),
+              ),
+
+            const PopupMenuItem<String>(
+              value: 'cancel',
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.close_rounded,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                  SizedBox(width: 10),
+                  Text('Cancel Invitation'),
+                ],
+              ),
+            ),
+          ];
+        }
+
+        // Active
+        if (staff.isActive) {
+          return const [
+            PopupMenuItem<String>(
+              value: 'deactivate',
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.block_outlined,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                  SizedBox(width: 10),
+                  Text('Mark Inactive'),
+                ],
+              ),
+            ),
+          ];
+        }
+
+        // Inactive
+        return const [
+          PopupMenuItem<String>(
+            value: 'activate',
+            child: Row(
+              children: [
+                Icon(
+                  Icons.check_circle_outline_rounded,
+                  color: Colors.green,
+                  size: 20,
+                ),
+                SizedBox(width: 10),
+                Text('Mark Active'),
+              ],
+            ),
+          ),
+        ];
+      },
+    );
   }
 }

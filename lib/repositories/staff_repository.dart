@@ -56,6 +56,33 @@ class StaffRepository {
     );
   }
 
+  Future<void> resendInvitation({
+    required String invitationId,
+  }) async {
+    await _supabase.rpc(
+      'resend_staff_invitation',
+      params: {
+        'p_invitation_id': invitationId,
+      },
+    );
+
+    await sendInvitationEmail(
+      invitationId: invitationId,
+    );
+  }
+
+  Future<void> cancelInvitation({
+    required String invitationId,
+  }) async {
+    await _supabase.rpc(
+      'cancel_staff_invitation',
+      params: {
+        'p_invitation_id': invitationId,
+      },
+    );
+  }
+
+
   Future<List<StaffModel>> fetchStaff() async {
     final response = await _supabase.rpc('get_shop_staff');
 

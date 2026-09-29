@@ -34,6 +34,8 @@ class SignupController extends GetxController {
   final obscurePassword = true.obs;
   final obscureConfirmPassword = true.obs;
   final isInviteLoading = false.obs;
+  final isStaffInviteValid = false.obs;
+  final isStaffInviteExpired = false.obs;
 
   String? _resolveInvitationToken() {
     if (!Get.isRegistered<DeepLinkService>()) return null;
@@ -91,15 +93,22 @@ class SignupController extends GetxController {
 
       if (invitedEmail != null && invitedEmail.isNotEmpty) {
         emailController.text = invitedEmail;
+        isStaffInviteValid.value = true;
+        isStaffInviteExpired.value = false;
         debugPrint('EMAIL CONTROLLER: ${emailController.text}');
       }
     } on PostgrestException catch (e) {
-      debugPrint(
-        'PostgrestError loading staff invitation: ${e.message}, code: ${e.code}',
-      );
+      final message = e.message.toLowerCase();
+
+      isStaffInviteValid.value = false;
+      isStaffInviteExpired.value =
+          message.contains('invitation has expired');
+
       CustomSnackBar.errorSnackBar(
-        title: 'Invalid Invitation',
-        message: 'Unable to load staff invitation.',
+        title: isStaffInviteExpired.value
+            ? 'Invitation Expired'
+            : 'Invalid Invitation',
+        message: e.message,
       );
     } catch (e) {
       debugPrint('Error loading staff invitation: $e');

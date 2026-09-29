@@ -12,7 +12,10 @@ class StaffModel {
   final String role;
   final StaffStatus status;
   final DateTime? joinedAt;
+
+  // Pending invitation
   final String? invitationId;
+  final DateTime? expiresAt;
 
   const StaffModel({
     this.userId,
@@ -23,6 +26,7 @@ class StaffModel {
     required this.status,
     this.joinedAt,
     this.invitationId,
+    this.expiresAt,
   });
 
   bool get isActive => status == StaffStatus.active;
@@ -30,6 +34,11 @@ class StaffModel {
   bool get isInactive => status == StaffStatus.inactive;
 
   bool get isPending => status == StaffStatus.pending;
+
+  bool get isInviteExpired =>
+      isPending &&
+          expiresAt != null &&
+          DateTime.now().isAfter(expiresAt!);
 
   factory StaffModel.fromJson(Map<String, dynamic> json) {
     final statusValue =
@@ -57,10 +66,16 @@ class StaffModel {
       profileImg: json['profile_img']?.toString(),
       role: json['role']?.toString() ?? 'staff',
       status: status,
+
       joinedAt: json['joined_at'] != null
           ? DateTime.tryParse(json['joined_at'].toString())
           : null,
+
       invitationId: json['invitation_id']?.toString(),
+
+      expiresAt: json['expires_at'] != null
+          ? DateTime.tryParse(json['expires_at'].toString())
+          : null,
     );
   }
 }

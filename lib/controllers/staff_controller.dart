@@ -151,7 +151,8 @@ class StaffController extends GetxController {
   Future<void> changeStaffStatus(
       StaffModel staff,
       bool isActive,
-      ) async {
+      ) async
+  {
     if (staff.userId == null || staff.isPending) return;
     if (staff.isActive == isActive) return;
 
@@ -180,6 +181,69 @@ class StaffController extends GetxController {
       );
     }
   }
+
+  Future<void> resendInvitation(StaffModel staff) async {
+    if (!staff.isPending ||
+        staff.invitationId == null ||
+        !staff.isInviteExpired) {
+      return;
+    }
+
+    try {
+      isSending.value = true;
+
+      await _repository.resendInvitation(
+        invitationId: staff.invitationId!,
+      );
+
+      await fetchStaff();
+
+      CustomSnackBar.successSnackBar(
+        title: 'Invitation Sent',
+        message: 'Invitation has been resent to ${staff.email}.',
+      );
+    } on PostgrestException catch (e) {
+      CustomSnackBar.errorSnackBar(
+        title: 'Unable to Resend',
+        message: e.message,
+      );
+    } catch (e) {
+      CustomSnackBar.errorSnackBar(
+        title: 'Unable to Resend',
+        message: e.toString(),
+      );
+    } finally {
+      isSending.value = false;
+    }
+  }
+
+  Future<void> cancelInvitation(StaffModel staff) async {
+    if (!staff.isPending || staff.invitationId == null) return;
+
+    try {
+      await _repository.cancelInvitation(
+        invitationId: staff.invitationId!,
+      );
+
+      await fetchStaff();
+
+      CustomSnackBar.successSnackBar(
+        title: 'Invitation Cancelled',
+        message: 'Staff invitation has been cancelled.',
+      );
+    } on PostgrestException catch (e) {
+      CustomSnackBar.errorSnackBar(
+        title: 'Unable to Cancel',
+        message: e.message,
+      );
+    } catch (_) {
+      CustomSnackBar.errorSnackBar(
+        title: 'Unable to Cancel',
+        message: AppConstants.defaultErrorMessage,
+      );
+    }
+  }
+
 
 
   void clearForm() {
