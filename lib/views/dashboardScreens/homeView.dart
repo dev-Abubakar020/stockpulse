@@ -23,6 +23,10 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<HomeController>()) {
+      return const SizedBox.shrink();
+    }
+    final controller = Get.find<HomeController>();
     final theme = context.appTheme;
     final double nameFontSize = controller.userName.length > AppConstants.spaceLG ? AppConstants.spaceMLG : AppConstants.spaceLXL;
 

@@ -23,9 +23,11 @@ class PurchasePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
+    if (!Get.isRegistered<PurchaseController>()) {
+      return const SizedBox.shrink();
+    }
     final PurchaseController controller = Get.find<PurchaseController>();
+    final theme = context.appTheme;
 
     return CustomScreen(
       backgroundColor: theme.background,

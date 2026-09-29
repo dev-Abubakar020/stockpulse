@@ -17,11 +17,14 @@ import '../../../common/widgets/emptyfilter.dart';
 import '../../../common/widgets/product_shimmer.dart';
 
 class SaleView extends StatelessWidget {
-  SaleView({super.key});
-  final SaleController controller = Get.find<SaleController>();
+  const SaleView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<SaleController>()) {
+      return const SizedBox.shrink();
+    }
+    final SaleController controller = Get.find<SaleController>();
     final theme = context.appTheme;
 
     return CustomScreen(

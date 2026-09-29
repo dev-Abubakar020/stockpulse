@@ -22,6 +22,9 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<ShopCreateController>()) {
+      return const SizedBox.shrink();
+    }
     final ShopCreateController controller = Get.find<ShopCreateController>();
     final roleService = Get.isRegistered<RoleService>()
         ? Get.find<RoleService>()

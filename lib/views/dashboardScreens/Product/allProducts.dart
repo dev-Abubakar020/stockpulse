@@ -25,6 +25,10 @@ class AllProducts extends GetView<ProductController>  {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<ProductController>()) {
+      return const SizedBox.shrink();
+    }
+    final controller = Get.find<ProductController>();
     final theme = context.appTheme;
 
     return CustomScreen(

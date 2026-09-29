@@ -41,7 +41,7 @@ class DashboardScreen extends StatelessWidget {
         isPermitted: true,
       ),
       DashboardTabConfig(
-        page: SaleView(),
+        page: const SaleView(),
         navItem: const BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart_outlined),
           activeIcon: Icon(Icons.shopping_cart),
@@ -59,7 +59,7 @@ class DashboardScreen extends StatelessWidget {
         isPermitted: true,
       ),
       DashboardTabConfig(
-        page: PurchasePage(),
+        page: const PurchasePage(),
         navItem: const BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart_outlined),
           activeIcon: Icon(Icons.shopping_cart),
@@ -81,9 +81,10 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.isRegistered<DashboardController>()
-        ? Get.find<DashboardController>()
-        : Get.put(DashboardController());
+    if (!Get.isRegistered<DashboardController>()) {
+      return const SizedBox.shrink();
+    }
+    final controller = Get.find<DashboardController>();
 
     final roleService = Get.isRegistered<RoleService>()
         ? Get.find<RoleService>()

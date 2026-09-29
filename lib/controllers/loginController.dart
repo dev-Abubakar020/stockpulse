@@ -254,8 +254,8 @@ class LoginController extends GetxController {
       await Supabase.instance.client.auth.signOut();
       Get.find<LocalStorageService>().setLoggedIn(false);
       Get.find<LocalStorageService>().setRecoveryInProgress(false);
-      clearUserSessionData();
       Get.offAllNamed(Routes.login);
+      clearUserSessionData();
     } catch (e) {
       final exception = AppException.fromException(e);
       CustomSnackBar.errorSnackBar(
