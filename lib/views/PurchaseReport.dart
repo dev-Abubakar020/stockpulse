@@ -659,7 +659,7 @@ class _SalesChartPainter extends CustomPainter {
     required this.textColor,
   });
 
-  static const double leftPadding = 48;
+  static const double leftPadding = 25;
   static const double rightPadding = 8;
   static const double topPadding = 10;
   static const double bottomPadding = 28;
