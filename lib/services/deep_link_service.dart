@@ -20,6 +20,12 @@ class DeepLinkService extends GetxService {
   bool _isStaffInviteProcessing = false;
   String? pendingStaffInvitationToken;
 
+  bool get isStaffInviteFlow =>
+      pendingStaffInvitationToken?.isNotEmpty == true;
+  void clearStaffInvitation() {
+    pendingStaffInvitationToken = null;
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -65,6 +71,7 @@ class DeepLinkService extends GetxService {
           recoveryLinkProcessed = true;
         } else if (isStaffInviteUri(initialUri)) {
           pendingStaffInvitationToken = initialUri.queryParameters['token']!;
+          debugPrint('COLD START STAFF INVITE DEEP LINK DETECTED: $pendingStaffInvitationToken');
           initialRoute = Routes.register;
           recoveryLinkProcessed = true;
         }
@@ -216,6 +223,7 @@ class DeepLinkService extends GetxService {
 
     try {
       pendingStaffInvitationToken = token;
+      debugPrint('WARM START STAFF INVITE DEEP LINK DETECTED: $pendingStaffInvitationToken');
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.offAllNamed(

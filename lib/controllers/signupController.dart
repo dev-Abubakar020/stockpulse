@@ -33,23 +33,84 @@ class SignupController extends GetxController {
   final isGoogleLoading = false.obs;
   final obscurePassword = true.obs;
   final obscureConfirmPassword = true.obs;
+  final isInviteLoading = false.obs;
 
-  Future<void> pickImage() async {
-    final image = await imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-      maxWidth: 1200,
-    );
-    if (image == null) return;
+  String? _resolveInvitationToken() {
+    if (!Get.isRegistered<DeepLinkService>()) return null;
+    final deepLinkService = Get.find<DeepLinkService>();
 
-    selectedImage.value = image;
-    final bytes = await image.readAsBytes();
-    imageBytes.value = bytes;
+    var token = deepLinkService.pendingStaffInvitationToken;
+
+    if ((token == null || token.isEmpty) && Get.arguments is Map) {
+      token = Get.arguments['invitationToken']?.toString();
+      if (token != null && token.isNotEmpty) {
+        deepLinkService.pendingStaffInvitationToken = token;
+      }
+    }
+    return token;
   }
 
-  void removeImage() {
-    selectedImage.value = null;
-    imageBytes.value = null;
+  bool get isStaffInviteFlow {
+    final token = _resolveInvitationToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    final token = _resolveInvitationToken();
+    debugPrint('STAFF INVITE FLOW: $isStaffInviteFlow');
+    debugPrint('INVITE TOKEN: $token');
+
+    if (isStaffInviteFlow) {
+      loadStaffInvitation();
+    }
+  }
+
+  Future<void> loadStaffInvitation() async {
+    final token = _resolveInvitationToken();
+
+    if (token == null || token.isEmpty) {
+      debugPrint('No valid invitation token found.');
+      return;
+    }
+
+    try {
+      isInviteLoading.value = true;
+
+      final response = await Supabase.instance.client.rpc(
+        'get_staff_invitation_email',
+        params: {'p_token': token},
+      );
+
+      debugPrint('INVITE RPC RESPONSE: $response');
+
+      final invitedEmail = response?.toString().trim();
+      debugPrint('INVITED EMAIL: $invitedEmail');
+
+      if (invitedEmail != null && invitedEmail.isNotEmpty) {
+        emailController.text = invitedEmail;
+        debugPrint('EMAIL CONTROLLER: ${emailController.text}');
+      }
+    } on PostgrestException catch (e) {
+      debugPrint(
+        'PostgrestError loading staff invitation: ${e.message}, code: ${e.code}',
+      );
+      CustomSnackBar.errorSnackBar(
+        title: 'Invalid Invitation',
+        message: 'Unable to load staff invitation.',
+      );
+    } catch (e) {
+      debugPrint('Error loading staff invitation: $e');
+
+      CustomSnackBar.errorSnackBar(
+        title: 'Invalid Invitation',
+        message: 'Unable to load staff invitation.',
+      );
+    } finally {
+      isInviteLoading.value = false;
+    }
   }
 
   Future<void> _handlePostSignupNavigation() async {
@@ -58,7 +119,7 @@ class SignupController extends GetxController {
     final deepLinkService = Get.isRegistered<DeepLinkService>()
         ? Get.find<DeepLinkService>()
         : null;
-    final invitationToken = deepLinkService?.pendingStaffInvitationToken;
+    final invitationToken = _resolveInvitationToken();
 
     if (invitationToken != null && invitationToken.isNotEmpty) {
       if (Supabase.instance.client.auth.currentSession != null) {
@@ -67,7 +128,7 @@ class SignupController extends GetxController {
             'claim_staff_invitation',
             params: {'p_token': invitationToken},
           );
-          deepLinkService?.pendingStaffInvitationToken = null;
+          deepLinkService?.clearStaffInvitation();
         } catch (e) {
           debugPrint('Error claiming staff invitation: $e');
         }
@@ -101,6 +162,25 @@ class SignupController extends GetxController {
       Get.offAllNamed(Routes.createShop);
     }
   }
+
+  Future<void> pickImage() async {
+    final image = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1200,
+    );
+    if (image == null) return;
+
+    selectedImage.value = image;
+    final bytes = await image.readAsBytes();
+    imageBytes.value = bytes;
+  }
+
+  void removeImage() {
+    selectedImage.value = null;
+    imageBytes.value = null;
+  }
+
 
   Future<void> signInWithGoogle() async {
     if (!await NetworkManager.instance.checkInternet()) return;

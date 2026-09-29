@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
@@ -84,7 +85,7 @@ class _PremiumSpeedDialState extends State<PremiumSpeedDial>
             animation: _controller,
             interval: const Interval(0.10, 0.90),
             title: AppConstants.addProducts,
-            icon: Icons.add_box_outlined,
+            icon: CupertinoIcons.cube_box,
             color: const Color(0xFF1565C0),
             onTap: () => _navigate(Routes.addProductWizard),
           ),
@@ -95,7 +96,7 @@ class _PremiumSpeedDialState extends State<PremiumSpeedDial>
             animation: _controller,
             interval: const Interval(0.05, 0.80),
             title: AppConstants.addPurchase,
-            icon: Icons.assignment_turned_in_outlined,
+            icon: Icons.list_alt,
             color: const Color(0xFF00796B),
             onTap: () => _navigate(Routes.addPurchase),
           ),

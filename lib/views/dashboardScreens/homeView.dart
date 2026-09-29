@@ -554,14 +554,54 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12,right: AppConstants.spaceSM),
-        child: PremiumSpeedDial(
-          onRefresh: () async {
-            await controller.fetchHomeData();
-          },
-        ),
-      ),
+      floatingActionButton: Obx(() {
+        final roleService = Get.find<RoleService>();
+
+        return roleService.isOwner
+            ? Container(
+          margin: EdgeInsets.only(
+            bottom: 12,
+            right: AppConstants.spaceSM,
+          ),
+          child: PremiumSpeedDial(
+            onRefresh: () async {
+              await controller.fetchHomeData();
+            },
+          ),
+        )
+            : Container(
+          margin: EdgeInsets.only(
+            bottom: 12,
+            right: AppConstants.spaceSM,
+          ),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF0F766E),
+                Color(0xFF14B8A6),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: FloatingActionButton.extended(
+            heroTag: 'staffAddSaleFab',
+            onPressed: () => Get.toNamed(Routes.addSale),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            icon: const Icon(Icons.add),
+            label: const Text(
+              AppConstants.addSale,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -726,89 +766,8 @@ class _Legend extends StatelessWidget {
   }
 }
 
-class _CategoryProgress extends StatelessWidget {
-  final String title;
-  final String amount;
-  final int percentage;
-  final Color color;
-  final dynamic theme;
 
-  const _CategoryProgress({
-    required this.title,
-    required this.amount,
-    required this.percentage,
-    required this.color,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Container(
-              width: AppConstants.spaceSM,
-              height: AppConstants.spaceSM,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: AppConstants.spaceSM),
-            Expanded(
-              child: Text(
-                title,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: theme.textPrimary,
-                ),
-              ),
-            ),
-            Text(
-              amount,
-              style: GoogleFonts.sora(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: theme.textPrimary,
-              ),
-            ),
-            const SizedBox(width: AppConstants.spaceSM),
-            SizedBox(
-              width: 35,
-              child: Text(
-                '$percentage%',
-                textAlign: TextAlign.end,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: theme.textSecondary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppConstants.spaceSM),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(
-            AppConstants.radiusXL,
-          ),
-          child: LinearProgressIndicator(
-            value: percentage / 100,
-            minHeight: AppConstants.reportProgressHeight,
-            backgroundColor: theme.surfaceMuted,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              color,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SalesPurchaseChart extends StatelessWidget {
+class _SalesPurchaseChart extends StatefulWidget {
   final HomeController controller;
   final dynamic theme;
 
@@ -818,117 +777,554 @@ class _SalesPurchaseChart extends StatelessWidget {
   });
 
   @override
+  State<_SalesPurchaseChart> createState() =>
+      _SalesPurchaseChartState();
+}
+
+class _SalesPurchaseChartState extends State<_SalesPurchaseChart> {
+  int? selectedIndex;
+
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final data = controller.chartData;
+      final data = widget.controller.chartData;
+
       if (data.isEmpty) {
         return Center(
           child: Text(
             'No chart data available',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
-              color: theme.textSecondary,
+              color: widget.theme.textSecondary,
             ),
           ),
         );
       }
 
-      final maxVal = data.fold<double>(1.0, (prev, e) {
-        final m = e.salesAmount > e.purchaseAmount ? e.salesAmount : e.purchaseAmount;
-        return m > prev ? m : prev;
+      final rawMax = data.fold<double>(0, (prev, item) {
+        final value = item.salesAmount > item.purchaseAmount
+            ? item.salesAmount
+            : item.purchaseAmount;
+
+        return value > prev ? value : prev;
       });
 
-      return Column(
-        children: [
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: List.generate(
-                data.length,
-                (index) {
-                  final item = data[index];
-                  final salesHeight = maxVal == 0 ? 0.0 : (item.salesAmount / maxVal);
-                  final purchaseHeight = maxVal == 0 ? 0.0 : (item.purchaseAmount / maxVal);
+      final maxVal = _getNiceMax(rawMax);
 
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        final dateStr = "${item.date.day}/${item.date.month}/${item.date.year}";
-                        Get.snackbar(
-                          'Date: $dateStr',
-                          'Sales: Rs ${item.salesAmount.toStringAsFixed(0)}\nPurchases: Rs ${item.purchaseAmount.toStringAsFixed(0)}',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: theme.surface,
-                          colorText: theme.textPrimary,
-                          duration: const Duration(seconds: 3),
-                          margin: const EdgeInsets.all(16),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: FractionallySizedBox(
-                                heightFactor: salesHeight.clamp(0.02, 1.0),
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: theme.success,
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(AppConstants.radiusXS),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 1),
-                            Expanded(
-                              child: FractionallySizedBox(
-                                heightFactor: purchaseHeight.clamp(0.02, 1.0),
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: theme.primary,
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(AppConstants.radiusXS),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+      const ySteps = 4;
+
+      final filter = widget.controller.dashboardFilter.value.toLowerCase();
+
+      final showXAxis =
+          filter == 'today' ||
+          filter == 'yesterday' ||
+          filter == 'week';
+
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // =============================
+          // Y AXIS
+          // =============================
+          SizedBox(
+            width: 42,
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: showXAxis ? 28 : 0,
+              ),
+              child: Column(
+                mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+                crossAxisAlignment:
+                CrossAxisAlignment.end,
+                children: List.generate(
+                  ySteps + 1,
+                      (index) {
+                    final value =
+                        maxVal -
+                            ((maxVal / ySteps) * index);
+
+                    return Text(
+                      _formatAmount(value),
+                      style:
+                      GoogleFonts.plusJakartaSans(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w500,
+                        color: widget.theme.textHint,
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                data.isNotEmpty ? "${data.first.date.day}/${data.first.date.month}" : '',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10,
-                  color: theme.textHint,
+
+          const SizedBox(width: 8),
+
+          // =============================
+          // CHART
+          // =============================
+          Expanded(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // =========================
+                      // GRID LINES
+                      // =========================
+                      Positioned.fill(
+                        child: Column(
+                          mainAxisAlignment:
+                          MainAxisAlignment
+                              .spaceBetween,
+                          children: List.generate(
+                            ySteps + 1,
+                                (_) => Container(
+                              height: 1,
+                              color: widget.theme.border
+                                  .withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // =========================
+                      // BARS
+                      // =========================
+                      Positioned.fill(
+                        child: Row(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.end,
+                          children: List.generate(
+                            data.length,
+                                (index) {
+                              final item =
+                              data[index];
+
+                              final salesHeight =
+                              maxVal == 0
+                                  ? 0.0
+                                  : item.salesAmount /
+                                  maxVal;
+
+                              final purchaseHeight =
+                              maxVal == 0
+                                  ? 0.0
+                                  : item.purchaseAmount /
+                                  maxVal;
+
+                              final isSelected =
+                                  selectedIndex == index;
+
+                              return Expanded(
+                                child: GestureDetector(
+                                  behavior:
+                                  HitTestBehavior
+                                      .translucent,
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex =
+                                      selectedIndex ==
+                                          index
+                                          ? null
+                                          : index;
+                                    });
+                                  },
+                                  child: Stack(
+                                    clipBehavior:
+                                    Clip.none,
+                                    alignment:
+                                    Alignment
+                                        .bottomCenter,
+                                    children: [
+                                      // =================
+                                      // BAR GROUP
+                                      // =================
+                                      Positioned.fill(
+                                        child: Padding(
+                                          padding:
+                                          const EdgeInsets
+                                              .symmetric(
+                                            horizontal:
+                                            1.5,
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .end,
+                                            children: [
+                                              // SALES
+                                              Expanded(
+                                                child:
+                                                FractionallySizedBox(
+                                                  heightFactor:
+                                                  salesHeight
+                                                      .clamp(
+                                                    0.02,
+                                                    1.0,
+                                                  ),
+                                                  alignment:
+                                                  Alignment
+                                                      .bottomCenter,
+                                                  child:
+                                                  Container(
+                                                    decoration:
+                                                    BoxDecoration(
+                                                      color: widget
+                                                          .theme
+                                                          .success,
+                                                      borderRadius:
+                                                      const BorderRadius
+                                                          .vertical(
+                                                        top: Radius.circular(
+                                                          AppConstants
+                                                              .radiusXS,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              const SizedBox(
+                                                width: 1,
+                                              ),
+
+                                              // PURCHASE
+                                              Expanded(
+                                                child:
+                                                FractionallySizedBox(
+                                                  heightFactor:
+                                                  purchaseHeight
+                                                      .clamp(
+                                                    0.02,
+                                                    1.0,
+                                                  ),
+                                                  alignment:
+                                                  Alignment
+                                                      .bottomCenter,
+                                                  child:
+                                                  Container(
+                                                    decoration:
+                                                    BoxDecoration(
+                                                      color: widget
+                                                          .theme
+                                                          .primary,
+                                                      borderRadius:
+                                                      const BorderRadius
+                                                          .vertical(
+                                                        top: Radius.circular(
+                                                          AppConstants
+                                                              .radiusXS,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      // =================
+                                      // TOOLTIP
+                                      // =================
+                                      if (isSelected)
+                                        Positioned(
+                                          bottom:
+                                          _tooltipBottom(
+                                            salesHeight,
+                                            purchaseHeight,
+                                            context,
+                                          ),
+                                          child:
+                                          _ChartTooltip(
+                                            item: item,
+                                            theme:
+                                            widget.theme,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                data.length > 1 ? "${data.last.date.day}/${data.last.date.month}" : '',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10,
-                  color: theme.textHint,
-                ),
-              ),
-            ],
+
+                // =============================
+                // X AXIS
+                // =============================
+                if (showXAxis) ...[
+                  const SizedBox(height: 8),
+
+                  SizedBox(
+                    height: 20,
+                    child: Row(
+                      children: List.generate(
+                        data.length,
+                        (index) {
+                          final item = data[index];
+
+                          return Expanded(
+                            child: Center(
+                              child: Text(
+                                _formatXAxisDate(item.date),
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w500,
+                                  color: widget.theme.textHint,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       );
     });
+  }
+
+  double _tooltipBottom(
+      double salesHeight,
+      double purchaseHeight,
+      BuildContext context,
+      ) {
+    final highest = salesHeight > purchaseHeight
+        ? salesHeight
+        : purchaseHeight;
+
+    // Approximate chart height minus X axis.
+    final chartHeight =
+        AppConstants.reportChartHeight - 30;
+
+    return (highest * chartHeight) + 8;
+  }
+
+  String _formatXAxisDate(DateTime date) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return '${date.day}-${months[date.month - 1]}';
+  }
+
+  double _getNiceMax(double value) {
+    if (value <= 0) return 100;
+
+    if (value <= 100) {
+      return (value / 20).ceil() * 20.0;
+    }
+
+    if (value <= 1000) {
+      return (value / 100).ceil() * 100.0;
+    }
+
+    if (value <= 10000) {
+      return (value / 1000).ceil() * 1000.0;
+    }
+
+    if (value <= 100000) {
+      return (value / 10000).ceil() * 10000.0;
+    }
+
+    if (value <= 1000000) {
+      return (value / 100000).ceil() * 100000.0;
+    }
+
+    return (value / 1000000)
+        .ceil() *
+        1000000.0;
+  }
+
+  String _formatAmount(double value) {
+    if (value >= 1000000) {
+      final result = value / 1000000;
+
+      return result ==
+          result.roundToDouble()
+          ? '${result.toInt()}M'
+          : '${result.toStringAsFixed(1)}M';
+    }
+
+    if (value >= 1000) {
+      final result = value / 1000;
+
+      return result ==
+          result.roundToDouble()
+          ? '${result.toInt()}K'
+          : '${result.toStringAsFixed(1)}K';
+    }
+
+    return value.toInt().toString();
+  }
+}
+
+class _ChartTooltip extends StatelessWidget {
+  final dynamic item;
+  final dynamic theme;
+
+  const _ChartTooltip({
+    required this.item,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 125,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: theme.border,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: 0.08,
+            ),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${item.date.day} ${_month(item.date.month)} ${item.date.year}',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: theme.textPrimary,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          _TooltipValue(
+            color: theme.success,
+            label: 'Sales',
+            value:
+            'Rs ${item.salesAmount.toStringAsFixed(0)}',
+            theme: theme,
+          ),
+
+          const SizedBox(height: 4),
+
+          _TooltipValue(
+            color: theme.primary,
+            label: 'Purchases',
+            value:
+            'Rs ${item.purchaseAmount.toStringAsFixed(0)}',
+            theme: theme,
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _month(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return months[month - 1];
+  }
+}
+class _TooltipValue extends StatelessWidget {
+  final Color color;
+  final String label;
+  final String value;
+  final dynamic theme;
+
+  const _TooltipValue({
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+
+        const SizedBox(width: 5),
+
+        Expanded(
+          child: Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 9,
+              color: theme.textSecondary,
+            ),
+          ),
+        ),
+
+        Text(
+          value,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 9,
+            fontWeight: FontWeight.w600,
+            color: theme.textPrimary,
+          ),
+        ),
+      ],
+    );
   }
 }

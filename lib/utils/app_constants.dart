@@ -49,17 +49,17 @@ class AppConstants {
   static const String newSale = 'New Sale';
   static const String productTitle = 'All Inventory';
   static const String businessTitle = 'Business Management';
-  static const String totalProduct = 'Total Products';
+  static const String totalProduct = 'Total Inventory';
   static const String quickAction = "Quick Actions";
   static const String recentSales = "Recent Sales";
   static const String recentPurchase = "Recent Purchase";
   static const String homeTitle = 'Home';
-  static const String productLabel = 'Products';
+  static const String productLabel = 'Inventory';
   static const String moreTitle = 'More';
   static const String detailPTitle = 'Product Details';
   static const String purchaseTitle = 'Purchase';
   static const String addPurchase = 'Add Purchase';
-  static const String addProducts = 'Add Product';
+  static const String addProducts = 'Add Inventory';
   static const String uncatProduct = 'Uncategorized';
   static const String addExpenses = 'Add Expense';
   static const String report = 'Reports';
@@ -122,7 +122,7 @@ class AppConstants {
   static const String staffEmailDesc = 'Enter the email address of the staff member you want to invite.';
   static const String staffEmailLabelHint = 'abc@gmail.com';
   static const String staffEmailHint =
-                                     'An invitation will be sent to this email.\nThe staff member will need to create a \nnew StockPulse account using the same email address.';
+                                     'An invitation will be sent to this email.\nThe staff member will need to create \na new StockPulse account using the same email address.';
   static const String requiredAsterisk = '*';
   static const String required = 'Required';
   static const String categoryNameHint =
@@ -158,6 +158,7 @@ class AppConstants {
   static const String cartEmpty = "Your Cart is Empty";
   static const String clrAll = "Clear All";
   static const String statusActive = "Active";
+  static const String pending = "pending";
   static const String statusInActive = "InActive";
   static const String markActive = "Mark Active";
   static const String markInActive = "Mark InActive";
@@ -246,12 +247,13 @@ class AppConstants {
   static const String itemsLabel = 'items';
   static const String proceedToPayment = 'CheckOut';
   static const String completeSaleLabel = 'Complete Sale';
-  static const String noProductsAvailable = 'No products available';
-  static const String noProductsFound = 'No products found';
+  static const String noProductsAvailable = 'No Product available';
+  static const String noInverntriesAvailable = 'No Inventory available';
+  static const String noProductsFound = 'No Inventory found';
   static const String addProductsBeforeSale =
-      'Add products before creating a sale.';
+      'Add Inventory before creating a sale.';
   static const String tryAnotherProductName =
-      'Try another product name or barcode.';
+      'Try another Inventory name or barcode.';
   static const String viewCart = 'View Cart';
   static const String cartDetail = 'Cart Detail';
 
@@ -289,6 +291,11 @@ class AppConstants {
   static const String updateBusiness = 'Update Business';
   static const String updatePasswordBtn = 'Update Password';
   static const String createAccountBtn = 'Create Account';
+  static const String agreePrefix = 'I agree to the ';
+  static const String termsOfService = 'Terms of Service';
+  static const String agreeAnd = ' and ';
+  static const String privacyPolicy = 'Privacy Policy';
+  static const String agreeSuffix = '.';
   static const String agreeToTermsText =
       'I agree to the Terms of Service and Privacy Policy.';
   static const String verifyAndProceedBtn = 'Verify & Proceed';
@@ -299,7 +306,8 @@ class AppConstants {
   static const String preferEmailSignIn = 'Prefer email sign in?';
   static const String backToSignIn = 'Back to Sign In';
   static const String newVendorReg = 'NEW VENDOR REGISTRATION';
-  static const String signupDesc =
+  static const String newStaffReg = 'NEW STAFF REGISTRATION';
+  static const String signupDescForOwner =
       'Create your account to manage inventories';
   static const String passwordsDoNotMatch = 'Passwords do not match.';
   static const String passwordLengthError =
@@ -435,11 +443,11 @@ class AppConstants {
       'Your completed purchases will appear here.';
   // Static Constants Alternative
   static const String queryNotFoundTitle = 'Query Not found';
-  static const String noProductsFoundTitle = 'No products found';
+  static const String noProductsFoundTitle = 'No Inventory found';
   static const String noProductsFoundSubtitle =
       'Try changing your search or filter.';
   static const String noProductsYetSubtitle =
-      'Your added products will appear here.';
+      'Your added Inventory will appear here.';
 
   /// Additional Category, Product, Purchase & Sale Constants
   static const String categoryNameEmpty = 'Category name cannot be empty';
@@ -448,11 +456,11 @@ class AppConstants {
   static const String failedFetchCategories = 'Failed to fetch categories';
   static const String failedUpdateCategoryStatus =
       'Failed to update category status';
-  static const String unableLoadProducts = 'Unable to load products';
+  static const String unableLoadProducts = 'Unable to load Inventories';
   static const String productRemovedSuccess = 'Product removed successfully';
   static const String unableRemoveProduct = 'Unable to remove product';
   static const String noProductsSelected =
-      'Please select at least one product.';
+      'Please select at least one Inventory.';
   static const String invalidDiscount = 'Invalid Discount';
   static const String discountNegative = 'Discount cannot be negative.';
   static const String discountExceedSubtotal =

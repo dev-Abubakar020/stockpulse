@@ -61,8 +61,8 @@ class DashboardScreen extends StatelessWidget {
       DashboardTabConfig(
         page: const PurchasePage(),
         navItem: const BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart_outlined),
-          activeIcon: Icon(Icons.shopping_cart),
+          icon: Icon(Icons.list_alt),
+          activeIcon: Icon(Icons.list_alt),
           label: '${AppConstants.purchaseTitle}s',
         ),
         isPermitted: roleService.canManagePurchases,

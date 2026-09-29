@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stockpulse/common/widgets/custom_snackbar.dart';
 import '../models/staff_invite_model.dart';
 import '../repositories/staff_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,17 +27,17 @@ class StaffController extends GetxController {
     final email = emailController.text.trim();
 
     if (email.isEmpty) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter staff email address.',
+      CustomSnackBar.errorSnackBar(
+        title: 'Validation Error',
+        message: 'Please enter staff email address.',
       );
       return null;
     }
 
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar(
-        'Validation Error',
-        'Please enter a valid email address.',
+      CustomSnackBar.errorSnackBar(
+        title: 'Validation Error',
+        message:'Please enter a valid email address.',
       );
       return null;
     }
@@ -45,39 +46,33 @@ class StaffController extends GetxController {
       isSending.value = true;
 
       // 1. Create pending invitation in database
-      final invitation =
-      await _repository.createInvitation(email);
-
+      final invitation = await _repository.createInvitation(email);
       // 2. Send actual invitation email
       await _repository.sendInvitationEmail(
         invitationId: invitation.id,
       );
-
-      // 3. Success
+      await fetchStaff();
+      // 3. Clear form and close screen FIRST
       clearForm();
+      Get.back(result: invitation);
 
-      Get.snackbar(
-        'Invitation Sent',
-        'Staff invitation has been sent to $email.',
-      );
-
-      Get.back();
+      // 4. Show success snackbar on the parent screen
+      CustomSnackBar.successSnackBar(
+        title: 'Invitation Sent',
+        message: 'Staff invitation has been sent to $email.',
+        );
 
       return invitation;
     } on PostgrestException catch (e) {
-      Get.snackbar(
-        'Invitation Failed',
-        e.message,
-      );
-
+      CustomSnackBar.errorSnackBar(
+        title: 'Invitation Failed',
+        message:  e.message);
       return null;
     } catch (e) {
-      // Keep actual error while testing
-      Get.snackbar(
-        'Invitation Failed',
-        e.toString(),
-      );
-
+      CustomSnackBar.errorSnackBar(
+        title: 'Invitation Failed',
+        message:  e.toString(),
+        );
       return null;
     } finally {
       isSending.value = false;
@@ -92,22 +87,35 @@ class StaffController extends GetxController {
     // Search
     if (query.isNotEmpty) {
       list = list.where((staff) {
-        return staff.name.toLowerCase().contains(query);
+        return staff.name.toLowerCase().contains(query) ||
+            (staff.email?.toLowerCase().contains(query) ?? false);
       }).toList();
     }
 
-    // Active
-    if (selectedFilterIndex.value == 1) {
-      list = list
-          .where((staff) => staff.isActive)
-          .toList();
-    }
+    // Filter order:
+    // 0 = All
+    // 1 = Pending
+    // 2 = Active
+    // 3 = Inactive
 
-    // Inactive
-    if (selectedFilterIndex.value == 2) {
-      list = list
-          .where((staff) => !staff.isActive)
-          .toList();
+    switch (selectedFilterIndex.value) {
+      case 1:
+        list = list
+            .where((staff) => staff.status == StaffStatus.pending)
+            .toList();
+        break;
+
+      case 2:
+        list = list
+            .where((staff) => staff.status == StaffStatus.active)
+            .toList();
+        break;
+
+      case 3:
+        list = list
+            .where((staff) => staff.status == StaffStatus.inactive)
+            .toList();
+        break;
     }
 
     return list;
@@ -142,18 +150,17 @@ class StaffController extends GetxController {
   Future<void> changeStaffStatus(
       StaffModel staff,
       bool isActive,
-      ) async
-  {
+      ) async {
+    if (staff.userId == null || staff.isPending) return;
     if (staff.isActive == isActive) return;
 
     try {
       await _repository.changeStaffStatus(
-        userId: staff.userId,
+        userId: staff.userId!,
         isActive: isActive,
       );
 
       await fetchStaff();
-
       Get.snackbar(
         'Success',
         isActive
@@ -166,12 +173,13 @@ class StaffController extends GetxController {
         e.message,
       );
     } catch (_) {
-      Get.snackbar(
-        'Unable to Update Staff',
-        'Something went wrong. Please try again.',
-      );
+    Get.snackbar(
+    'Unable to Update Staff',
+    'Something went wrong. Please try again.',
+    );
     }
   }
+
 
   void clearForm() {
     emailController.clear();

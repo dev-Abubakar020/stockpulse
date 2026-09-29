@@ -43,6 +43,7 @@ class AllStaffView extends StatelessWidget {
                 () => CustomFilterTabs(
               items: const [
                 AppConstants.all,
+                AppConstants.pending,
                 AppConstants.statusActive,
                 AppConstants.statusInActive,
               ],
@@ -110,7 +111,9 @@ class AllStaffView extends StatelessWidget {
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        icon: const Icon(Icons.person_add_alt_1_rounded),
+        icon: const Icon(
+          Icons.person_add_alt_1_rounded,
+        ),
         label: const Text(
           AppConstants.addStaff,
           style: TextStyle(
@@ -150,14 +153,15 @@ class StaffCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Profile Image
+            // ====================================================
+            // Avatar
+            // ====================================================
+
             Container(
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: staff.isActive
-                    ? const Color(0xFFE8F8F0)
-                    : const Color(0xFFF0F0F0),
+                color: _avatarBackgroundColor,
                 shape: BoxShape.circle,
               ),
               clipBehavior: Clip.antiAlias,
@@ -175,7 +179,10 @@ class StaffCard extends StatelessWidget {
 
             const SizedBox(width: 14),
 
-            // Staff Information
+            // ====================================================
+            // Information
+            // ====================================================
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,112 +204,204 @@ class StaffCard extends StatelessWidget {
 
                       const SizedBox(width: 8),
 
-                      // Status
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: staff.isActive
-                              ? const Color(0xFFA3EAC0)
-                              : const Color(0xFFE0E0E0),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          staff.isActive
-                              ? AppConstants.statusActive
-                              : AppConstants.statusInActive,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: staff.isActive
-                                ? const Color(0xFF0F5B36)
-                                : Colors.black54,
-                          ),
-                        ),
-                      ),
+                      _buildStatusBadge(),
                     ],
                   ),
 
                   const SizedBox(height: 5),
 
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.badge_outlined,
-                        size: 15,
-                        color: Colors.grey.shade500,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        _roleName(staff.role),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
+                  // Pending → show email
+                  if (staff.isPending &&
+                      staff.email != null &&
+                      staff.email!.isNotEmpty)
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.email_outlined,
+                          size: 15,
+                          color: Colors.grey.shade500,
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            staff.email!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.badge_outlined,
+                          size: 15,
+                          color: Colors.grey.shade500,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          _roleName(staff.role),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
 
+            // ====================================================
             // Actions
-            PopupMenuButton<bool>(
-              icon: const Icon(
-                Icons.more_vert,
-                color: Colors.black54,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              onSelected: onStatusChanged,
-              itemBuilder: (context) => [
-                PopupMenuItem<bool>(
-                  value: true,
-                  enabled: !staff.isActive,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline,
-                        size: 20,
-                        color: staff.isActive
-                            ? Colors.grey
-                            : Colors.green,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(AppConstants.markActive),
-                    ],
-                  ),
-                ),
+            // ====================================================
 
-                PopupMenuItem<bool>(
-                  value: false,
-                  enabled: staff.isActive,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.block_outlined,
-                        size: 20,
-                        color: staff.isActive
-                            ? Colors.red
-                            : Colors.grey,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(AppConstants.markInActive),
-                    ],
-                  ),
+            if (!staff.isPending)
+              PopupMenuButton<bool>(
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: Colors.black54,
                 ),
-              ],
-            ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onSelected: onStatusChanged,
+                itemBuilder: (context) => [
+                  PopupMenuItem<bool>(
+                    value: true,
+                    enabled: !staff.isActive,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 20,
+                          color: staff.isActive
+                              ? Colors.grey
+                              : Colors.green,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          AppConstants.markActive,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  PopupMenuItem<bool>(
+                    value: false,
+                    enabled: staff.isActive,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.block_outlined,
+                          size: 20,
+                          color: staff.isActive
+                              ? Colors.red
+                              : Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          AppConstants.markInActive,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
 
+  // ============================================================
+  // STATUS BADGE
+  // ============================================================
+
+  Widget _buildStatusBadge() {
+    Color backgroundColor;
+    Color textColor;
+    String text;
+
+    switch (staff.status) {
+      case StaffStatus.active:
+        backgroundColor = const Color(0xFFA3EAC0);
+        textColor = const Color(0xFF0F5B36);
+        text = AppConstants.statusActive;
+        break;
+
+      case StaffStatus.inactive:
+        backgroundColor = const Color(0xFFE0E0E0);
+        textColor = Colors.black54;
+        text = AppConstants.statusInActive;
+        break;
+
+      case StaffStatus.pending:
+        backgroundColor = const Color(0xFFFFF3CD);
+        textColor = const Color(0xFF9A6700);
+        text = AppConstants.pending;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 3,
+      ),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // AVATAR COLOR
+  // ============================================================
+
+  Color get _avatarBackgroundColor {
+    switch (staff.status) {
+      case StaffStatus.active:
+        return const Color(0xFFE8F8F0);
+
+      case StaffStatus.inactive:
+        return const Color(0xFFF0F0F0);
+
+      case StaffStatus.pending:
+        return const Color(0xFFFFF8E1);
+    }
+  }
+
+  // ============================================================
+  // FALLBACK AVATAR
+  // ============================================================
+
   Widget _buildAvatarFallback() {
+    // For pending invitations show email icon instead of
+    // first letter of email.
+    if (staff.isPending) {
+      return const Center(
+        child: Icon(
+          Icons.mail_outline_rounded,
+          size: 21,
+          color: Color(0xFF9A6700),
+        ),
+      );
+    }
+
     final initial = staff.name.trim().isNotEmpty
         ? staff.name.trim()[0].toUpperCase()
         : 'S';
@@ -319,12 +418,18 @@ class StaffCard extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // ROLE NAME
+  // ============================================================
+
   String _roleName(String role) {
     switch (role.toLowerCase()) {
       case 'owner':
         return 'Owner';
+
       case 'staff':
         return 'Staff Member';
+
       default:
         return role;
     }

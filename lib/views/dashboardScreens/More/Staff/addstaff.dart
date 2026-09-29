@@ -135,58 +135,54 @@ class AddStaff extends StatelessWidget {
 
           // Send Invitation
           Obx(
-                () => SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: controller.isSending.value
-                    ? null
-                    : () async {
-                  final invitation =
-                  await controller.sendInvitation();
-
-                  if (invitation == null) return;
-
-                  // Next:
-                  // actual invitation email send karenge
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor:
-                  Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                () => SafeArea(
+                  child: SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton.icon(
+                  onPressed: controller.isSending.value
+                      ? null
+                      : () async {
+                    await controller.sendInvitation();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                    Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor:
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                icon: controller.isSending.value
-                    ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
+                  icon: controller.isSending.value
+                      ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                      : const Icon(
+                    Icons.send_rounded,
+                    size: 20,
                   ),
-                )
-                    : const Icon(
-                  Icons.send_rounded,
-                  size: 20,
-                ),
-                label: Text(
-                  controller.isSending.value
-                      ? 'Sending...'
-                      : 'Send Invitation',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  label: Text(
+                    controller.isSending.value
+                        ? 'Sending...'
+                        : 'Send Invitation',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                                ),
+                              ),
                 ),
-              ),
-            ),
           ),
         ],
       ),

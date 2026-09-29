@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +14,7 @@ import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/themetogglebtn.dart';
+
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -46,7 +48,7 @@ class _SignupViewState extends State<SignupView> {
                   child: const ThemeToggleButton(),
                 ),
                 const SizedBox(height: 8),
-                const _BrandHeader(),
+                _BrandHeader(controller: controller),
                 const SizedBox(height: 24),
                 _SignupCard(
                   controller: controller,
@@ -85,12 +87,13 @@ class _SignupViewState extends State<SignupView> {
 }
 
 class _BrandHeader extends StatelessWidget {
-  const _BrandHeader();
+  const _BrandHeader({required this.controller});
+
+  final SignupController controller;
 
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-
     return Column(
       children: [
         Container(
@@ -132,7 +135,9 @@ class _BrandHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              AppConstants.newVendorReg,
+              controller.isStaffInviteFlow
+                  ? AppConstants.newStaffReg
+                  : AppConstants.newVendorReg,
               style: GoogleFonts.sora(
                 color: theme.primary,
                 fontSize: 11,
@@ -153,15 +158,16 @@ class _BrandHeader extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
-        Text(
-          AppConstants.signupDesc,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.plusJakartaSans(
-            color: theme.textSecondary,
-            fontSize: 13.5,
-            height: 1.45,
+        if (!controller.isStaffInviteFlow)
+          Text(
+            AppConstants.signupDescForOwner,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+              color: theme.textSecondary,
+              fontSize: 13.5,
+              height: 1.45,
+            ),
           ),
-        ),
       ],
     );
   }
@@ -215,18 +221,34 @@ class _SignupCard extends StatelessWidget {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
-          CustomTextField(
-            controller: controller.emailController,
-            labelText: AppConstants.loginEmailLabel,
-            hintText: AppConstants.loginEmailHint,
-            prefixIcon: Icon(
-              Icons.mail_outline_rounded,
-              color: theme.primary,
-              size: 20,
+          Obx(
+            () => CustomTextField(
+              controller: controller.emailController,
+              readOnly: controller.isStaffInviteFlow,
+              labelText: AppConstants.loginEmailLabel,
+              hintText: AppConstants.loginEmailHint,
+              prefixIcon: Icon(
+                Icons.mail_outline_rounded,
+                color: theme.primary,
+                size: 20,
+              ),
+              suffixIcon: controller.isInviteLoading.value
+                  ? Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: theme.primary,
+                        ),
+                      ),
+                    )
+                  : null,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              textInputAction: TextInputAction.next,
             ),
-            keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.email],
-            textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
           Obx(
@@ -274,12 +296,39 @@ class _SignupCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  AppConstants.agreeToTermsText,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: theme.textSecondary,
-                    fontSize: 12,
-                    height: 1.4,
+                child: RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.plusJakartaSans(
+                      color: theme.textSecondary,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                    children: [
+                      const TextSpan(text: AppConstants.agreePrefix),
+                      TextSpan(
+                        text: AppConstants.termsOfService,
+                        style: TextStyle(
+                          color: theme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+
+                          },
+                      ),
+                      const TextSpan(text: AppConstants.agreeAnd),
+                      TextSpan(
+                        text: AppConstants.privacyPolicy,
+                        style: TextStyle(
+                          color: theme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            // Handle Privacy Policy tap
+                          },
+                      ),
+                      const TextSpan(text: AppConstants.agreeSuffix),
+                    ],
                   ),
                 ),
               ),
