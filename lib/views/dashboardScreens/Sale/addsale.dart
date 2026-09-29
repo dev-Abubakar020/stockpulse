@@ -12,6 +12,7 @@ import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/custom_snackbar.dart';
 import '../../../controllers/sale_controller.dart';
 import '../../../models/productItemModel.dart';
 
@@ -64,10 +65,9 @@ class _AddSaleState extends State<AddSale> {
     if (saleController.paymentMethod.value == 'cash') {
       final received = saleController.receivedAmount;
       if (received < saleController.totalAmount) {
-        Get.snackbar(
-          AppConstants.insufficientAmount,
-          AppConstants.receivedAmountError,
-          snackPosition: SnackPosition.BOTTOM,
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.insufficientAmount,
+          message: AppConstants.receivedAmountError,
         );
         return;
       }
@@ -796,9 +796,9 @@ class _AddSaleState extends State<AddSale> {
             ? null
             : () {
                 if (saleController.discount.value > saleController.subtotal) {
-                  Get.snackbar(
-                    'Invalid Discount',
-                    'Discount cannot exceed subtotal.',
+                  CustomSnackBar.warningSnackBar(
+                    title: 'Invalid Discount',
+                    message: 'Discount cannot exceed subtotal.',
                   );
                   return;
                 }

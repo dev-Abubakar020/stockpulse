@@ -129,14 +129,14 @@ class StaffController extends GetxController {
 
       staffList.assignAll(data);
     } on PostgrestException catch (e) {
-      Get.snackbar(
-        'Error',
-        e.message,
+      CustomSnackBar.errorSnackBar(
+        title: 'Error',
+        message: e.message,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Unable to load staff members.',
+      CustomSnackBar.errorSnackBar(
+        title: 'Error',
+        message: 'Unable to load staff members.',
       );
     } finally {
       isLoading.value = false;
@@ -161,22 +161,22 @@ class StaffController extends GetxController {
       );
 
       await fetchStaff();
-      Get.snackbar(
-        'Success',
-        isActive
+      CustomSnackBar.successSnackBar(
+        title: 'Success',
+        message: isActive
             ? '${staff.name} has been activated.'
             : '${staff.name} has been deactivated.',
       );
     } on PostgrestException catch (e) {
-      Get.snackbar(
-        'Unable to Update Staff',
-        e.message,
+      CustomSnackBar.errorSnackBar(
+        title: 'Unable to Update Staff',
+        message: e.message,
       );
     } catch (_) {
-    Get.snackbar(
-    'Unable to Update Staff',
-    'Something went wrong. Please try again.',
-    );
+      CustomSnackBar.errorSnackBar(
+        title: 'Unable to Update Staff',
+        message: 'Something went wrong. Please try again.',
+      );
     }
   }
 

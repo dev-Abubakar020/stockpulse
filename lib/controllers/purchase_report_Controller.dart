@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../common/widgets/custom_snackbar.dart';
 
 import '../models/purchasemodel.dart';
 import '../repositories/purchase_repo.dart';
@@ -85,9 +86,9 @@ class PurchaseReportController extends GetxController {
 
       await _generateReport();
     } catch (e) {
-      Get.snackbar(
-        'Report Error',
-        e.toString(),
+      CustomSnackBar.errorSnackBar(
+        title: 'Report Error',
+        message: e.toString(),
       );
     } finally {
       isLoading.value = false;
