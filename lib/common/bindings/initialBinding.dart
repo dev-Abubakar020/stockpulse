@@ -5,7 +5,9 @@ import "package:stockpulse/common/theme/theme_helper.dart";
 import "package:stockpulse/controllers/allProductsController.dart";
 import "package:stockpulse/repositories/auth_repository.dart";
 import "package:stockpulse/repositories/shop_repository.dart";
+import "package:stockpulse/services/role_service.dart";
 
+import "../../controllers/dashboardController.dart";
 import "../../controllers/shopCreateController.dart";
 import "../../repositories/product_repository.dart";
 import "../../services/networkManager.dart";
@@ -16,10 +18,14 @@ class InitialBinding extends Bindings {
   void dependencies() {
     Get.put(NetworkManager());
     Get.put<AuthRepository>(AuthRepository(), permanent: true,);
+    if (!Get.isRegistered<RoleService>()) {
+      Get.put(RoleService(), permanent: true);
+    }
     Get.lazyPut<ShopRepository>(
           () => ShopRepository(),
       fenix: true,
     );
+    Get.lazyPut(() => DashboardController(), fenix: true);
     Get.put<ThemeController>(ThemeController(), permanent: true);
     Get.lazyPut<ShopCreateController>(
           () => ShopCreateController(

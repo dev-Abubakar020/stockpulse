@@ -7,6 +7,7 @@ import 'package:stockpulse/common/widgets/custom_snackbar.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/services/session_cleanup_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,6 +17,8 @@ class DeepLinkService extends GetxService {
   StreamSubscription<Uri>? _linkSubscription;
   bool _isRecoveryProcessing = false;
   bool _isAuthErrorShowing = false;
+  bool _isStaffInviteProcessing = false;
+  String? pendingStaffInvitationToken;
 
   @override
   void onInit() {
@@ -38,6 +41,13 @@ class DeepLinkService extends GetxService {
         uri.queryParameters['type'] == 'recovery';
   }
 
+  bool isStaffInviteUri(Uri uri) {
+    return uri.scheme == 'https' &&
+        uri.host == 'www.rishtajourney.com' &&
+        uri.path == '/staff-invite' &&
+        uri.queryParameters['token']?.isNotEmpty == true;
+  }
+
   Future<String> determineInitialRoute() async {
     final storage = Get.find<LocalStorageService>();
     final authRepo = Get.find<AuthRepository>();
@@ -52,6 +62,10 @@ class DeepLinkService extends GetxService {
           await authRepo.verifyRecoveryToken(tokenHash);
           storage.setRecoveryInProgress(true);
           initialRoute = Routes.resetPassword;
+          recoveryLinkProcessed = true;
+        } else if (isStaffInviteUri(initialUri)) {
+          pendingStaffInvitationToken = initialUri.queryParameters['token']!;
+          initialRoute = Routes.register;
           recoveryLinkProcessed = true;
         }
       }
@@ -93,7 +107,26 @@ class DeepLinkService extends GetxService {
     if (session == null) {
       return Routes.login;
     }
-    final shopRepository = ShopRepository();
+
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
+
+    await roleService.fetchMembership();
+
+    if (roleService.hasMembership.value) {
+      if (roleService.isStaff && !roleService.isActive.value) {
+        try {
+          await Supabase.instance.client.auth.signOut();
+        } catch (_) {}
+        return Routes.login;
+      }
+      return Routes.dashboard;
+    }
+
+    final shopRepository = Get.isRegistered<ShopRepository>()
+        ? Get.find<ShopRepository>()
+        : ShopRepository();
     final hasShop = await shopRepository.currentUserHasShop();
     if (!hasShop) {
       return Routes.createShop;
@@ -102,14 +135,29 @@ class DeepLinkService extends GetxService {
   }
 
   Future<void> _handleDeepLink(Uri uri) async {
-    if (!isRecoveryUri(uri)) return;
+    if (isRecoveryUri(uri)) {
+      await _handleRecoveryLink(uri);
+      return;
+    }
+
+    if (isStaffInviteUri(uri)) {
+      await _handleStaffInvite(uri);
+      return;
+    }
+  }
+
+  Future<void> _handleRecoveryLink(Uri uri) async {
     if (_isRecoveryProcessing) return;
 
     final tokenHash = uri.queryParameters['token_hash'];
     final type = uri.queryParameters['type'];
 
-    if (tokenHash == null || tokenHash.isEmpty || type != 'recovery') {
-      _showRecoveryError('Invalid password reset link.');
+    if (tokenHash == null ||
+        tokenHash.isEmpty ||
+        type != 'recovery') {
+      _showRecoveryError(
+        'Invalid password reset link.',
+      );
       return;
     }
 
@@ -119,7 +167,6 @@ class DeepLinkService extends GetxService {
       final authRepo = Get.find<AuthRepository>();
       await authRepo.verifyRecoveryToken(tokenHash);
       Get.find<LocalStorageService>().setRecoveryInProgress(true);
-
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.currentRoute != Routes.resetPassword) {
           Get.offAllNamed(Routes.resetPassword);
@@ -145,10 +192,41 @@ class DeepLinkService extends GetxService {
         clearUserSessionData();
         await Supabase.instance.client.auth.signOut();
       } catch (_) {}
-
-      _showRecoveryError(AppConstants.unableToSentLink);
+      _showRecoveryError(
+        AppConstants.unableToSentLink,
+      );
     } finally {
       _isRecoveryProcessing = false;
+    }
+  }
+
+  Future<void> _handleStaffInvite(Uri uri) async {
+    if (_isStaffInviteProcessing) return;
+
+    final token = uri.queryParameters['token'];
+
+    if (token == null || token.isEmpty) {
+      CustomSnackBar.warningSnackBar(
+        title: 'Invalid Invitation',
+        message: 'Staff invitation link is invalid.',
+      );
+      return;
+    }
+    _isStaffInviteProcessing = true;
+
+    try {
+      pendingStaffInvitationToken = token;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.offAllNamed(
+          Routes.register,
+          arguments: {
+            'invitationToken': token,
+          },
+        );
+      });
+    } finally {
+      _isStaffInviteProcessing = false;
     }
   }
 
