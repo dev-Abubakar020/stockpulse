@@ -177,66 +177,9 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
                   ],
                 ),
               ],
-            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _RecoveryTab extends StatelessWidget {
-  const _RecoveryTab({
-    required this.title,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String title;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.appTheme;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.card : Colors.transparent,
-          borderRadius: BorderRadius.circular(9),
-          border: isSelected
-              ? Border.all(
-                  color: theme.primary.withValues(alpha: 0.4),
-                  width: 1,
-                )
-              : null,
-        ),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 15,
-              color: isSelected ? theme.primary : theme.textHint,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              title,
-              style: GoogleFonts.plusJakartaSans(
-                color: isSelected ? theme.textPrimary : theme.textHint,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    ));
   }
 }

@@ -1,11 +1,10 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/theme_helper.dart';
 
 class ThemeToggleButton extends StatelessWidget {
-  const ThemeToggleButton();
+  const ThemeToggleButton({super.key});
 
   @override
   Widget build(BuildContext context) {
