@@ -117,7 +117,7 @@ class HomeView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Overview',
+                        AppConstants.overview,
                         style: GoogleFonts.sora(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -126,7 +126,7 @@ class HomeView extends GetView<HomeController> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'Track your performance',
+                        AppConstants.trackYourPerformanceSubtitle,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           color: theme.textSecondary,
@@ -146,13 +146,13 @@ class HomeView extends GetView<HomeController> {
                       color: theme.card,
 
                       itemBuilder: (context) => [
-                        _filterItem('today', 'Today', Icons.today_rounded),
-                        _filterItem('yesterday', 'Yesterday', Icons.history_rounded),
-                        _filterItem('week', 'This Week', Icons.date_range_rounded),
-                        _filterItem('month', 'This Month', Icons.calendar_month_rounded),
+                        _filterItem('today', AppConstants.today, Icons.today_rounded),
+                        _filterItem('yesterday', AppConstants.yesterday, Icons.history_rounded),
+                        _filterItem('week', AppConstants.thisWeek, Icons.date_range_rounded),
+                        _filterItem('month', AppConstants.thisMonth, Icons.calendar_month_rounded),
                         _filterItem(
                           'custom',
-                          'Custom Range',
+                          AppConstants.customRange,
                           Icons.tune_rounded,
                         ),
                       ],

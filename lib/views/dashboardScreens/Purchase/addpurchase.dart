@@ -8,6 +8,7 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/utils/app_colors.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_snackbar.dart';
@@ -40,8 +41,8 @@ class _AddPurchaseState extends State<AddPurchase> {
     Get.back();
 
     CustomSnackBar.successSnackBar(
-      title: 'Purchase Completed',
-      message: 'Purchase saved and stock updated successfully.',
+      title: AppConstants.purchaseCompletedTitle,
+      message: AppConstants.purchaseSavedSuccessMsg,
     );
   }
   void _showProductPicker(BuildContext context) {

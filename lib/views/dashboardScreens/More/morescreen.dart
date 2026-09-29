@@ -131,7 +131,7 @@ class MoreScreen extends StatelessWidget {
                     ? controller.userName.value
                     : (controller.ownerController.text.isNotEmpty
                         ? controller.ownerController.text
-                        : 'User');
+                        : AppConstants.defaultUserTitle);
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -154,10 +154,10 @@ class MoreScreen extends StatelessWidget {
                     /// SHOP NAME OR ROLE
                     Text(
                       roleService.isStaff
-                          ? 'Staff Member'
+                          ? AppConstants.staffMemberRole
                           : (controller.shopController.text.isNotEmpty
                               ? controller.shopController.text
-                              : 'Shop Owner'),
+                              : AppConstants.shopOwnerRole),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.notoSans(
@@ -208,7 +208,7 @@ class MoreScreen extends StatelessWidget {
                   _buildCardGroup([
                     MoreMenuTile(
                       icon: Icons.info,
-                      title: 'Business Info',
+                      title: AppConstants.businessInfo,
                       showDivider: false,
                       onTap: () {
                         Get.toNamed(Routes.editBDetails);
@@ -248,7 +248,7 @@ class MoreScreen extends StatelessWidget {
                     if (roleService.isOwner)
                       MoreMenuTile(
                         icon: Icons.print,
-                        title: 'Printing Setting',
+                        title: AppConstants.printingSettingTitle,
                         showDivider: roleService.canManageStaff,
                         onTap: () {
                           Get.toNamed(Routes.printingSetting);

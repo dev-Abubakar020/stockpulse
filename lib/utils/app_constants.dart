@@ -630,4 +630,22 @@ class AppConstants {
   static const double iconMD = 20.0;
   static const double iconLG = 24.0;
   static const double iconXL = 28.0;
+
+  // Additional Screen & Notification Strings
+  static const String purchaseCompletedTitle = 'Purchase Completed';
+  static const String purchaseSavedSuccessMsg =
+      'Purchase saved and stock updated successfully.';
+  static const String reportErrorTitle = 'Report Error';
+  static const String unableToLoadStaffMsg = 'Unable to load staff members.';
+  static const String unableToUpdateStaffTitle = 'Unable to Update Staff';
+  static const String trackYourPerformanceSubtitle = 'Track your performance';
+  static const String today = 'Today';
+  static const String yesterday = 'Yesterday';
+  static const String thisWeek = 'This Week';
+  static const String thisMonth = 'This Month';
+  static const String customRange = 'Custom Range';
+  static const String staffMemberRole = 'Staff Member';
+  static const String shopOwnerRole = 'Shop Owner';
+  static const String defaultUserTitle = 'User';
+  static const String printingSettingTitle = 'Printing Setting';
 }

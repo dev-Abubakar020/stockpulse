@@ -16,28 +16,48 @@ class PurchasePdfService {
     final isThermal =
         format.width < 100 * PdfPageFormat.mm;
 
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: format,
+    if (isThermal) {
+      // Dynamic receipt height based on number of items.
+      final receiptHeightMm =
+          115.0 + (items.length * 10.0);
 
-        margin: isThermal
-            ? pw.EdgeInsets.all(
-          3 * PdfPageFormat.mm,
-        )
-            : const pw.EdgeInsets.symmetric(
-          horizontal: 32,
-          vertical: 28,
-        ),
+      final thermalFormat = PdfPageFormat(
+        format.width,
+        receiptHeightMm * PdfPageFormat.mm,
+        marginAll: 0,
+      );
 
-        build: (_) => [
-          _buildReceipt(
+      pdf.addPage(
+        pw.Page(
+          pageFormat: thermalFormat,
+          margin: pw.EdgeInsets.all(
+            3 * PdfPageFormat.mm,
+          ),
+          build: (_) => _buildReceipt(
             purchase: purchase,
             items: items,
             creatorName: creatorName,
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    } else {
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: format,
+          margin: const pw.EdgeInsets.symmetric(
+            horizontal: 32,
+            vertical: 28,
+          ),
+          build: (_) => [
+            _buildReceipt(
+              purchase: purchase,
+              items: items,
+              creatorName: creatorName,
+            ),
+          ],
+        ),
+      );
+    }
 
     return pdf.save();
   }
@@ -66,7 +86,7 @@ class PurchasePdfService {
 
     return pw.Center(
       child: pw.Container(
-        width: 360,
+        width: 300,
         child: pw.Column(
           crossAxisAlignment:
           pw.CrossAxisAlignment.stretch,

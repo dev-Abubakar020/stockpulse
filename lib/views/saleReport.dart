@@ -190,7 +190,7 @@ class SaleReport extends GetView<SaleReportController> {
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Center(
                                 child: Text(
-                                  'No category data available',
+                                  AppConstants.noData,
                                   style: GoogleFonts.plusJakartaSans(
                                     color: theme.textSecondary,
                                     fontSize: 13,

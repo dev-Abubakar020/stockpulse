@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/widgets/custom_snackbar.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import '../models/staff_invite_model.dart';
 import '../repositories/staff_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -130,13 +131,13 @@ class StaffController extends GetxController {
       staffList.assignAll(data);
     } on PostgrestException catch (e) {
       CustomSnackBar.errorSnackBar(
-        title: 'Error',
+        title: AppConstants.errorTitle,
         message: e.message,
       );
     } catch (e) {
       CustomSnackBar.errorSnackBar(
-        title: 'Error',
-        message: 'Unable to load staff members.',
+        title: AppConstants.errorTitle,
+        message: AppConstants.unableToLoadStaffMsg,
       );
     } finally {
       isLoading.value = false;
@@ -162,20 +163,20 @@ class StaffController extends GetxController {
 
       await fetchStaff();
       CustomSnackBar.successSnackBar(
-        title: 'Success',
+        title: AppConstants.successTitle,
         message: isActive
             ? '${staff.name} has been activated.'
             : '${staff.name} has been deactivated.',
       );
     } on PostgrestException catch (e) {
       CustomSnackBar.errorSnackBar(
-        title: 'Unable to Update Staff',
+        title: AppConstants.unableToUpdateStaffTitle,
         message: e.message,
       );
     } catch (_) {
       CustomSnackBar.errorSnackBar(
-        title: 'Unable to Update Staff',
-        message: 'Something went wrong. Please try again.',
+        title: AppConstants.unableToUpdateStaffTitle,
+        message: AppConstants.defaultErrorMessage,
       );
     }
   }

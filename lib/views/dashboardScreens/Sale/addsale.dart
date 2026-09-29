@@ -44,7 +44,7 @@ class _AddSaleState extends State<AddSale> {
   }
 
   void _handleBack() {
-    if (_currentStep > 0 && _currentStep < 3) {
+    if (_currentStep > 0 && _currentStep < 2) {
       setState(() {
         _currentStep--;
       });
@@ -62,17 +62,6 @@ class _AddSaleState extends State<AddSale> {
   }
 
   Future<void> _completeSale() async {
-    if (saleController.paymentMethod.value == 'cash') {
-      final received = saleController.receivedAmount;
-      if (received < saleController.totalAmount) {
-        CustomSnackBar.warningSnackBar(
-          title: AppConstants.insufficientAmount,
-          message: AppConstants.receivedAmountError,
-        );
-        return;
-      }
-    }
-
     final saleId = await saleController.createSale();
     if (saleId == null) {
       return;
@@ -81,7 +70,7 @@ class _AddSaleState extends State<AddSale> {
     if (!mounted) return;
     setState(() {
       _createdSaleId = saleId;
-      _currentStep = 3;
+      _currentStep = 2;
     });
   }
 
@@ -101,7 +90,7 @@ class _AddSaleState extends State<AddSale> {
 
         body: _buildCurrentStepContent(),
 
-        bottomNavigationBar: _currentStep != 3
+        bottomNavigationBar: _currentStep != 2
             ? Obx(() {
           final _ = saleController.quantities.length;
           final _discount = saleController.discount.value;
@@ -114,8 +103,8 @@ class _AddSaleState extends State<AddSale> {
   }
 
   PreferredSizeWidget _buildTopBar() {
-    // Step 3
-    if (_currentStep == 3) {
+    // Step 2 (Success)
+    if (_currentStep == 2) {
       return CustomAppBar(
         leadingIcon: Icons.close_rounded,
         leadingOnPressed: () => Navigator.of(context).pop(),
@@ -137,7 +126,7 @@ class _AddSaleState extends State<AddSale> {
       );
     }
 
-    // Default / Step 0, 2
+    // Default / Step 0
     return CustomAppBar(
       title: Text('New ${AppConstants.saleTitle}'),
       showBackArrow: true,
@@ -158,8 +147,6 @@ class _AddSaleState extends State<AddSale> {
       case 1:
         return _buildStep2ReviewCart();
       case 2:
-        return _buildStep3Payment();
-      case 3:
         return _buildStep4Success();
       default:
         return const SizedBox();
@@ -486,173 +473,7 @@ class _AddSaleState extends State<AddSale> {
   }
 
   // ============================================================
-  // STEP 3: PAYMENT
-  // ============================================================
-
-  Widget _buildStep3Payment() {
-    final isDark = context.isDark;
-    final paymentMethods = [
-      {'id': 'Cash', 'icon': Icons.payments_outlined},
-    ];
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // TOTAL
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF111A2E) : const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppConstants.totalAmountLabel,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    color: textMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : textDark,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 22),
-
-          // PAYMENT METHOD
-          Text(
-            AppConstants.selectPaymentMethod,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: paymentMethods.map((pm) {
-              final method = (pm['id'] as String).toLowerCase();
-              final isSelected = saleController.paymentMethod.value == method;
-
-              return GestureDetector(
-                onTap: () {
-                  saleController.changePaymentMethod(pm['id'] as String);
-                  if (method == 'card') {
-                    saleController.receivedAmountController.text =
-                        saleController.totalAmount.toStringAsFixed(2);
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? primaryGreen
-                        : (isDark ? const Color(0xFF131D2E) : Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isSelected
-                          ? primaryGreen
-                          : (isDark ? const Color(0xFF1E2D44) : borderColor),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        pm['icon'] as IconData,
-                        size: 18,
-                        color: isSelected
-                            ? Colors.white
-                            : (isDark ? Colors.white70 : textDark),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        pm['id'] as String,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected
-                              ? Colors.white
-                              : (isDark ? Colors.white : textDark),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-
-          const SizedBox(height: 22),
-
-          // RECEIVED AMOUNT
-          if (saleController.paymentMethod.value == 'cash') ...[
-            Text(
-              AppConstants.receivedAmountLabel,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            CustomTextField(
-              controller: saleController.receivedAmountController,
-              hintText: '0.00',
-              prefixIcon: const Icon(Icons.money_rounded, size: 18),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              onChanged: (_) {
-                saleController.paymentMethod.refresh();
-              },
-            ),
-            const SizedBox(height: 16),
-            Text(
-              AppConstants.changeLabel,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                color: textMuted,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Rs. ${saleController.changeAmount.toStringAsFixed(2)}',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: primaryGreen,
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // STEP 4: SUCCESS
+  // STEP 3: SUCCESS
   // ============================================================
 
   Widget _buildStep4Success() {
@@ -755,7 +576,7 @@ class _AddSaleState extends State<AddSale> {
               backgroundColor: isDark
                   ? const Color(0xFF1E2D44)
                   : const Color(0xFFF3F4F6),
-              // textColor: isDark ? Colors.white : textDark,
+              foregroundColor : isDark ? Colors.white : textDark,
             ),
           ],
         ),
@@ -797,8 +618,8 @@ class _AddSaleState extends State<AddSale> {
             : () {
                 if (saleController.discount.value > saleController.subtotal) {
                   CustomSnackBar.warningSnackBar(
-                    title: 'Invalid Discount',
-                    message: 'Discount cannot exceed subtotal.',
+                    title: AppConstants.invalidDiscount,
+                    message: AppConstants.discountExceedSubtotal,
                   );
                   return;
                 }

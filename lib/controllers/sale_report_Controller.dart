@@ -53,7 +53,7 @@ class SaleReportController extends GetxController {
       await _generateReport();
     } catch (e) {
       CustomSnackBar.errorSnackBar(
-        title: 'Report Error',
+        title: AppConstants.reportErrorTitle,
         message: e.toString(),
       );
     } finally {
