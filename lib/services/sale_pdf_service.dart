@@ -24,22 +24,49 @@ class SalePdfService {
     final isThermal =
         format.width < 100 * PdfPageFormat.mm;
 
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: format,
-        margin: isThermal
-            ? pw.EdgeInsets.all(3 * PdfPageFormat.mm)
-            : const pw.EdgeInsets.all(32),
+    if (isThermal) {
+      // Sale receipt is slightly taller than purchase receipt.
+      final receiptHeightMm =
+          140.0 + (items.length * 12.0);
 
-        build: (context) => [
-          _buildReceipt(
+      final thermalFormat = PdfPageFormat(
+        format.width,
+        receiptHeightMm * PdfPageFormat.mm,
+        marginAll: 0,
+      );
+
+      pdf.addPage(
+        pw.Page(
+          pageFormat: thermalFormat,
+          margin: pw.EdgeInsets.all(
+            3 * PdfPageFormat.mm,
+          ),
+          build: (_) => _buildReceipt(
             sale: sale,
             items: items,
             creatorName: creatorName,
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    } else {
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: format,
+          margin: const pw.EdgeInsets.symmetric(
+            horizontal: 32,
+            vertical: 28,
+          ),
+          build: (_) => [
+            _buildReceipt(
+              sale: sale,
+              items: items,
+              creatorName: creatorName,
+            ),
+          ],
+        ),
+      );
+    }
+
 
     return pdf.save();
   }
