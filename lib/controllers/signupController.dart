@@ -6,9 +6,12 @@ import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
+import 'package:stockpulse/services/deep_link_service.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../common/exceptional/platform_exceptions.dart';
 import '../common/exceptional/validator.dart';
@@ -51,6 +54,46 @@ class SignupController extends GetxController {
 
   Future<void> _handlePostSignupNavigation() async {
     Get.find<LocalStorageService>().setLoggedIn(true);
+
+    final deepLinkService = Get.isRegistered<DeepLinkService>()
+        ? Get.find<DeepLinkService>()
+        : null;
+    final invitationToken = deepLinkService?.pendingStaffInvitationToken;
+
+    if (invitationToken != null && invitationToken.isNotEmpty) {
+      if (Supabase.instance.client.auth.currentSession != null) {
+        try {
+          await Supabase.instance.client.rpc(
+            'claim_staff_invitation',
+            params: {'p_token': invitationToken},
+          );
+          deepLinkService?.pendingStaffInvitationToken = null;
+        } catch (e) {
+          debugPrint('Error claiming staff invitation: $e');
+        }
+      }
+    }
+
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
+
+    await roleService.fetchMembership();
+
+    if (roleService.hasMembership.value) {
+      if (roleService.isStaff && !roleService.isActive.value) {
+        CustomSnackBar.errorSnackBar(
+          title: 'Account Inactive',
+          message: 'Your staff account is inactive. Please contact the shop owner.',
+        );
+        await Supabase.instance.client.auth.signOut();
+        Get.offAllNamed(Routes.login);
+        return;
+      }
+      Get.offAllNamed(Routes.dashboard);
+      return;
+    }
+
     final hasShop = await Get.find<ShopRepository>().currentUserHasShop();
     if (hasShop) {
       Get.offAllNamed(Routes.dashboard);

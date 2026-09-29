@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/sale_item_model.dart';
@@ -173,8 +174,8 @@ class SaleRepository {
           .maybeSingle();
 
       if (response != null) {
-        final name = response['name'] as String? ??
-            response['full_name'] as String? ??
+        final name = response['full_name'] as String? ??
+            response['name'] as String? ??
             response['email'] as String?;
         if (name != null && name.trim().isNotEmpty) {
           return name.trim().contains('@')
@@ -182,9 +183,36 @@ class SaleRepository {
               : name.trim();
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('getUserName error: $e');
+    }
 
-    return 'Shop Owner';
+    return 'Staff Member';
+  }
+
+  Future<String> getSaleCreatorName(String saleId, {String? createdByUserId}) async {
+    try {
+      final response = await _supabase.rpc(
+        'get_sale_creator_name',
+        params: {
+          'p_sale_id': saleId,
+        },
+      );
+
+      final name = response?.toString().trim();
+
+      if (name != null && name.isNotEmpty && name != 'Unknown User') {
+        return name;
+      }
+    } catch (e) {
+      debugPrint('Creator name RPC error: $e');
+    }
+
+    if (createdByUserId != null && createdByUserId.isNotEmpty) {
+      return getUserName(createdByUserId);
+    }
+
+    return 'Staff Member';
   }
 
   // ============================================================

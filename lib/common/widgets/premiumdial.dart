@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
@@ -58,50 +59,57 @@ class _PremiumSpeedDialState extends State<PremiumSpeedDial>
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // Expense
-        _SpeedDialAction(
-          animation: _controller,
-          interval: const Interval(0.15, 1),
-          title: AppConstants.addExpenses,
-          icon: Icons.account_balance_wallet_outlined,
-          color: const Color(0xFFEF6C00),
-          onTap: () => _navigate(Routes.addExpense),
-        ),
+        if (roleService.canManageExpenses)
+          _SpeedDialAction(
+            animation: _controller,
+            interval: const Interval(0.15, 1),
+            title: AppConstants.addExpenses,
+            icon: Icons.account_balance_wallet_outlined,
+            color: const Color(0xFFEF6C00),
+            onTap: () => _navigate(Routes.addExpense),
+          ),
 
         // Product
-        _SpeedDialAction(
-          animation: _controller,
-          interval: const Interval(0.10, 0.90),
-          title: AppConstants.addProducts,
-          icon: Icons.add_box_outlined,
-          color: const Color(0xFF1565C0),
-          onTap: () => _navigate(Routes.addProductWizard),
-        ),
+        if (roleService.canManageProducts)
+          _SpeedDialAction(
+            animation: _controller,
+            interval: const Interval(0.10, 0.90),
+            title: AppConstants.addProducts,
+            icon: Icons.add_box_outlined,
+            color: const Color(0xFF1565C0),
+            onTap: () => _navigate(Routes.addProductWizard),
+          ),
 
         // Purchase
-        _SpeedDialAction(
-          animation: _controller,
-          interval: const Interval(0.05, 0.80),
-          title: AppConstants.addPurchase,
-          icon: Icons.assignment_turned_in_outlined,
-          color: const Color(0xFF00796B),
-          onTap: () => _navigate(Routes.addPurchase),
-        ),
+        if (roleService.canManagePurchases)
+          _SpeedDialAction(
+            animation: _controller,
+            interval: const Interval(0.05, 0.80),
+            title: AppConstants.addPurchase,
+            icon: Icons.assignment_turned_in_outlined,
+            color: const Color(0xFF00796B),
+            onTap: () => _navigate(Routes.addPurchase),
+          ),
 
         // Sale
-        _SpeedDialAction(
-          animation: _controller,
-          interval: const Interval(0.0, 0.70),
-          title: AppConstants.newSale,
-          icon: Icons.add_shopping_cart_rounded,
-          color: const Color(0xFF2E7D32),
-          onTap: () => _navigate(Routes.addSale),
-        ),
+        if (roleService.canCreateSale)
+          _SpeedDialAction(
+            animation: _controller,
+            interval: const Interval(0.0, 0.70),
+            title: AppConstants.newSale,
+            icon: Icons.add_shopping_cart_rounded,
+            color: const Color(0xFF2E7D32),
+            onTap: () => _navigate(Routes.addSale),
+          ),
 
         const SizedBox(
           height: AppConstants.spaceSM,

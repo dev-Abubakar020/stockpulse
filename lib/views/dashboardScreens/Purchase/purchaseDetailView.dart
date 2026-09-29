@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/appbar.dart';
@@ -120,12 +121,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
             const SizedBox(height: 12),
             Obx(() {
               if (controller.isPurchaseItemsLoading.value) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                return _buildDetailItemsShimmer(theme);
               }
 
               final items = controller.currentPurchaseItems;
@@ -385,6 +381,31 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDetailItemsShimmer(AppThemeHelper theme) {
+    final baseColor = theme.isDark ? const Color(0xFF131D2E) : Colors.grey.shade300;
+    final highlightColor = theme.isDark ? const Color(0xFF1E2D44) : Colors.grey.shade100;
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Column(
+        children: List.generate(
+          3,
+          (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

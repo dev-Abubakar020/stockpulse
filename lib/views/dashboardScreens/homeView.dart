@@ -6,9 +6,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/Custom_card.dart';
-import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
@@ -207,10 +207,79 @@ class HomeView extends GetView<HomeController> {
                     children: [
                       const SizedBox(height: 12),
                       Obx(() {
+                        final roleService = Get.isRegistered<RoleService>()
+                            ? Get.find<RoleService>()
+                            : Get.put(RoleService(), permanent: true);
+
                         if (controller.isLoading.value) {
                           return _buildShimmerCards();
                         }
 
+                        if (!roleService.canManagePurchases) {
+                          // Staff view: Hide purchases card & chart
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: roleService.canViewReports
+                                          ? () => Get.toNamed(Routes.saleReport)
+                                          : null,
+                                      child: SummaryCard(
+                                        title: AppConstants.saleTitle,
+                                        value:
+                                            'Rs. ${controller.totalSales.value.toInt()}',
+                                        icon: CupertinoIcons.cart,
+                                        iconColor: const Color(0xFF00796B),
+                                        percentage: '',
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () {
+                                        Get.find<DashboardController>().changePage(2);
+                                      },
+                                      child: SummaryCard(
+                                        title: AppConstants.totalProduct,
+                                        value: controller
+                                            .productController
+                                            .products
+                                            .length
+                                            .toString(),
+                                        icon: Icons.grid_view_rounded,
+                                        iconColor: const Color(0xFF1565C0),
+                                        percentage: '',
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: SummaryCard(
+                                      title: AppConstants.lowStockTitle,
+                                      value:
+                                          '${controller.lowStockCount.value} Items',
+                                      icon: CupertinoIcons.cube_box,
+                                      iconColor: const Color(0xFFC62828),
+                                      percentage: '',
+                                      theme: theme,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }
+
+                        // Owner view: Show all cards and chart
                         return Column(
                           children: [
                             Row(
@@ -289,59 +358,64 @@ class HomeView extends GetView<HomeController> {
                           ],
                         );
                       }),
-                      SizedBox(height: 18,),
-                      _SectionContainer(
-                        theme: theme,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                      const SizedBox(height: 18),
+                      Obx(() {
+                        final roleService = Get.isRegistered<RoleService>()
+                            ? Get.find<RoleService>()
+                            : Get.put(RoleService(), permanent: true);
 
-                            SizedBox(height: 12,),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    AppConstants.salesVsPurchases,
-                                    style: GoogleFonts.sora(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w700,
-                                      color: theme.textPrimary,
+                        if (!roleService.canManagePurchases) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return _SectionContainer(
+                          theme: theme,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      AppConstants.salesVsPurchases,
+                                      style: GoogleFonts.sora(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700,
+                                        color: theme.textPrimary,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: AppConstants.spaceLG),
-
-                            Row(
-                              children: [
-                                _Legend(
-                                  title: AppConstants.saleTitle,
-                                  color: theme.success,
-                                  theme: theme,
-                                ),
-                                const SizedBox(width: AppConstants.spaceLG),
-                                _Legend(
-                                  title: AppConstants.purchaseTitle,
-                                  color: theme.primary,
-                                  theme: theme,
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: AppConstants.spaceXL),
-
-                            SizedBox(
-                              height: AppConstants.reportChartHeight,
-                              child: _SalesPurchaseChart(
-                                controller: controller,
-                                theme: theme,
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
+                              const SizedBox(height: AppConstants.spaceLG),
+                              Row(
+                                children: [
+                                  _Legend(
+                                    title: AppConstants.saleTitle,
+                                    color: theme.success,
+                                    theme: theme,
+                                  ),
+                                  const SizedBox(width: AppConstants.spaceLG),
+                                  _Legend(
+                                    title: AppConstants.purchaseTitle,
+                                    color: theme.primary,
+                                    theme: theme,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: AppConstants.spaceXL),
+                              SizedBox(
+                                height: AppConstants.reportChartHeight,
+                                child: _SalesPurchaseChart(
+                                  controller: controller,
+                                  theme: theme,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
 
                       const SizedBox(height: AppConstants.spaceLG),
                       const SizedBox(height: 18),

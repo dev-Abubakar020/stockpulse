@@ -17,6 +17,8 @@ import 'package:stockpulse/views/authScreens/resetPassword.dart';
 import 'package:stockpulse/views/dashboardScreens/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
 import '../../printingview.dart';
+import '../../views/dashboardScreens/More/Staff/addstaff.dart';
+import '../../views/dashboardScreens/More/Staff/allstaffs.dart';
 import '../../views/dashboardScreens/More/addcategories.dart';
 import '../../views/expense/addexpenses.dart';
 import '../../views/expense/allexpense.dart';
@@ -41,10 +43,10 @@ import '../bindings/dashboardBinding.dart';
 import '../bindings/expenseBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
 import '../bindings/saleBinding.dart';
+import '../bindings/staff_binding.dart';
 import 'app_routes.dart';
 
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/get_route.dart';
 
 class AppPages {
   static final pages = [
@@ -185,6 +187,17 @@ class AppPages {
     GetPage(
       name: Routes.printingSetting,
       page: () => PrinterSettingsView(),
+    ),
+
+    GetPage(
+      name: Routes.allStaff,
+      page: () => AllStaffView(),
+      binding: StaffBinding(),
+    ),
+    GetPage(
+      name: Routes.addStaff,
+      page: () => AddStaff(),
+      binding: StaffBinding(),
     ),
     // GetPage(name: Routes.onboarding, page: () => const OnboardingScreen()),
   ];

@@ -11,6 +11,7 @@ import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/services/deep_link_service.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:stockpulse/views/authScreens/login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -33,6 +34,7 @@ Future<void> main() async {
   Get.put(LocalStorageService(), permanent: true);
   Get.put(NetworkManager(), permanent: true);
   Get.put<AuthRepository>(AuthRepository(), permanent: true);
+  Get.put(RoleService(), permanent: true);
   final deepLinkService = Get.put(DeepLinkService(), permanent: true);
 
   final initialRoute = await deepLinkService.determineInitialRoute();

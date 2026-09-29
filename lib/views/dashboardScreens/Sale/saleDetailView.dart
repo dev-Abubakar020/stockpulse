@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/appbar.dart';
@@ -28,7 +29,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
     super.initState();
     sale = Get.arguments as SaleModel;
     controller.fetchSaleItems(sale.id);
-    controller.fetchCreatorName(sale.createdBy);
+    controller.fetchCreatorName(sale.id, createdByUserId: sale.createdBy);
   }
 
   @override
@@ -123,12 +124,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
             const SizedBox(height: 12),
             Obx(() {
               if (controller.isSaleItemsLoading.value) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                return _buildDetailItemsShimmer(theme);
               }
 
               final items = controller.currentSaleItems;
@@ -393,6 +389,31 @@ class _SaleDetailViewState extends State<SaleDetailView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDetailItemsShimmer(AppThemeHelper theme) {
+    final baseColor = theme.isDark ? const Color(0xFF131D2E) : Colors.grey.shade300;
+    final highlightColor = theme.isDark ? const Color(0xFF1E2D44) : Colors.grey.shade100;
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Column(
+        children: List.generate(
+          3,
+          (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

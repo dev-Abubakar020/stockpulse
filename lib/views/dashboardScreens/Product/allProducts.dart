@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../../common/widgets/CustomSearchField.dart';
@@ -306,34 +307,44 @@ class AllProducts extends GetView<ProductController>  {
       ),
 
       /// Floating Action Button
-      floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12,right: AppConstants.spaceSM),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF0F766E),
-              Color(0xFF14B8A6),
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
+      floatingActionButton: Obx(() {
+        final roleService = Get.isRegistered<RoleService>()
+            ? Get.find<RoleService>()
+            : Get.put(RoleService(), permanent: true);
+
+        if (!roleService.canManageProducts) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12, right: AppConstants.spaceSM),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF0F766E),
+                Color(0xFF14B8A6),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: FloatingActionButton.extended(
-          onPressed: () => Get.toNamed(Routes.addProductWizard),
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          icon: const Icon(Icons.add),
-          label: const Text(
-            AppConstants.addProducts,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+          child: FloatingActionButton.extended(
+            onPressed: () => Get.toNamed(Routes.addProductWizard),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            icon: const Icon(Icons.add),
+            label: const Text(
+              AppConstants.addProducts,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

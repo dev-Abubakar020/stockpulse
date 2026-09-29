@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,7 +14,6 @@ import '../../../common/widgets/custom_MenuTile.dart';
 import '../../../common/widgets/custom_shimmer.dart';
 import '../../../controllers/loginController.dart';
 import '../../../controllers/shopCreateController.dart';
-import '../Product/allProducts.dart';
 
 class MoreScreen extends StatelessWidget {
   MoreScreen({super.key});
@@ -23,25 +23,29 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShopCreateController controller = Get.find<ShopCreateController>();
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
 
     return CustomScreen(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: CustomAppBar(
         title: Text(AppConstants.moreTitle),
         actions: [
-          IconButton(onPressed: (){
-            Get.dialog(
-              CustomConfirmDialog(
-                title: AppConstants.logout,
-                subtitle: AppConstants.logoutAlertSubTitle,
-                confirmText: AppConstants.logout,
-                onConfirm: () {
-                  Get.back();
-                  Get.find<LoginController>().logout();
-                },
-              ),
-            );
-          },
+          IconButton(
+            onPressed: () {
+              Get.dialog(
+                CustomConfirmDialog(
+                  title: AppConstants.logout,
+                  subtitle: AppConstants.logoutAlertSubTitle,
+                  confirmText: AppConstants.logout,
+                  onConfirm: () {
+                    Get.back();
+                    Get.find<LoginController>().logout();
+                  },
+                ),
+              );
+            },
             icon: Material(
               color: Colors.transparent,
               child: Container(
@@ -51,8 +55,7 @@ class MoreScreen extends StatelessWidget {
                   color: Colors.red.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.red
-                        .withValues(alpha: 0.20),
+                    color: Colors.red.withValues(alpha: 0.20),
                   ),
                 ),
                 child: Icon(
@@ -61,7 +64,8 @@ class MoreScreen extends StatelessWidget {
                   color: Colors.red.withValues(alpha: 0.7),
                 ),
               ),
-            ),),
+            ),
+          ),
         ],
       ),
       body: Column(
@@ -75,10 +79,10 @@ class MoreScreen extends StatelessWidget {
 
               final profileImg =
                   controller.userProfileImageUrl.value.isNotEmpty
-                  ? controller.userProfileImageUrl.value
-                  : (controller.shopImageUrl.value.isNotEmpty
-                        ? controller.shopImageUrl.value
-                        : AppConstants.defaultUserIcon);
+                      ? controller.userProfileImageUrl.value
+                      : (controller.shopImageUrl.value.isNotEmpty
+                          ? controller.shopImageUrl.value
+                          : AppConstants.defaultUserIcon);
 
               return Container(
                 padding: const EdgeInsets.all(2),
@@ -105,7 +109,7 @@ class MoreScreen extends StatelessWidget {
 
             const SizedBox(width: 16),
 
-            /// OWNER + SHOP
+            /// OWNER / USER + SHOP
             Expanded(
               child: Obx(() {
                 if (controller.isProfileLoading.value) {
@@ -123,14 +127,14 @@ class MoreScreen extends StatelessWidget {
                 final displayName = controller.userName.value.isNotEmpty
                     ? controller.userName.value
                     : (controller.ownerController.text.isNotEmpty
-                          ? controller.ownerController.text
-                          : 'User');
+                        ? controller.ownerController.text
+                        : 'User');
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// OWNER / USER NAME
+                    /// USER NAME
                     Text(
                       displayName,
                       maxLines: 2,
@@ -144,11 +148,13 @@ class MoreScreen extends StatelessWidget {
 
                     const SizedBox(height: 5),
 
-                    /// SHOP NAME
+                    /// SHOP NAME OR ROLE
                     Text(
-                      controller.shopController.text.isNotEmpty
-                          ? controller.shopController.text
-                          : 'Shop',
+                      roleService.isStaff
+                          ? 'Staff Member'
+                          : (controller.shopController.text.isNotEmpty
+                              ? controller.shopController.text
+                              : 'Shop Owner'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.notoSans(
@@ -164,7 +170,7 @@ class MoreScreen extends StatelessWidget {
 
             const SizedBox(width: 8),
 
-            /// EDIT
+            /// EDIT PROFILE
             Material(
               color: Colors.transparent,
               child: InkWell(
@@ -179,8 +185,7 @@ class MoreScreen extends StatelessWidget {
                     color: const Color(0xFF0F766E).withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color(0xFF0F766E)
-                          .withValues(alpha: 0.20),
+                      color: const Color(0xFF0F766E).withValues(alpha: 0.20),
                     ),
                   ),
                   child: Icon(
@@ -195,52 +200,69 @@ class MoreScreen extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                CustomHeading(title: AppConstants.businessTitle),
+                if (roleService.canEditShopDetails) ...[
+                  CustomHeading(title: AppConstants.businessTitle),
+                  _buildCardGroup([
+                    MoreMenuTile(
+                      icon: Icons.info,
+                      title: 'Business Info',
+                      showDivider: false,
+                      onTap: () {
+                        Get.toNamed(Routes.editBDetails);
+                      },
+                    ),
+                  ]),
+                  const SizedBox(height: 10),
+                ],
 
-                _buildCardGroup([
-                  MoreMenuTile(
-                    icon: Icons.info,
-                    title: 'Business Info',
-                    onTap: () {
-                      Get.toNamed(Routes.editBDetails);
-                    },
-                  ),
-                ]),
-                const SizedBox(height: 10),
-                _buildCardGroup([
-                  MoreMenuTile(
-                    icon: Icons.category_outlined,
-                    title: AppConstants.categoriesTitle,
-                    onTap: () {
-                      Get.toNamed(Routes.allCategories);
-                    },
-                  ),
-                  MoreMenuTile(
-                    icon: Icons.receipt_long_outlined,
-                    title: AppConstants.expensesTitle,
-                    onTap: () {
-                      Get.toNamed(Routes.allExpenses);
-                    },
-                  ),
-                  MoreMenuTile(
-                    icon: Icons.print,
-                    title: 'Printing Setting',
-                    onTap: () {
-                      Get.toNamed(Routes.printingSetting);
-                    },
-                  ),
-                  MoreMenuTile(
-                    icon: Icons.badge_outlined,
-                    title: AppConstants.staffTitle,
-                    showDivider: false,
-                    onTap: () {
-                      Get.snackbar(
-                        AppConstants.featureUnavailableTitle,
-                        AppConstants.featureComingSoonMsg,
-                      );
-                    },
-                  ),
-                ]),
+                // Management section
+                if (roleService.canManageProducts ||
+                    roleService.canManageExpenses ||
+                    roleService.canManageStaff ||
+                    roleService.isOwner) ...[
+                  _buildCardGroup([
+                    if (roleService.canManageProducts)
+                      MoreMenuTile(
+                        icon: Icons.category_outlined,
+                        title: AppConstants.categoriesTitle,
+                        showDivider: roleService.canManageExpenses ||
+                            roleService.canManageStaff ||
+                            roleService.isOwner,
+                        onTap: () {
+                          Get.toNamed(Routes.allCategories);
+                        },
+                      ),
+                    if (roleService.canManageExpenses)
+                      MoreMenuTile(
+                        icon: Icons.receipt_long_outlined,
+                        title: AppConstants.expensesTitle,
+                        showDivider:
+                            roleService.canManageStaff || roleService.isOwner,
+                        onTap: () {
+                          Get.toNamed(Routes.allExpenses);
+                        },
+                      ),
+                    if (roleService.isOwner)
+                      MoreMenuTile(
+                        icon: Icons.print,
+                        title: 'Printing Setting',
+                        showDivider: roleService.canManageStaff,
+                        onTap: () {
+                          Get.toNamed(Routes.printingSetting);
+                        },
+                      ),
+                    if (roleService.canManageStaff)
+                      MoreMenuTile(
+                        icon: Icons.badge_outlined,
+                        title: AppConstants.staffTitle,
+                        showDivider: false,
+                        onTap: () {
+                          Get.toNamed(Routes.allStaff);
+                        },
+                      ),
+                  ]),
+                  const SizedBox(height: 10),
+                ],
 
                 // Section 2
                 CustomHeading(title: AppConstants.othersOptionsTitle),

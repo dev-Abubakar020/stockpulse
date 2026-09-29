@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../models/productItemModel.dart';
@@ -53,7 +54,14 @@ class ProductController extends GetxController {
     try {
       isLoading.value = true;
       debugPrint('Fetching products from Supabase...');
-      final fetched = await repository.getProducts();
+      final roleService = Get.isRegistered<RoleService>()
+          ? Get.find<RoleService>()
+          : Get.put(RoleService(), permanent: true);
+
+      final fetched = roleService.isStaff
+          ? await repository.getStaffProducts()
+          : await repository.getProducts();
+
       debugPrint('Successfully fetched ${fetched.length} products.');
       products.assignAll(fetched);
     } catch (e) {

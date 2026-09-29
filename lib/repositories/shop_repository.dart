@@ -21,6 +21,21 @@ class ShopRepository {
     return shop != null;
   }
 
+  Future<Map<String, dynamic>?> getMyMembership() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return null;
+
+    final response = await _supabase.rpc('get_my_membership');
+    if (response == null) return null;
+    if (response is List) {
+      if (response.isEmpty) return null;
+      return Map<String, dynamic>.from(response.first);
+    } else if (response is Map) {
+      return Map<String, dynamic>.from(response);
+    }
+    return null;
+  }
+
   Future<Map<String, dynamic>?> getShop() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return null;

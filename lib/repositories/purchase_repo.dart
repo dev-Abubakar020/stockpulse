@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/purchasemodel.dart';
 
@@ -128,9 +129,11 @@ class PurchaseRepository {
               : name.trim();
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Purchase getUserName error: $e');
+    }
 
-    return 'Shop Owner';
+    return 'Staff Member';
   }
 
   String? _cleanNotes(String? notes) {

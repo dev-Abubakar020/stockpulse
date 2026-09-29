@@ -12,6 +12,7 @@ import 'package:stockpulse/repositories/product_repository.dart';
 import 'package:stockpulse/repositories/purchase_repo.dart';
 import 'package:stockpulse/repositories/sale_repository.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
+import 'package:stockpulse/services/role_service.dart';
 
 /// Centralized session cleanup utility to wipe user-scoped GetX state and repositories
 /// without deleting permanent infrastructure services (AuthRepository, LocalStorageService, NetworkManager, ThemeController).
@@ -55,6 +56,9 @@ void clearUserSessionData() {
     }
     if (Get.isRegistered<EditProfileController>()) {
       Get.delete<EditProfileController>(force: true);
+    }
+    if (Get.isRegistered<RoleService>()) {
+      Get.find<RoleService>().clearRole();
     }
   } catch (e) {
     // Suppress cleanup errors during hot reload / test runs

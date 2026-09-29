@@ -7,6 +7,7 @@ import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
@@ -371,22 +372,24 @@ class _AddSaleState extends State<AddSale> {
               title: 'Cost Summary',
               child: Column(
                 children: [
-                  CustomTextField(
-                    controller: saleController.discountController,
-                    hintText: '0',
-                    labelText: 'Discount (Rs.)',
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    prefixIcon: const Icon(Icons.local_offer_rounded, size: 18),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d*\.?\d{0,2}'),
+                  if (Get.find<RoleService>().canApplyDiscount) ...[
+                    CustomTextField(
+                      controller: saleController.discountController,
+                      hintText: '0',
+                      labelText: 'Discount (Rs.)',
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
                       ),
-                    ],
-                    onChanged: saleController.updateDiscount,
-                  ),
-                  const SizedBox(height: 18),
+                      prefixIcon: const Icon(Icons.local_offer_rounded, size: 18),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*\.?\d{0,2}'),
+                        ),
+                      ],
+                      onChanged: saleController.updateDiscount,
+                    ),
+                    const SizedBox(height: 18),
+                  ],
                   _OrderSummaryRow(
                     label: 'Subtotal',
                     value: 'Rs. ${saleController.subtotal.toStringAsFixed(2)}',
@@ -1419,9 +1422,13 @@ class _SalePriceFieldState extends State<_SalePriceField> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
 
     return TextFormField(
       controller: _controller,
+      enabled: roleService.canChangeSalePrice,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),

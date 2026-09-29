@@ -31,6 +31,18 @@ class ProductRepository {
         .toList();
   }
 
+  Future<List<ProductItemModel>> getStaffProducts() async {
+    final response = await _supabase.rpc('get_staff_products');
+
+    return (response as List)
+        .map(
+          (item) => ProductItemModel.fromJson(
+        Map<String, dynamic>.from(item),
+      ),
+    )
+        .toList();
+  }
+
 
   // =========================
   // ADDING + FETCH PRODUCT CATEGORIES

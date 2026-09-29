@@ -4,6 +4,8 @@ import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../services/role_service.dart';
+
 class SplashController extends GetxController {
   var visible = true.obs;
   bool _disposed = false;
@@ -47,14 +49,31 @@ class SplashController extends GetxController {
       return Routes.login;
     }
 
-    // 3. User logged in -> check whether shop exists
+    // 3. Check membership for logged in session
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
+
+    await roleService.fetchMembership();
+
+    if (roleService.hasMembership.value) {
+      if (roleService.isStaff && !roleService.isActive.value) {
+        try {
+          await Supabase.instance.client.auth.signOut();
+        } catch (_) {}
+        return Routes.login;
+      }
+      return Routes.dashboard;
+    }
+
+    // 4. Fallback: check whether shop exists
     final hasShop = await shopRepository.currentUserHasShop();
 
     if (!hasShop) {
       return Routes.createShop;
     }
 
-    // 4. Logged in + shop exists
+    // 5. Logged in + shop exists
     return Routes.dashboard;
   }
 

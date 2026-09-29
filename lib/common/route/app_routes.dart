@@ -33,4 +33,6 @@ abstract class Routes {
   static const purchaseDetail = '/purchaseDetail';
 
   static const printingSetting = '/printingSetting';
+  static const allStaff = '/allStaff';
+  static const addStaff = '/addStaff';
 }

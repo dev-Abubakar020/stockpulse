@@ -12,6 +12,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../common/exceptional/platform_exceptions.dart';
 import '../common/exceptional/validator.dart';
 import '../common/widgets/custom_snackbar.dart';
+import '../services/deep_link_service.dart';
+import '../services/role_service.dart';
 
 class LoginController extends GetxController {
   final AuthRepository authRepository;
@@ -34,6 +36,46 @@ class LoginController extends GetxController {
 
   Future<void> _handlePostLoginNavigation() async {
     Get.find<LocalStorageService>().setLoggedIn(true);
+
+    final deepLinkService = Get.isRegistered<DeepLinkService>()
+        ? Get.find<DeepLinkService>()
+        : null;
+    final invitationToken = deepLinkService?.pendingStaffInvitationToken;
+
+    if (invitationToken != null && invitationToken.isNotEmpty) {
+      if (Supabase.instance.client.auth.currentSession != null) {
+        try {
+          await Supabase.instance.client.rpc(
+            'claim_staff_invitation',
+            params: {'p_token': invitationToken},
+          );
+          deepLinkService?.pendingStaffInvitationToken = null;
+        } catch (e) {
+          debugPrint('Error claiming staff invitation on login: $e');
+        }
+      }
+    }
+
+    final roleService = Get.isRegistered<RoleService>()
+        ? Get.find<RoleService>()
+        : Get.put(RoleService(), permanent: true);
+
+    await roleService.fetchMembership();
+
+    if (roleService.hasMembership.value) {
+      if (roleService.isStaff && !roleService.isActive.value) {
+        CustomSnackBar.errorSnackBar(
+          title: 'Account Inactive',
+          message: 'Your staff account is inactive. Please contact the shop owner.',
+        );
+        await Supabase.instance.client.auth.signOut();
+        Get.offAllNamed(Routes.login);
+        return;
+      }
+      Get.offAllNamed(Routes.dashboard);
+      return;
+    }
+
     final hasShop = await Get.find<ShopRepository>().currentUserHasShop();
     if (hasShop) {
       Get.offAllNamed(Routes.dashboard);

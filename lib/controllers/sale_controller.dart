@@ -25,9 +25,11 @@ class SaleController extends GetxController {
   final RxList<SaleItemModel> currentSaleItems = <SaleItemModel>[].obs;
   final RxString creatorName = ''.obs;
 
-  Future<void> fetchCreatorName(String userId) async {
-    // creatorName.value = 'Loading...';
-    creatorName.value = await repository.getUserName(userId);
+  Future<void> fetchCreatorName(String saleId, {String? createdByUserId}) async {
+    creatorName.value = await repository.getSaleCreatorName(
+      saleId,
+      createdByUserId: createdByUserId,
+    );
   }
 
   /// productId -> quantity

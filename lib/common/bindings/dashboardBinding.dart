@@ -13,7 +13,7 @@ import '../../controllers/loginController.dart';
 class DashboardBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<DashboardController>(() => DashboardController());
+    Get.lazyPut<DashboardController>(() => DashboardController(), fenix: true);
     Get.lazyPut<AuthRepository>(() => AuthRepository());
     Get.lazyPut<LoginController>(() => LoginController(Get.find<AuthRepository>()));
 

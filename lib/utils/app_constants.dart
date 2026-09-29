@@ -118,6 +118,11 @@ class AppConstants {
 
   static const String reset = 'Reset';
   static const String categoryName = 'Category Name ';
+  static const String staffName = 'Staff Email ';
+  static const String staffEmailDesc = 'Enter the email address of the staff member you want to invite.';
+  static const String staffEmailLabelHint = 'abc@gmail.com';
+  static const String staffEmailHint =
+                                     'An invitation will be sent to this email.\nThe staff member will need to create a \nnew StockPulse account using the same email address.';
   static const String requiredAsterisk = '*';
   static const String required = 'Required';
   static const String categoryNameHint =
@@ -133,9 +138,13 @@ class AppConstants {
   static const String saveCategory = 'Save Category';
 
   static const String searchCat = 'Search Categories';
+  static const String searchStaff = 'Search Staff';
   static const String allCat = 'All Categories';
+  static const String allStaff = 'All Staff';
+  static const String addStaff = 'Add Staff';
   static const String allExpenses = 'All Expenses';
   static const String noCatFound = 'No categories found.';
+  static const String noStaffFound = 'No Staff found.';
   static const String noData = 'No category data available';
   static const String noExpenseFound = 'No Expenses found.';
   static const String customer = "Customer";
