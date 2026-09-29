@@ -153,10 +153,7 @@ class StaffCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // ====================================================
             // Avatar
-            // ====================================================
-
             Container(
               width: 46,
               height: 46,
@@ -178,10 +175,7 @@ class StaffCard extends StatelessWidget {
             ),
 
             const SizedBox(width: 14),
-
-            // ====================================================
             // Information
-            // ====================================================
 
             Expanded(
               child: Column(
@@ -257,9 +251,7 @@ class StaffCard extends StatelessWidget {
               ),
             ),
 
-            // ====================================================
             // Actions
-            // ====================================================
 
             if (!staff.isPending)
               PopupMenuButton<bool>(
@@ -319,9 +311,7 @@ class StaffCard extends StatelessWidget {
     );
   }
 
-  // ============================================================
   // STATUS BADGE
-  // ============================================================
 
   Widget _buildStatusBadge() {
     Color backgroundColor;
@@ -368,9 +358,7 @@ class StaffCard extends StatelessWidget {
     );
   }
 
-  // ============================================================
   // AVATAR COLOR
-  // ============================================================
 
   Color get _avatarBackgroundColor {
     switch (staff.status) {
@@ -385,9 +373,7 @@ class StaffCard extends StatelessWidget {
     }
   }
 
-  // ============================================================
   // FALLBACK AVATAR
-  // ============================================================
 
   Widget _buildAvatarFallback() {
     // For pending invitations show email icon instead of
@@ -418,9 +404,7 @@ class StaffCard extends StatelessWidget {
     );
   }
 
-  // ============================================================
   // ROLE NAME
-  // ============================================================
 
   String _roleName(String role) {
     switch (role.toLowerCase()) {

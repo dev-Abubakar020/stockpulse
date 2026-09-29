@@ -149,22 +149,6 @@ class AddCategories extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    // RichText(
-                                    //   text: const TextSpan(
-                                    //     text: AppConstants.databaseKeyPrefix,
-                                    //     style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
-                                    //     children: [
-                                    //       TextSpan(
-                                    //         text: AppConstants.databaseKey,
-                                    //         style: TextStyle(
-                                    //           fontFamily: AppConstants.fontMonospace,
-                                    //           fontWeight: FontWeight.w600,
-                                    //           color: Color(0xFF0F766E),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
 

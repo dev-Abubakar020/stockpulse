@@ -537,25 +537,6 @@ class ProductDetailView extends GetView<ProductController> {
           Get.back(); // Return to All Products list
         },
       ),
-      // AlertDialog(
-      //   title: const Text('${AppConstants.delProduct}?'),
-      //   content: Text('Are you sure you want to delete ${product.article}? This action cannot be undone.'),
-      //   actions: [
-      //     TextButton(
-      //       onPressed: () => Get.back(),
-      //       child: const Text(AppConstants.cancelTitle),
-      //     ),
-      //     TextButton(
-      //       onPressed: () async {
-      //         Get.back();
-      //         await controller.deleteProduct(product);
-      //         Get.back(); // Return to All Products list
-      //       },
-      //       style: TextButton.styleFrom(foregroundColor: Colors.red),
-      //       child: const Text(AppConstants.delTitle),
-      //     ),
-      //   ],
-      // ),
     );
   }
 }

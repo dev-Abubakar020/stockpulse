@@ -41,6 +41,7 @@ dependencies:
   pdf: ^3.13.1
   flutter_thermal_printer: ^2.3.0
   permission_handler: ^13.0.2
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
