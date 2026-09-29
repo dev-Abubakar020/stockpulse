@@ -144,6 +144,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
               }
 
               return ListView.separated(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: items.length,
@@ -211,7 +212,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                 },
               );
             }),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
 
             // --- Totals Summary Card ---
             Container(
