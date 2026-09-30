@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
@@ -694,81 +695,153 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 16),
 
               // Initial Stock Quantity counter widget box stepper row
-              _buildFieldLabel('Initial Stock Quantity',isRequired: true, theme),
+              _buildFieldLabel(
+                'Initial Stock Quantity',
+                isRequired: true,
+                theme,
+              ),
               const SizedBox(height: 8),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: theme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.border),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.remove, color: theme.textPrimary),
-                      onPressed: () => controller.decrementStock(),
-                    ),
-                    const VerticalDivider(width: 1),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          '${controller.initialStock.value} pcs',
+
+              Obx(() {
+                final isDecimal = controller.isDecimalUnit;
+
+                return Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: theme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: theme.border),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.remove,
+                          color: theme.textPrimary,
+                        ),
+                        onPressed: controller.decrementStock,
+                      ),
+
+                      const VerticalDivider(width: 1),
+
+                      Expanded(
+                        child: TextField(
+                          controller: controller.initialStockController,
+                          keyboardType: TextInputType.numberWithOptions(
+                            decimal: isDecimal,
+                          ),
+                          inputFormatters: _quantityFormatters(isDecimal),
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.sora(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: theme.textPrimary,
                           ),
-                        ),
-                      ),
-                    ),
-                    const VerticalDivider(width: 1),
-                    IconButton(
-                      icon: Icon(Icons.add, color: theme.textPrimary),
-                      onPressed: () => controller.incrementStock(),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Low Stock Alert Limit stepper row element
-              _buildFieldLabel('Low Stock Alert Limit',isRequired: true, theme),
-              const SizedBox(height: 8),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: theme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.border),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.remove, color: theme.textPrimary),
-                      onPressed: () => controller.decrementLowStock(),
-                    ),
-                    const VerticalDivider(width: 1),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          '${controller.lowStockLimit.value} PCS LIMIT',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: theme.textPrimary,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: '0',
+                            suffixText: controller.unitSymbol,
+                            suffixStyle: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: theme.textSecondary,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const VerticalDivider(width: 1),
-                    IconButton(
-                      icon: Icon(Icons.add, color: theme.textPrimary),
-                      onPressed: () => controller.incrementLowStock(),
-                    ),
-                  ],
-                ),
+
+                      const VerticalDivider(width: 1),
+
+                      IconButton(
+                        icon: Icon(
+                          Icons.add,
+                          color: theme.textPrimary,
+                        ),
+                        onPressed: controller.incrementStock,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+
+              const SizedBox(height: 20),
+
+              // Low Stock Alert Limit stepper row element
+              _buildFieldLabel(
+                'Low Stock Alert Limit',
+                isRequired: true,
+                theme,
               ),
+              const SizedBox(height: 8),
+
+              Obx(() {
+                final isDecimal = controller.isDecimalUnit;
+
+                return Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: theme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: theme.border),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.remove,
+                          color: theme.textPrimary,
+                        ),
+                        onPressed: controller.decrementLowStock,
+                      ),
+
+                      const VerticalDivider(width: 1),
+
+                      Expanded(
+                        child: TextField(
+                          controller: controller.lowStockController,
+                          keyboardType: TextInputType.numberWithOptions(
+                            decimal: isDecimal,
+                          ),
+                          inputFormatters: _quantityFormatters(isDecimal),
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.sora(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: theme.textPrimary,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: '0',
+                            suffixText: controller.unitSymbol,
+                            suffixStyle: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: theme.textSecondary,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const VerticalDivider(width: 1),
+
+                      IconButton(
+                        icon: Icon(
+                          Icons.add,
+                          color: theme.textPrimary,
+                        ),
+                        onPressed: controller.incrementLowStock,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+
               const SizedBox(height: 24),
 
               // Track Stock Switch Toggle Row
@@ -1036,7 +1109,10 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     _buildSummaryRow('Barcode', controller.skuController.text, theme),
                     _buildSummaryRow('Purchase Price', 'Rs. ${controller.purchasePriceController.text}', theme),
                     _buildSummaryRow('Sale Price', 'Rs. ${controller.salePriceController.text}', theme, isBoldValue: true),
-                    _buildSummaryRow('Current Stock', '${controller.initialStock.value} pcs', theme),
+                    _buildSummaryRow('Current Stock',
+                        '${controller.formatQuantity(controller.initialStock)} '
+                            '${controller.unitSymbol}',
+                        theme),
                   ],
                 ),
               ),
@@ -1236,5 +1312,15 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
       );
     }
     return null;
+  }
+
+  List<TextInputFormatter> _quantityFormatters(bool allowDecimal) {
+    return [
+      FilteringTextInputFormatter.allow(
+        allowDecimal
+            ? RegExp(r'^\d*\.?\d{0,3}')
+            : RegExp(r'^\d*'),
+      ),
+    ];
   }
 }

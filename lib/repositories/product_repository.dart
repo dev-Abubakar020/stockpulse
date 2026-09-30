@@ -98,9 +98,18 @@ class ProductRepository {
       ) async
   {
     final userId = _supabase.auth.currentUser!.id;
+    final rpcShopId = await _supabase.rpc('my_shop_id');
+    final finalShopId = product.shopId ?? 
+        (rpcShopId is num ? rpcShopId.toInt() : int.tryParse(rpcShopId?.toString() ?? ''));
+    
+    if (finalShopId == null) {
+      throw Exception('No active shop found');
+    }
 
     final data = {
       ...product.toJson(),
+      // Force security-sensitive values here
+      'shop_id': finalShopId,
       'created_by': userId,
       'updated_by': userId,
     };

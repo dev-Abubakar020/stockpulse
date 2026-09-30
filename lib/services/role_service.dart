@@ -12,7 +12,13 @@ class RoleService extends GetxService {
   final RxString shopName = ''.obs;
   final RxBool isLoaded = false.obs;
 
-  bool get isOwner => role.value == 'owner';
+  bool get isOwner {
+    final currentRole = role.value?.trim().toLowerCase();
+    return currentRole == 'owner' ||
+        currentRole == 'shop_owner' ||
+        currentRole == 'shop owner' ||
+        currentRole == 'admin';
+  }
   bool get isStaff => role.value == 'staff';
 
   bool get canManageProducts => isOwner;
@@ -27,6 +33,7 @@ class RoleService extends GetxService {
   bool get canViewPurchasePrice => isOwner;
 
   Future<Map<String, dynamic>?> fetchMembership() async {
+    isLoaded.value = false;
     final user = _supabase.auth.currentUser;
     if (user == null) {
       clearRole();

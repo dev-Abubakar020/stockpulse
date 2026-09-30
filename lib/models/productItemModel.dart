@@ -5,7 +5,7 @@ class ProductItemModel {
   final String article;
   final String? categoryId;
   final String? categoryName;
-
+  final int? shopId;
   final String? color;
   final String? size;
   final String? barcode;
@@ -28,6 +28,7 @@ class ProductItemModel {
 
   const ProductItemModel({
     required this.id,
+    this.shopId,
     required this.article,
     this.categoryId,
     this.categoryName,
@@ -53,7 +54,7 @@ class ProductItemModel {
       id: json['id'] ?? '',
       article: json['article'] ?? '',
       categoryId: json['category_id'],
-
+      shopId: (json['shop_id'] as num?)?.toInt(),
       // Comes from joined categories table
       categoryName: json['categories']?['name'],
 
@@ -94,6 +95,7 @@ class ProductItemModel {
   Map<String, dynamic> toJson() {
     return {
       'article': article,
+      'shop_id': shopId,
       'category_id': categoryId,
       'color': color,
       'size': size,
@@ -105,11 +107,12 @@ class ProductItemModel {
       'min_stock_threshold': minStockThreshold,
       'image_url': imageUrl,
       'is_active': isActive,
+      // 'created_by': createdBy,
+      // 'created_at' : createdAt,
     };
   }
 
   bool get isOutOfStock => currentStock <= 0;
-
   bool get isLowStock =>
       currentStock > 0 &&
           currentStock <= minStockThreshold;

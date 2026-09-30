@@ -10,48 +10,87 @@ import '../common/widgets/custom_snackbar.dart';
 import '../models/category_model.dart';
 import '../repositories/product_repository.dart';
 import '../services/networkManager.dart';
+import '../services/role_service.dart';
 import '../utils/app_constants.dart';
 import 'allProductsController.dart';
 
 class AddProductWizardController extends GetxController {
   // Step navigation (1, 2, 3)
   final RxInt currentStep = 1.obs;
-
-  // Track if we are editing an existing product
   final Rxn<ProductItemModel> editingProduct = Rxn<ProductItemModel>();
 
-  // STEP 1 Fields
-  final nameController = TextEditingController();
-  final skuController = TextEditingController();
-  final Rxn<CategoryModel> selectedCategory = Rxn<CategoryModel>();
-  final RxString selectedUnit = 'Piece (pcs)'.obs;
-
-  // Image handling
+  // STEP 1 Page
   final Rxn<String> networkImageUrl = Rxn<String>();
   final Rxn<XFile> pickedFile = Rxn<XFile>();
   final RxBool isUploading = false.obs;
-
+  final nameController = TextEditingController();
   final categories = <CategoryModel>[].obs;
+  final Rxn<CategoryModel> selectedCategory = Rxn<CategoryModel>();
+  final skuController = TextEditingController();
   final isCategoriesLoading = false.obs;
-
   final List<String> units = [
     'Piece (pcs)',
+    'Pack',
     'Box',
+    'Dozen (doz)',
     'Kilogram (kg)',
     'Litre (L)',
+    'Meter (m)',
   ];
+  final RxString selectedUnit = 'Piece (pcs)'.obs;
+  bool get isDecimalUnit =>
+      selectedUnit.value == 'Kilogram (kg)' ||
+          selectedUnit.value == 'Litre (L)' ||
+          selectedUnit.value == 'Meter (m)';
+  String get unitSymbol {
+    switch (selectedUnit.value) {
+      case 'Piece (pcs)':
+        return 'pcs';
+      case 'Pack':
+        return 'pack';
+      case 'Box':
+        return 'box';
+      case 'Dozen (doz)':
+        return 'doz';
+      case 'Kilogram (kg)':
+        return 'kg';
+      case 'Litre (L)':
+        return 'L';
+      case 'Meter (m)':
+        return 'm';
+      default:
+        return '';
+    }
+  }
+
 
   // STEP 2 Fields
   final purchasePriceController = TextEditingController();
   final salePriceController = TextEditingController();
-  final RxInt initialStock = 24.obs;
-  final RxInt lowStockLimit = 5.obs;
+  final RxDouble estimatedProfit = 0.0.obs;
+  final RxDouble marginPercentage = 0.0.obs;
+  final initialStockController = TextEditingController(text: '24');
+  final lowStockController = TextEditingController(text: '5');
   final RxBool trackStock = true.obs;
   final RxBool activeForSale = true.obs;
 
-  // Live computed values
-  final RxDouble estimatedProfit = 60.0.obs;
-  final RxDouble marginPercentage = 33.3.obs;
+
+  double get initialStock =>
+      double.tryParse(initialStockController.text) ?? 0;
+
+  double get lowStockLimit =>
+      double.tryParse(lowStockController.text) ?? 0;
+
+  double get quantityStep => isDecimalUnit ? 0.1 : 1.0;
+
+  String formatQuantity(double value) {
+    if (!isDecimalUnit) return value.toInt().toString();
+
+    return value
+        .toStringAsFixed(3)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
 
   @override
   void onInit() {
@@ -74,17 +113,25 @@ class AddProductWizardController extends GetxController {
 
   void _prefillFields() {
     final p = editingProduct.value!;
+
     nameController.text = p.article;
     skuController.text = p.barcode ?? '';
     selectedUnit.value = p.unit;
-    purchasePriceController.text = p.purchasePrice.toInt().toString();
-    salePriceController.text = p.salePrice.toInt().toString();
-    initialStock.value = p.currentStock.toInt();
-    lowStockLimit.value = p.minStockThreshold.toInt();
+
+    purchasePriceController.text =
+        p.purchasePrice.toStringAsFixed(2);
+
+    salePriceController.text =
+        p.salePrice.toStringAsFixed(2);
+
+    initialStockController.text =
+        formatQuantity(p.currentStock);
+
+    lowStockController.text =
+        formatQuantity(p.minStockThreshold);
+
     activeForSale.value = p.isActive;
     networkImageUrl.value = p.imageUrl;
-
-    // category will be set once fetchCategories finishes if it matches
   }
 
   Future<void> pickImage() async {
@@ -94,6 +141,42 @@ class AddProductWizardController extends GetxController {
     if (image != null) {
       pickedFile.value = image;
     }
+  }
+
+  void selectCategory(CategoryModel category) {
+    selectedCategory.value = category;
+  }
+
+  void incrementStock() {
+    final value = initialStock + quantityStep;
+    initialStockController.text = formatQuantity(value);
+  }
+
+  void decrementStock() {
+    final value = initialStock;
+
+    if (value <= 0) return;
+
+    final newValue =
+    (value - quantityStep).clamp(0.0, double.infinity).toDouble();
+
+    initialStockController.text = formatQuantity(newValue);
+  }
+
+  void decrementLowStock() {
+    final value = lowStockLimit;
+
+    if (value <= 0) return;
+
+    final newValue =
+    (value - quantityStep).clamp(0.0, double.infinity).toDouble();
+
+    lowStockController.text = formatQuantity(newValue);
+  }
+
+  void incrementLowStock() {
+    final value = lowStockLimit + quantityStep;
+    lowStockController.text = formatQuantity(value);
   }
 
   void calculateMargin() {
@@ -110,38 +193,53 @@ class AddProductWizardController extends GetxController {
     }
   }
 
-  void incrementStock() => initialStock.value++;
-  void decrementStock() {
-    if (initialStock.value > 0) {
-      initialStock.value--;
-    }
-  }
-
-  void incrementLowStock() => lowStockLimit.value++;
-  void decrementLowStock() {
-    if (lowStockLimit.value > 0) lowStockLimit.value--;
-  }
-
-  void selectCategory(CategoryModel category) {
-    selectedCategory.value = category;
-  }
-
   Future<void> saveProduct() async {
     if (!await NetworkManager.instance.checkInternet()) return;
 
+    final roleService = Get.find<RoleService>();
+
+    // Ensure latest membership/role is loaded
+    if (!roleService.isLoaded.value ||
+        roleService.role.value == null) {
+      await roleService.fetchMembership();
+    }
+
+    debugPrint('========== PRODUCT PERMISSION ==========');
+    debugPrint('Role: ${roleService.role.value}');
+    debugPrint('Loaded: ${roleService.isLoaded.value}');
+    debugPrint('Has Membership: ${roleService.hasMembership.value}');
+    debugPrint('Active: ${roleService.isActive.value}');
+    debugPrint('Shop ID: ${roleService.shopId.value}');
+    debugPrint('isOwner: ${roleService.isOwner}');
+    debugPrint('canManageProducts: ${roleService.canManageProducts}');
+    debugPrint('========================================');
+
+    if (!roleService.canManageProducts) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.errorTitle,
+        message: AppConstants.permissionDeniedAction,
+      );
+      return;
+    }
+
     try {
       isUploading.value = true;
+
       final repository = Get.find<ProductRepository>();
       final isEdit = editingProduct.value != null;
 
       String? imageUrl = networkImageUrl.value;
 
-      // Handle new image upload if picked
       if (pickedFile.value != null) {
         final bytes = await pickedFile.value!.readAsBytes();
         final ext = pickedFile.value!.name.split('.').last;
-        final fileName = '${DateTime.now().millisecondsSinceEpoch}.$ext';
-        imageUrl = await repository.uploadProductImage(fileName, bytes);
+        final fileName =
+            '${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+        imageUrl = await repository.uploadProductImage(
+          fileName,
+          bytes,
+        );
       }
 
       final productData = ProductItemModel(
@@ -149,34 +247,48 @@ class AddProductWizardController extends GetxController {
         article: nameController.text.trim(),
         categoryId: selectedCategory.value?.id,
         unit: selectedUnit.value,
-        purchasePrice: double.tryParse(purchasePriceController.text) ?? 0.0,
-        salePrice: double.tryParse(salePriceController.text) ?? 0.0,
-        currentStock: initialStock.value.toDouble(),
-        minStockThreshold: lowStockLimit.value.toDouble(),
+        shopId: int.tryParse(roleService.shopId.value),
+        purchasePrice:
+        double.tryParse(purchasePriceController.text.trim()) ?? 0.0,
+
+        salePrice:
+        double.tryParse(salePriceController.text.trim()) ?? 0.0,
+
+        currentStock:
+        double.tryParse(initialStockController.text.trim()) ?? 0.0,
+
+        minStockThreshold:
+        double.tryParse(lowStockController.text.trim()) ?? 0.0,
+
         barcode: skuController.text.trim().isEmpty
             ? null
             : skuController.text.trim(),
+
         isActive: activeForSale.value,
         imageUrl: imageUrl,
       );
 
       if (isEdit) {
-        await repository.updateProduct(productData.id, productData.toJson());
+        await repository.updateProduct(
+          productData.id,
+          productData.toJson(),
+        );
       } else {
         await repository.addProduct(productData);
       }
 
-      // Refresh the all products controller list
       if (Get.isRegistered<ProductController>()) {
-        Get.find<ProductController>().fetchProducts();
+        await Get.find<ProductController>().fetchProducts();
       }
 
-      // Refresh Home Dashboard Data
       if (Get.isRegistered<HomeController>()) {
-        Get.find<HomeController>().fetchHomeData();
+        await Get.find<HomeController>().fetchHomeData();
       }
     } catch (e) {
+      debugPrint('SAVE PRODUCT ERROR: $e');
+
       final exception = AppException.fromException(e);
+
       CustomSnackBar.errorSnackBar(
         title: AppConstants.errorTitle,
         message: exception.message,
@@ -185,6 +297,7 @@ class AddProductWizardController extends GetxController {
       isUploading.value = false;
     }
   }
+
 
   bool validateStep1() {
     if (nameController.text.trim().isEmpty) {
@@ -267,8 +380,8 @@ class AddProductWizardController extends GetxController {
     salePriceController.text = '0';
     selectedCategory.value = categories.isNotEmpty ? categories.first : null;
     selectedUnit.value = 'Piece (pcs)';
-    initialStock.value = 24;
-    lowStockLimit.value = 5;
+    initialStockController.text = '24';
+    lowStockController.text = '5';
     trackStock.value = true;
     activeForSale.value = true;
     calculateMargin();
@@ -278,6 +391,16 @@ class AddProductWizardController extends GetxController {
   void onClose() {
     purchasePriceController.removeListener(calculateMargin);
     salePriceController.removeListener(calculateMargin);
+
+    purchasePriceController.dispose();
+    salePriceController.dispose();
+
+    initialStockController.dispose();
+    lowStockController.dispose();
+
+    nameController.dispose();
+    skuController.dispose();
+
     super.onClose();
   }
 
