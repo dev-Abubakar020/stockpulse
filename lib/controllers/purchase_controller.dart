@@ -55,7 +55,6 @@ class PurchaseController extends GetxController {
   final RxDouble discount = 0.0.obs;
 
   final TextEditingController noteController = TextEditingController();
-  final TextEditingController discountController = TextEditingController();
 
   // =========================
   // Products
@@ -175,10 +174,6 @@ class PurchaseController extends GetxController {
     quantities.clear();
     lineTotals.clear();
     // purchasePrices.clear();
-
-    discount.value = 0;
-
-    discountController.clear();
     noteController.clear();
   }
 
@@ -227,7 +222,7 @@ class PurchaseController extends GetxController {
   // }
 
   double get totalAmount {
-    final total = subtotal - discount.value;
+    final total = subtotal;
 
     return total < 0 ? 0 : total;
   }
@@ -310,28 +305,9 @@ class PurchaseController extends GetxController {
       return null;
     }
 
-    if (discount.value < 0) {
-      CustomSnackBar.warningSnackBar(
-        title: AppConstants.invalidDiscount,
-        message: AppConstants.discountNegative,
-      );
-
-      return null;
-    }
-
-    if (discount.value > subtotal) {
-      CustomSnackBar.warningSnackBar(
-        title: AppConstants.invalidDiscount,
-        message: AppConstants.discountExceedSubtotal,
-      );
-
-      return null;
-    }
-
     if (!await NetworkManager.instance.checkInternet()) {
       return null;
     }
-
     try {
       isLoading.value = true;
 
@@ -339,14 +315,11 @@ class PurchaseController extends GetxController {
 
       final purchaseId = await repository.createPurchase(
         items: items,
-        discount: discount.value,
         notes: noteController.text,
       );
 
-      // Refresh products because database stock
-      // and purchase prices have changed.
-      await productController.fetchProducts();
 
+      await productController.fetchProducts();
       clearCart();
 
       // Refresh Home Dashboard Data

@@ -14,7 +14,6 @@ class PurchaseRepository {
 
   Future<String> createPurchase({
     required List<PurchaseItemModel> items,
-    double discount = 0,
     String? notes,
   }) async {
     if (items.isEmpty) {
@@ -26,7 +25,6 @@ class PurchaseRepository {
         'create_purchase',
         params: {
           'p_items': items.map((item) => item.toRpcJson()).toList(),
-          'p_discount': discount,
           'p_notes': _cleanNotes(notes),
         },
       );
@@ -37,6 +35,11 @@ class PurchaseRepository {
 
       return response.toString();
     } on PostgrestException catch (e) {
+      debugPrint('Message: ${e.message}');
+      debugPrint('Code: ${e.code}');
+      debugPrint('Details: ${e.details}');
+      debugPrint('Hint: ${e.hint}');
+      debugPrint('========================================');
       throw Exception(e.message);
     }
   }

@@ -46,6 +46,7 @@ class AppConstants {
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String signupTitle = 'Create Account';
   static const String saleTitle = 'Sale';
+  static const String saleSummary = 'Sale Summary';
   static const String newSale = 'New Sale';
   static const String productTitle = 'All Inventory';
   static const String businessTitle = 'Business Management';
@@ -159,7 +160,7 @@ class AppConstants {
   static const String cartEmpty = "Your Cart is Empty";
   static const String clrAll = "Clear All";
   static const String statusActive = "Active";
-  static const String pending = "pending";
+  static const String pending = "Pending";
   static const String statusInActive = "InActive";
   static const String markActive = "Mark Active";
   static const String markInActive = "Mark InActive";
@@ -547,7 +548,6 @@ class AppConstants {
   static const String averagePurchase = 'Average Purchase';
   static const String itemsSold = 'Items Sold';
 
-  static const String salesVsPurchases = 'Sales vs Purchases';
   static const String quickReports = 'Quick Reports';
   static const String topSellingProducts = 'Top Selling Products';
 

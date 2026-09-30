@@ -62,12 +62,21 @@ class _AddSaleState extends State<AddSale> {
   }
 
   Future<void> _completeSale() async {
+    debugPrint('========== COMPLETE SALE CLICKED ==========');
+
     final saleId = await saleController.createSale();
+
+    debugPrint('Returned Sale ID: $saleId');
+
     if (saleId == null) {
+      debugPrint('SALE FAILED: saleId is null');
       return;
     }
 
+    debugPrint('SALE SUCCESS: $saleId');
+
     if (!mounted) return;
+
     setState(() {
       _createdSaleId = saleId;
       _currentStep = 2;
@@ -616,38 +625,26 @@ class _AddSaleState extends State<AddSale> {
     if (_currentStep == 1) {
       return _BottomSaveBar(
         label: 'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
-        buttonText: AppConstants.proceedToPayment,
-        buttonColor: primaryGreen,
-        isLoading: false,
-        onSave: saleController.quantities.isEmpty
-            ? null
-            : () {
-                if (saleController.discount.value > saleController.subtotal) {
-                  CustomSnackBar.warningSnackBar(
-                    title: AppConstants.invalidDiscount,
-                    message: AppConstants.discountExceedSubtotal,
-                  );
-                  return;
-                }
-
-                saleController.receivedAmountController.text = saleController
-                    .totalAmount
-                    .toStringAsFixed(2);
-
-                setState(() {
-                  _currentStep = 2;
-                });
-              },
-      );
-    }
-
-    if (_currentStep == 2) {
-      return _BottomSaveBar(
-        label: 'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
         buttonText: AppConstants.completeSaleLabel,
         buttonColor: primaryGreen,
         isLoading: saleController.isLoading.value,
-        onSave: saleController.isLoading.value ? null : _completeSale,
+        onSave: saleController.isLoading.value
+            ? null
+            : () async {
+          if (saleController.discount.value >
+              saleController.subtotal) {
+            CustomSnackBar.warningSnackBar(
+              title: AppConstants.invalidDiscount,
+              message: AppConstants.discountExceedSubtotal,
+            );
+            return;
+          }
+
+          saleController.receivedAmountController.text =
+              saleController.totalAmount.toStringAsFixed(2);
+
+          await _completeSale();
+        },
       );
     }
 

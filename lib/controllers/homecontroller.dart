@@ -19,6 +19,7 @@ class HomeController extends GetxController {
   final RxDouble totalPurchases = 0.0.obs;
   final RxInt lowStockCount = 0.obs;
   final RxList<SaleModel> recentSales = <SaleModel>[].obs;
+  final RxList<SaleModel> daySales = <SaleModel>[].obs;
   final RxBool isLoading = false.obs;
   DateTimeRange? _customRange;
 
@@ -161,6 +162,7 @@ class HomeController extends GetxController {
 
       currentSales.sort((a, b) => b.saleDate.compareTo(a.saleDate));
       recentSales.assignAll(currentSales.take(3));
+      daySales.assignAll(currentSales);
 
       // Calculate low stock from product controller
       lowStockCount.value = productController.products

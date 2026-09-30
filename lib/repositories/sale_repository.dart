@@ -29,26 +29,29 @@ class SaleRepository {
     }
 
     try {
-      final response =
-      await _supabase.rpc(
+      final params = {
+        'p_items': items
+            .map((item) => item.toRpcJson())
+            .toList(),
+        'p_discount': discount,
+        'p_payment_method': paymentMethod.toLowerCase(),
+        'p_notes': _cleanNotes(notes),
+      };
+
+      debugPrint('========== CREATE SALE ==========');
+      debugPrint('Items count: ${items.length}');
+      debugPrint('Discount: $discount');
+      debugPrint('Payment: $paymentMethod');
+      debugPrint('Params: $params');
+
+      final response = await _supabase.rpc(
         'create_sale',
-        params: {
-          'p_items': items
-              .map(
-                (item) =>
-                item.toRpcJson(),
-          )
-              .toList(),
-
-          'p_discount': discount,
-
-          'p_payment_method':
-          paymentMethod.toLowerCase(),
-
-          'p_notes':
-          _cleanNotes(notes),
-        },
+        params: params,
       );
+
+      debugPrint('CREATE SALE RESPONSE: $response');
+      debugPrint('RESPONSE TYPE: ${response.runtimeType}');
+      debugPrint('=================================');
 
       if (response == null) {
         throw Exception(
@@ -58,7 +61,21 @@ class SaleRepository {
 
       return response.toString();
     } on PostgrestException catch (e) {
-      throw Exception(e.message);
+      debugPrint('========== SALE RPC ERROR ==========');
+      debugPrint('Message: ${e.message}');
+      debugPrint('Code: ${e.code}');
+      debugPrint('Details: ${e.details}');
+      debugPrint('Hint: ${e.hint}');
+      debugPrint('====================================');
+
+      rethrow;
+    } catch (e, stackTrace) {
+      debugPrint('========== CREATE SALE ERROR ==========');
+      debugPrint('Error: $e');
+      debugPrint('Stack: $stackTrace');
+      debugPrint('=======================================');
+
+      rethrow;
     }
   }
 
