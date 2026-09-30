@@ -162,6 +162,7 @@ class AllExpenses extends GetView<ExpenseController> {
       ),
 
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'allExpenseFab',
         onPressed: () {
           Get.toNamed(Routes.addExpense);
         },

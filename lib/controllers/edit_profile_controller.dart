@@ -19,6 +19,7 @@ class EditProfileController extends GetxController {
 
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneController = TextEditingController();
 
   final profileImageUrl = ''.obs;
   final selectedImage = Rxn<XFile>();
@@ -50,6 +51,7 @@ class EditProfileController extends GetxController {
                   user?.email?.split('@').first ??
                   '')
               .toString();
+      var phone = (metadata['phone'] ?? '').toString();
       var img =
           (metadata['profile_img'] ??
                   metadata['avatar_url'] ??
@@ -67,6 +69,10 @@ class EditProfileController extends GetxController {
               profile['full_name'].toString().isNotEmpty) {
             name = profile['full_name'].toString();
           }
+          if (profile['phone'] != null &&
+              profile['phone'].toString().isNotEmpty) {
+            phone = profile['phone'].toString();
+          }
           if (profile['profile_img'] != null &&
               profile['profile_img'].toString().isNotEmpty) {
             img = profile['profile_img'].toString();
@@ -78,6 +84,7 @@ class EditProfileController extends GetxController {
       }
 
       nameController.text = name;
+      phoneController.text = phone;
       profileImageUrl.value = img;
     } finally {
       isLoading.value = false;
@@ -104,6 +111,7 @@ class EditProfileController extends GetxController {
 
   Future<void> updateProfile() async {
     final name = nameController.text.trim();
+    final phone = phoneController.text.trim();
 
     final nameError = CustomValidator.validateName(name);
     if (nameError != null) {
@@ -114,12 +122,23 @@ class EditProfileController extends GetxController {
       return;
     }
 
+    final phoneError = CustomValidator.validatePhone(phone);
+    if (phoneError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: phoneError,
+      );
+      return;
+    }
+
     if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
       isSaving.value = true;
+
       await authRepository.updateProfile(
         name: name,
+        phone: phone,
         image: selectedImage.value,
         existingImageUrl: profileImageUrl.value.isNotEmpty
             ? profileImageUrl.value
@@ -131,14 +150,21 @@ class EditProfileController extends GetxController {
         await Get.find<ShopCreateController>().fetchShopDetails();
       }
 
+      // Close Edit Profile screen first
+      Get.back();
+
+      // Allow previous screen to become active
+      await Future.delayed(
+        const Duration(milliseconds: 200),
+      );
+
       CustomSnackBar.successSnackBar(
         title: AppConstants.successTitle,
         message: AppConstants.profileUpdatedSuccessMsg,
       );
-
-      Get.back();
     } catch (e) {
       final exception = AppException.fromException(e);
+
       CustomSnackBar.errorSnackBar(
         title: AppConstants.errorTitle,
         message: exception.message,

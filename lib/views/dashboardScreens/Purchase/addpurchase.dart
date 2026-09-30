@@ -14,6 +14,7 @@ import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_snackbar.dart';
 import '../../../controllers/purchase_controller.dart';
 import '../../../models/productItemModel.dart';
+import '../../../services/role_service.dart';
 
 class AddPurchase extends StatefulWidget {
   const AddPurchase({super.key});
@@ -182,42 +183,28 @@ class _AddPurchaseState extends State<AddPurchase> {
               (index) {
             final product =
             selectedProducts[index];
-
+            final quantity = purchaseController.quantityOf(product.id);
+            final lineTotal = purchaseController.lineTotal(product);
             return _PurchaseItemTile(
               product: product,
               index: index,
               isDark: isDark,
-
-              quantity:
-              purchaseController.quantityOf(
-                product.id,
-              ),
-
-              purchasePrice:
-              purchaseController
-                  .purchasePriceOf(product),
-
+              quantity: quantity,
+              lineTotal: lineTotal,
               onIncrement: () {
-                purchaseController
-                    .addProduct(product);
+                purchaseController.addProduct(product);
               },
-
               onDecrement: () {
-                purchaseController
-                    .decrementProduct(product);
+                purchaseController.decrementProduct(product);
               },
-
               onRemove: () {
-                purchaseController
-                    .removeProduct(product.id);
+                purchaseController.removeProduct(product.id);
               },
-
-              onPriceChanged: (value) {
-                purchaseController
-                    .updatePurchasePrice(
-                  product.id,
-                  value,
-                );
+              onQuantityChanged: (value) {
+                purchaseController.updateQuantity(product, value);
+              },
+              onLineTotalChanged: (value) {
+                purchaseController.updateLineTotal(product.id, value);
               },
             );
           },
@@ -235,29 +222,6 @@ class _AddPurchaseState extends State<AddPurchase> {
       title: 'Cost Summary',
       child: Column(
         children: [
-          CustomTextField(
-            controller:
-            purchaseController.discountController,
-            hintText: '0',
-            labelText: 'Discount (Rs.)',
-            keyboardType:
-            const TextInputType.numberWithOptions(
-              decimal: true,
-            ),
-            prefixIcon: const Icon(
-              Icons.local_offer_rounded,
-              size: 18,
-            ),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                RegExp(r'^\d*\.?\d{0,2}'),
-              ),
-            ],
-            onChanged:
-            purchaseController.updateDiscount,
-          ),
-
-          const SizedBox(height: 18),
 
           _OrderSummaryRow(
             label: 'Subtotal',
@@ -295,37 +259,35 @@ class _AddPurchaseState extends State<AddPurchase> {
 
 class _PurchaseItemTile extends StatelessWidget {
   final ProductItemModel product;
-
   final int index;
   final bool isDark;
-
   final double quantity;
-  final double purchasePrice;
-
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onRemove;
-
-  final ValueChanged<String> onPriceChanged;
+  final double lineTotal;
+  final ValueChanged<String> onQuantityChanged;
+  final ValueChanged<String> onLineTotalChanged;
 
   const _PurchaseItemTile({
     required this.product,
     required this.index,
     required this.isDark,
     required this.quantity,
-    required this.purchasePrice,
     required this.onIncrement,
     required this.onDecrement,
     required this.onRemove,
-    required this.onPriceChanged,
+    required this.lineTotal,
+    required this.onQuantityChanged,
+    required this.onLineTotalChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     const blue = Color(0xFF2563EB);
+    final purchaseController = Get.find<PurchaseController>();
+    final isDecimal = purchaseController.isDecimalUnit(product);
 
-    final lineTotal =
-        quantity * purchasePrice;
 
     return Container(
       margin: const EdgeInsets.only(
@@ -454,36 +416,32 @@ class _PurchaseItemTile extends StatelessWidget {
 
                     const SizedBox(height: 6),
 
+                    isDecimal
+                        ? _QuantityField(
+                      value: quantity,
+                      isDecimal: true,
+                      onChanged: onQuantityChanged,
+                    ):
                     Row(
                       children: [
                         _QtyBtn(
                           icon: Icons.remove,
                           onTap: onDecrement,
-                          accentColor: blue,
+                          accentColor: Colors.green,
                         ),
-
-                        Padding(
-                          padding:
-                          const EdgeInsets.symmetric(
-                            horizontal: 12,
-                          ),
-                          child: Text(
-                            _formatQuantity(
-                              quantity,
-                            ),
-                            style:
-                            GoogleFonts.sora(
-                              fontSize: 14,
-                              fontWeight:
-                              FontWeight.w700,
-                            ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: _QuantityField(
+                            value: quantity,
+                            isDecimal: false,
+                            onChanged: onQuantityChanged,
                           ),
                         ),
-
+                        const SizedBox(width: 4),
                         _QtyBtn(
                           icon: Icons.add,
                           onTap: onIncrement,
-                          accentColor: blue,
+                          accentColor: Colors.green,
                         ),
                       ],
                     ),
@@ -514,11 +472,26 @@ class _PurchaseItemTile extends StatelessWidget {
 
                     const SizedBox(height: 6),
 
-                    _PurchasePriceField(
-                      initialValue:
-                      purchasePrice,
-                      onChanged:
-                      onPriceChanged,
+                    Container(
+                      height: 38,
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E2D44)
+                              : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Text(
+                        'Rs. ${product.purchasePrice.toStringAsFixed(0)}',
+                        style: GoogleFonts.sora(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -527,9 +500,7 @@ class _PurchaseItemTile extends StatelessWidget {
           ),
 
           const SizedBox(height: 12),
-
           const Divider(height: 1),
-
           const SizedBox(height: 10),
 
           // ====================================================
@@ -551,14 +522,11 @@ class _PurchaseItemTile extends StatelessWidget {
                   FontWeight.w500,
                 ),
               ),
-
-              Text(
-                'Rs. ${lineTotal.toStringAsFixed(2)}',
-                style: GoogleFonts.sora(
-                  fontSize: 14,
-                  fontWeight:
-                  FontWeight.w700,
-                  color: blue,
+              SizedBox(
+                width: 140,
+                child: _LineTotalField(
+                  value: lineTotal,
+                  onChanged: onLineTotalChanged,
                 ),
               ),
             ],
@@ -609,49 +577,183 @@ class _PurchaseItemTile extends StatelessWidget {
 // ================================================================
 // PURCHASE PRICE FIELD
 // ================================================================
-
-class _PurchasePriceField
-    extends StatefulWidget {
-  final double initialValue;
+class _QuantityField extends StatefulWidget {
+  final double value;
+  final bool isDecimal;
   final ValueChanged<String> onChanged;
 
-  const _PurchasePriceField({
-    required this.initialValue,
+  const _QuantityField({
+    required this.value,
+    required this.isDecimal,
     required this.onChanged,
   });
 
   @override
-  State<_PurchasePriceField> createState() =>
-      _PurchasePriceFieldState();
+  State<_QuantityField> createState() => _QuantityFieldState();
+}
+class _QuantityFieldState extends State<_QuantityField> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+  bool _hasFocus = false;
+
+  String _formatValue(double value) {
+    if (!widget.isDecimal) {
+      return value.toInt().toString();
+    }
+
+    // Whole number → no decimal
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    // Max 3 decimals, remove trailing zeros
+    return value
+        .toStringAsFixed(3)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _formatValue(widget.value));
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      setState(() {
+        _hasFocus = _focusNode.hasFocus;
+      });
+      if (!_hasFocus) {
+        _controller.text = _formatValue(widget.value);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _QuantityField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      if (!_hasFocus) {
+        final newText = _formatValue(widget.value);
+        if (_controller.text != newText) {
+          _controller.text = newText;
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDark;
+
+    return TextFormField(
+      controller: _controller,
+      focusNode: _focusNode,
+      keyboardType: widget.isDecimal
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      inputFormatters: [
+        if (widget.isDecimal)
+          FilteringTextInputFormatter.allow(
+            RegExp(r'^\d*\.?\d{0,3}$'),
+          )
+        else
+          FilteringTextInputFormatter.digitsOnly,
+      ],
+
+      onChanged: (value) {
+        if (value.trim().isEmpty) return;
+
+        widget.onChanged(value);
+      },
+
+      // ...
+    );
+  }
+
+  String formatAmount(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
 }
 
-class _PurchasePriceFieldState
-    extends State<_PurchasePriceField> {
-  late final TextEditingController
-  _controller;
+class _LineTotalField extends StatefulWidget {
+  final double value;
+  final ValueChanged<String> onChanged;
+
+  const _LineTotalField({
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  State<_LineTotalField> createState() => _LineTotalFieldState();
+}
+
+class _LineTotalFieldState extends State<_LineTotalField> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+
+  bool _hasFocus = false;
+
+  String _formatAmount(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
 
   @override
   void initState() {
     super.initState();
 
-    _controller =
-        TextEditingController(
-          text: widget.initialValue
-              .toStringAsFixed(2),
-        );
+    _controller = TextEditingController(
+      text: _formatAmount(widget.value),
+    );
+
+    _focusNode = FocusNode();
+
+    _focusNode.addListener(() {
+      final hasFocus = _focusNode.hasFocus;
+
+      setState(() {
+        _hasFocus = hasFocus;
+      });
+
+      // User finished editing → show clean formatted value
+      if (!hasFocus) {
+        final value = _formatAmount(widget.value);
+
+        if (_controller.text != value) {
+          _controller.text = value;
+        }
+      }
+    });
   }
 
   @override
-  void didUpdateWidget(
-      covariant _PurchasePriceField oldWidget,
-      ) {
+  void didUpdateWidget(covariant _LineTotalField oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.initialValue !=
-        widget.initialValue) {
-      final value =
-      widget.initialValue
-          .toStringAsFixed(2);
+    // Don't overwrite text while user is typing
+    if (!_hasFocus && oldWidget.value != widget.value) {
+      final value = _formatAmount(widget.value);
 
       if (_controller.text != value) {
         _controller.text = value;
@@ -662,77 +764,49 @@ class _PurchasePriceFieldState
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final roleService = Get.find<RoleService>();
+    final canEdit = roleService.canManagePurchases;
+
     return TextFormField(
       controller: _controller,
+      focusNode: _focusNode,
 
-      keyboardType:
-      const TextInputType.numberWithOptions(
+      readOnly: !canEdit,
+
+      keyboardType: const TextInputType.numberWithOptions(
         decimal: true,
       ),
 
       inputFormatters: [
         FilteringTextInputFormatter.allow(
-          RegExp(r'^\d*\.?\d{0,2}'),
+          RegExp(r'^\d*\.?\d{0,2}$'),
         ),
       ],
 
-      onChanged: widget.onChanged,
+      onChanged: canEdit ? widget.onChanged : null,
+
+      textAlign: TextAlign.center,
 
       style: GoogleFonts.sora(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: AppColors.primary,
       ),
 
       decoration: InputDecoration(
-        hintText: '0.00',
-        prefixText: 'Rs. ',
         isDense: true,
-
-        contentPadding:
-        const EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 10,
           vertical: 10,
         ),
-
-        filled: true,
-        fillColor:
-        Theme.of(context)
-            .colorScheme
-            .surface,
-
         border: OutlineInputBorder(
-          borderRadius:
-          BorderRadius.circular(8),
-          borderSide:
-          const BorderSide(
-            color: Color(0xFFE2E8F0),
-          ),
-        ),
-
-        enabledBorder:
-        OutlineInputBorder(
-          borderRadius:
-          BorderRadius.circular(8),
-          borderSide:
-          const BorderSide(
-            color: Color(0xFFE2E8F0),
-          ),
-        ),
-
-        focusedBorder:
-        OutlineInputBorder(
-          borderRadius:
-          BorderRadius.circular(8),
-          borderSide:
-          const BorderSide(
-            color: Color(0xFF2563EB),
-            width: 1.5,
-          ),
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
     );
@@ -1364,8 +1438,7 @@ class _QtyBtn extends StatelessWidget {
   const _QtyBtn({
     required this.icon,
     this.onTap,
-    this.accentColor =
-        AppColors.primary,
+    this.accentColor = AppColors.primary,
   });
 
   @override
@@ -1373,23 +1446,18 @@ class _QtyBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 30,
-        height: 30,
+        width: 34,
+        height: 38,
         decoration: BoxDecoration(
           color: onTap != null
-              ? accentColor.withValues(
-            alpha: .1,
-          )
+              ? accentColor.withValues(alpha: .1)
               : Colors.grey.shade200,
-          borderRadius:
-          BorderRadius.circular(7),
+          borderRadius: BorderRadius.circular(7),
         ),
         child: Icon(
           icon,
           size: 16,
-          color: onTap != null
-              ? accentColor
-              : Colors.grey,
+          color: onTap != null ? accentColor : Colors.grey,
         ),
       ),
     );

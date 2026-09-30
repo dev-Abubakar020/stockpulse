@@ -8,6 +8,7 @@ class StaffModel {
   final String? userId;
   final String name;
   final String? email;
+  final String? phone;
   final String? profileImg;
   final String role;
   final StaffStatus status;
@@ -19,6 +20,7 @@ class StaffModel {
 
   const StaffModel({
     this.userId,
+    this.phone,
     required this.name,
     this.email,
     this.profileImg,
@@ -61,6 +63,7 @@ class StaffModel {
 
     return StaffModel(
       userId: json['user_id']?.toString(),
+      phone: json['phone']?.toString(),
       name: json['full_name']?.toString() ?? 'Staff Member',
       email: json['email']?.toString(),
       profileImg: json['profile_img']?.toString(),

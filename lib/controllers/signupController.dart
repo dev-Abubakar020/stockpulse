@@ -24,7 +24,7 @@ class SignupController extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+  final phoneController = TextEditingController();
   final imagePicker = ImagePicker();
   final selectedImage = Rxn<XFile>();
   final imageBytes = Rxn<Uint8List>();
@@ -138,6 +138,19 @@ class SignupController extends GetxController {
             params: {'p_token': invitationToken},
           );
           deepLinkService?.clearStaffInvitation();
+
+          // Ensure profile full_name and phone are correctly saved for the staff member
+          final user = Supabase.instance.client.auth.currentUser;
+          final enteredName = nameController.text.trim();
+          final enteredPhone = phoneController.text.trim();
+          if (user != null && enteredName.isNotEmpty) {
+            await authRepository.syncProfileToDatabase(
+              userId: user.id,
+              name: enteredName,
+              phone: enteredPhone,
+              email: user.email,
+            );
+          }
         } catch (e) {
           debugPrint('Error claiming staff invitation: $e');
         }
@@ -214,6 +227,7 @@ class SignupController extends GetxController {
   Future<void> signup() async {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
     final password = passwordController.text;
 
     final nameError = CustomValidator.validateName(name);
@@ -230,6 +244,15 @@ class SignupController extends GetxController {
       CustomSnackBar.warningSnackBar(
         title: AppConstants.warningTitle,
         message: emailError,
+      );
+      return;
+    }
+
+    final phoneError = CustomValidator.validatePhone(phone);
+    if (phoneError != null) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.warningTitle,
+        message: phoneError,
       );
       return;
     }
@@ -251,6 +274,7 @@ class SignupController extends GetxController {
         name: name,
         email: email,
         password: password,
+        phone: phone,
         image: selectedImage.value,
       );
 

@@ -11,7 +11,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leadingOnPressed,
     this.showBackArrow = false,
     this.centerTitle = false,
-    this.isDarkIcons = true, // Choose light or dark status bar icons
+    this.isDarkIcons = true,
+    this.backgroundColor = Colors.transparent, // Default transparent
+    this.elevation = 0,                         // Default 0
   });
 
   final Widget? title;
@@ -21,15 +23,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final VoidCallback? leadingOnPressed;
   final bool isDarkIcons;
+  final Color backgroundColor;
+  final double elevation;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
       surfaceTintColor: Colors.transparent,
 
-      // Explicitly set the status bar overlay to transparent
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: isDarkIcons ? Brightness.dark : Brightness.light,
@@ -54,8 +57,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       centerTitle: centerTitle,
       titleSpacing: showBackArrow || leadingIcon != null ? 0 : 16,
-      actions: actions,
       actionsPadding: const EdgeInsets.only(right: 16),
+      actions: actions,
     );
   }
 

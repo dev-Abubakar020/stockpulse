@@ -221,6 +221,20 @@ class _SignupCard extends StatelessWidget {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
+          CustomTextField(
+            controller: controller.phoneController,
+            labelText: AppConstants.loginPhone,
+            hintText: AppConstants.enterPhoneNumber,
+            prefixIcon: Icon(
+              Icons.phone_outlined,
+              color: theme.primary,
+              size: 20,
+            ),
+            keyboardType: TextInputType.phone,
+            autofillHints: const [AutofillHints.telephoneNumber],
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(height: 16),
           Obx(
             () => CustomTextField(
               controller: controller.emailController,

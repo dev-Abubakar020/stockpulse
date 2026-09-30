@@ -29,6 +29,7 @@ class RoleService extends GetxService {
   bool get canViewReports => isOwner || isStaff;
   bool get canEditShopDetails => isOwner;
   bool get canChangeSalePrice => isOwner;
+  bool get canChangePurchasePrice => isOwner;
   bool get canApplyDiscount => isOwner;
   bool get canViewPurchasePrice => isOwner;
 

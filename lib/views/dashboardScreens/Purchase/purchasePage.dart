@@ -34,39 +34,17 @@ class PurchasePage extends StatelessWidget {
       appBar: CustomAppBar(
         title: Text(AppConstants.purchaseTitle),
         actions: [
-          IconButton(onPressed: (){
-            Get.dialog(
-              CustomConfirmDialog(
-                title: AppConstants.logout,
-                subtitle: AppConstants.logoutAlertSubTitle,
-                confirmText: AppConstants.logout,
-                onConfirm: () {
-                  Get.back();
-                  Get.find<LoginController>().logout();
-                },
+          Material(
+            color: Colors.transparent,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
               ),
-            );
-          },
-            icon: Material(
-              color: Colors.transparent,
-              child: Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.red
-                        .withValues(alpha: 0.20),
-                  ),
-                ),
-                child: Icon(
-                  Icons.logout,
-                  size: 20,
-                  color: Colors.red.withValues(alpha: 0.7),
-                ),
-              ),
-            ),),
+              child: Image.asset(AppConstants.splashImage),
+            ),
+          ),
         ],
       ),
       body: Column(
@@ -166,6 +144,7 @@ class PurchasePage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton.extended(
+          heroTag: 'purchasePageFab',
           onPressed: () => Get.toNamed(Routes.addPurchase),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,

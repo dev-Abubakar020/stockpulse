@@ -81,6 +81,7 @@ class AllCategories extends StatelessWidget {
 
       /// Floating Action Button
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'allCategoriesFab',
         onPressed: () {
           controller.clearForm();
           Get.toNamed(Routes.addCategories);

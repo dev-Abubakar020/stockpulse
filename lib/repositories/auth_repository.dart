@@ -57,42 +57,32 @@ class AuthRepository {
     return _supabase.storage.from('shop-images').getPublicUrl(path);
   }
 
-  Future<void> _syncProfileToDatabase({
+  Future<void> syncProfileToDatabase({
     required String userId,
     required String name,
     String? email,
+    String? phone,
     String? imageUrl,
   }) async {
-    final now = DateTime.now().toUtc().toIso8601String();
-    final profileData = <String, dynamic>{
-      'id': userId,
-      'name': name.trim(),
-      'full_name': name.trim(),
-      if (email != null && email.isNotEmpty) 'email': email.trim(),
-      if (imageUrl != null && imageUrl.isNotEmpty) ...{
-        'profile_img': imageUrl,
-        'avatar_url': imageUrl,
-      },
-      'updated_at': now,
-    };
-
     try {
+      final profileData = <String, dynamic>{
+        'id': userId,
+        'full_name': name.trim(),
+
+        if (phone != null && phone.trim().isNotEmpty)
+          'phone': phone.trim(),
+
+        if (imageUrl != null && imageUrl.trim().isNotEmpty)
+          'profile_img': imageUrl.trim(),
+      };
+
       await _supabase.from('profiles').upsert(
         profileData,
         onConflict: 'id',
       );
     } catch (e) {
-      debugPrint('Error upserting to profiles table: $e');
-      try {
-        await _supabase.from('profiles').upsert({
-          'id': userId,
-          'name': name.trim(),
-          if (imageUrl != null && imageUrl.isNotEmpty) 'profile_img': imageUrl,
-          'updated_at': now,
-        }, onConflict: 'id');
-      } catch (fallbackError) {
-        debugPrint('Fallback error upserting to profiles table: $fallbackError');
-      }
+      debugPrint('Error syncing profiles table: $e');
+      rethrow;
     }
   }
 
@@ -114,12 +104,17 @@ class AuthRepository {
     required String name,
     required String email,
     required String password,
+    required String phone,
     XFile? image,
   }) async {
     final response = await _supabase.auth.signUp(
       email: email.trim(),
       password: password,
-      data: {'name': name.trim()},
+      data: {
+        'name': name.trim(),
+        'full_name': name.trim(),
+        'phone': phone.trim(),
+      },
     );
 
     if (response.user != null) {
@@ -136,6 +131,7 @@ class AuthRepository {
               data: {
                 'name': name.trim(),
                 'full_name': name.trim(),
+                'phone': phone.trim(),
                 'profile_img': imageUrl,
                 'avatar_url': imageUrl,
               },
@@ -146,10 +142,11 @@ class AuthRepository {
         }
       }
 
-      await _syncProfileToDatabase(
+      await syncProfileToDatabase(
         userId: response.user!.id,
         name: name,
         email: email,
+        phone: phone,
         imageUrl: imageUrl,
       );
     }
@@ -159,6 +156,7 @@ class AuthRepository {
 
   Future<UserResponse> updateProfile({
     required String name,
+    required String phone,
     XFile? image,
     String? existingImageUrl,
   }) async {
@@ -175,6 +173,7 @@ class AuthRepository {
     final metadata = Map<String, dynamic>.from(user.userMetadata ?? {});
     metadata['name'] = name.trim();
     metadata['full_name'] = name.trim();
+    metadata['phone'] = phone.trim();
     if (imageUrl != null && imageUrl.isNotEmpty) {
       metadata['profile_img'] = imageUrl;
       metadata['avatar_url'] = imageUrl;
@@ -182,10 +181,11 @@ class AuthRepository {
 
     final response = await _supabase.auth.updateUser(UserAttributes(data: metadata));
 
-    await _syncProfileToDatabase(
+    await syncProfileToDatabase(
       userId: user.id,
       name: name,
       email: user.email,
+      phone: phone,
       imageUrl: imageUrl,
     );
 

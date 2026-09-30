@@ -49,8 +49,9 @@ class PurchaseController extends GetxController {
   final RxMap<String, double> quantities = <String, double>{}.obs;
 
   /// productId -> current purchase price for THIS purchase
-  final RxMap<String, double> purchasePrices = <String, double>{}.obs;
+  // final RxMap<String, double> purchasePrices = <String, double>{}.obs;
 
+  final RxMap<String, double> lineTotals = <String, double>{}.obs;
   final RxDouble discount = 0.0.obs;
 
   final TextEditingController noteController = TextEditingController();
@@ -70,22 +71,56 @@ class PurchaseController extends GetxController {
     return quantities.containsKey(productId);
   }
 
-  double quantityOf(String productId) {
-    return quantities[productId] ?? 0;
+  double quantityOf(String productId) {return quantities[productId] ?? 0;}
+  bool isDecimalUnit(ProductItemModel product) {
+    return product.unit == 'Kilogram (kg)' ||
+        product.unit == 'Litre (L)' ||
+        product.unit == 'Meter (m)';
+  }
+  double quantityStep(ProductItemModel product) {
+    return isDecimalUnit(product) ? 0.1 : 1.0;
   }
 
-  double purchasePriceOf(ProductItemModel product) {
-    return purchasePrices[product.id] ?? product.purchasePrice;
+  double normalizeQuantity(double value) {
+    return double.parse(value.toStringAsFixed(3));
   }
+  // double purchasePriceOf(ProductItemModel product) {
+  //   return purchasePrices[product.id] ?? product.purchasePrice;
+  // }
 
   void addProduct(ProductItemModel product) {
-    final currentQty = quantities[product.id] ?? 0;
+    // final currentQty = quantities[product.id];
+    final currentQty = quantityOf(product.id);
+    if (product.currentStock <= 0) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.outOfStock,
+        message: '${product.article} is currently out of stock.',
+      );
+      return;
+    }
+    double newQty;
+    if (!isSelected(product.id) || currentQty <= 0) {
+      newQty = isDecimalUnit(product) ? 0.5 : 1.0;
+    } else {
+      final step = quantityStep(product);
+      newQty = normalizeQuantity(currentQty + step);
+    }
 
-    quantities[product.id] = currentQty + 1;
+    if (newQty > product.currentStock) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.insufficientStock,
+        message:
+        'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
+      );
+      return;
+    }
+
+    quantities[product.id] = newQty;
+    lineTotals.remove(product.id);
 
     // First time product is selected:
     // initialize today's purchase price from existing product price.
-    purchasePrices.putIfAbsent(product.id, () => product.purchasePrice);
+    // purchasePrices.putIfAbsent(product.id, () => product.purchasePrice);
   }
 
   void decrementProduct(ProductItemModel product) {
@@ -99,14 +134,47 @@ class PurchaseController extends GetxController {
     quantities[product.id] = currentQty - 1;
   }
 
+  void updateQuantity(ProductItemModel product, String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      // Do not remove product or update while user is temporarily clearing the field during typing.
+      return;
+    }
+
+    var normalized = trimmed.startsWith('.') ? '0$trimmed' : trimmed;
+    if (normalized.endsWith('.')) {
+      normalized = '${normalized}0';
+    }
+
+    final parsed = double.tryParse(normalized);
+    if (parsed == null || parsed < 0) {
+      return;
+    }
+
+    if (parsed > product.currentStock) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.insufficientStock,
+        message:
+        'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
+      );
+      quantities[product.id] = normalizeQuantity(product.currentStock);
+      lineTotals.remove(product.id);
+      return;
+    }
+
+    quantities[product.id] = normalizeQuantity(parsed);
+    lineTotals.remove(product.id);
+  }
   void removeProduct(String productId) {
     quantities.remove(productId);
-    purchasePrices.remove(productId);
+    lineTotals.remove(productId);
+    // purchasePrices.remove(productId);
   }
 
   void clearCart() {
     quantities.clear();
-    purchasePrices.clear();
+    lineTotals.clear();
+    // purchasePrices.clear();
 
     discount.value = 0;
 
@@ -114,19 +182,6 @@ class PurchaseController extends GetxController {
     noteController.clear();
   }
 
-  // =========================
-  // Purchase Price
-  // =========================
-
-  void updatePurchasePrice(String productId, String value) {
-    final price = double.tryParse(value);
-
-    if (price == null || price < 0) {
-      return;
-    }
-
-    purchasePrices[productId] = price;
-  }
 
   // =========================
   // Discount
@@ -139,24 +194,37 @@ class PurchaseController extends GetxController {
   // =========================
   // Totals
   // =========================
-
   double get subtotal {
     double total = 0;
 
     quantities.forEach((productId, quantity) {
-      final product = products.firstWhereOrNull(
-        (product) => product.id == productId,
-      );
+      final product =
+      products.firstWhereOrNull((item) => item.id == productId);
 
       if (product == null) return;
 
-      final price = purchasePriceOf(product);
-
-      total += price * quantity;
+      total += lineTotal(product);
     });
 
     return total;
   }
+  // double get subtotal {
+  //   double total = 0;
+  //
+  //   quantities.forEach((productId, quantity) {
+  //     final product = products.firstWhereOrNull(
+  //       (product) => product.id == productId,
+  //     );
+  //
+  //     if (product == null) return;
+  //
+  //     final price = purchasePriceOf(product);
+  //
+  //     total += price * quantity;
+  //   });
+  //
+  //   return total;
+  // }
 
   double get totalAmount {
     final total = subtotal - discount.value;
@@ -165,9 +233,35 @@ class PurchaseController extends GetxController {
   }
 
   double lineTotal(ProductItemModel product) {
-    return quantityOf(product.id) * purchasePriceOf(product);
+    return lineTotals[product.id] ?? quantityOf(product.id) * product.purchasePrice;
   }
+  void updateLineTotal(String productId, String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      lineTotals.remove(productId);
+      return;
+    }
 
+    final amount = double.tryParse(trimmed);
+    if (amount == null || amount < 0) return;
+
+    lineTotals[productId] = amount;
+
+    final product = products.firstWhereOrNull((p) => p.id == productId);
+    if (product != null && product.purchasePrice > 0) {
+      final newQty = amount / product.purchasePrice;
+      if (newQty > product.currentStock) {
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.insufficientStock,
+          message:
+          'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
+        );
+        quantities[productId] = normalizeQuantity(product.currentStock);
+      } else {
+        quantities[productId] = normalizeQuantity(newQty < 0 ? 0 : newQty);
+      }
+    }
+  }
   // =========================
   // Build RPC Items
   // =========================
@@ -176,11 +270,15 @@ class PurchaseController extends GetxController {
     final List<PurchaseItemModel> items = [];
 
     quantities.forEach((productId, quantity) {
-      final product = products.firstWhereOrNull(
-        (product) => product.id == productId,
-      );
+      final product =
+      products.firstWhereOrNull((item) => item.id == productId);
 
-      if (product == null) return;
+      if (product == null || quantity <= 0) return;
+
+      final total = lineTotal(product);
+
+      // Effective unit price based on final line total
+      final effectivePurchasePrice = total / quantity;
 
       items.add(
         PurchaseItemModel(
@@ -190,7 +288,7 @@ class PurchaseController extends GetxController {
           size: product.size,
           unit: product.unit,
           quantity: quantity,
-          purchasePrice: purchasePriceOf(product),
+          purchasePrice: effectivePurchasePrice,
         ),
       );
     });
@@ -366,6 +464,13 @@ class PurchaseController extends GetxController {
     return result.toList();
   }
 
+  String _formatQty(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value.toStringAsFixed(2);
+  }
   @override
   void onInit() {
     super.onInit();

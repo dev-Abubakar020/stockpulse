@@ -99,6 +99,7 @@ class AllStaffView extends StatelessWidget {
 
       // Add Staff
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'allStaffFab',
         onPressed: () {
           controller.clearForm();
           Get.toNamed(Routes.addStaff);
@@ -120,13 +121,22 @@ class AllStaffView extends StatelessWidget {
   }
 }
 
-class StaffCard extends StatelessWidget {
+class StaffCard extends StatefulWidget {
   final StaffModel staff;
 
   const StaffCard({
     super.key,
     required this.staff,
   });
+
+  @override
+  State<StaffCard> createState() => _StaffCardState();
+}
+
+class _StaffCardState extends State<StaffCard> {
+  bool isExpanded = false;
+
+  StaffModel get staff => widget.staff;
 
   @override
   Widget build(BuildContext context) {
@@ -143,94 +153,333 @@ class StaffCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child: Column(
           children: [
-            // Avatar
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: _avatarBackgroundColor,
-                shape: BoxShape.circle,
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: staff.profileImg != null &&
-                  staff.profileImg!.isNotEmpty
-                  ? Image.network(
-                staff.profileImg!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) {
-                  return _buildAvatarFallback();
-                },
-              )
-                  : _buildAvatarFallback(),
-            ),
+            // =========================================================
+            // MAIN STAFF ROW
+            // =========================================================
+            Row(
+              children: [
+                // Avatar
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: _avatarBackgroundColor,
+                    shape: BoxShape.circle,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: staff.profileImg != null &&
+                      staff.profileImg!.trim().isNotEmpty
+                      ? Image.network(
+                    staff.profileImg!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) {
+                      return _buildAvatarFallback();
+                    },
+                  )
+                      : _buildAvatarFallback(),
+                ),
 
-            const SizedBox(width: 14),
-            // Information
+                const SizedBox(width: 14),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                // Name + Role
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          staff.isPending
-                              ? 'Staff Member'
-                              : (staff.name.isNotEmpty ? staff.name : 'Staff Member'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              staff.isPending ||
+                                  staff.name.trim().isEmpty
+                                  ? 'Staff Member'
+                                  : staff.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
                           ),
-                        ),
+
+                          const SizedBox(width: 8),
+
+                          _buildStatusBadge(),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      _buildStatusBadge(),
+
+                      const SizedBox(height: 5),
+
+                      Row(
+                        children: [
+                          Icon(
+                            staff.isPending
+                                ? Icons.schedule_rounded
+                                : Icons.badge_outlined,
+                            size: 15,
+                            color: Colors.grey.shade500,
+                          ),
+
+                          const SizedBox(width: 5),
+
+                          Expanded(
+                            child: Text(
+                              staff.isPending
+                                  ? 'Invitation Pending'
+                                  : _roleName(staff.role),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 5),
-                  Row(
+                ),
+
+                const SizedBox(width: 4),
+
+                // Expand / Collapse
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      isExpanded = !isExpanded;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0,
+                      duration: const Duration(
+                        milliseconds: 250,
+                      ),
+                      curve: Curves.easeInOut,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 23,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Actions
+                _buildActionsMenu(),
+              ],
+            ),
+
+            // =========================================================
+            // EXPANDED STAFF DETAILS
+            // =========================================================
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              child: isExpanded
+                  ? Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F766E)
+                        .withValues(alpha: 0.035),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: const Color(0xFF0F766E)
+                          .withValues(alpha: 0.15),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
                     children: [
+                      // Header
+                      Row(
+                        children: [
+                          Text(
+                            'STAFF DETAILS',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+
+                          const Spacer(),
+
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                              BorderRadius.circular(20),
+                              border: Border.all(
+                                color: const Color(0xFF0F766E)
+                                    .withValues(alpha: 0.20),
+                              ),
+                            ),
+                            child: Text(
+                              staff.isPending
+                                  ? 'Invitation'
+                                  : 'Account',
+                              style: const TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0F766E),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Email
+                      _buildDetailRow(
+                        icon: Icons.email_outlined,
+                        label: 'Email',
+                        value:
+                        staff.email?.trim().isNotEmpty ==
+                            true
+                            ? staff.email!
+                            : 'Not available',
+                      ),
+
+                      // Phone
                       if (!staff.isPending) ...[
-                        Icon(
-                          Icons.badge_outlined,
-                          size: 15,
-                          color: Colors.grey.shade500,
+                        const SizedBox(height: 11),
+
+                        _buildDetailRow(
+                          icon: Icons.phone_outlined,
+                          label: 'Phone',
+                          value:
+                          staff.phone
+                              ?.trim()
+                              .isNotEmpty ==
+                              true
+                              ? staff.phone!
+                              : 'Not available',
                         ),
-                        const SizedBox(width: 5),
                       ],
-                      Expanded(
-                        child: Text(
-                          staff.isPending
-                              ? (staff.email?.isNotEmpty ?? false ? staff.email! : 'No Email')
-                              : _roleName(staff.email ?? ''),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
+
+                      // Joined Date
+                      if (!staff.isPending &&
+                          staff.joinedAt != null) ...[
+                        const SizedBox(height: 11),
+
+                        _buildDetailRow(
+                          icon:
+                          Icons.calendar_today_outlined,
+                          label: 'Joined',
+                          value: _formatDate(
+                            staff.joinedAt!,
                           ),
                         ),
-                      ),
+                      ],
+
+                      // Pending invitation expiry
+                      if (staff.isPending &&
+                          staff.expiresAt != null) ...[
+                        const SizedBox(height: 11),
+
+                        _buildDetailRow(
+                          icon: Icons.timer_outlined,
+                          label: 'Invitation Expires',
+                          value: _formatDate(
+                            staff.expiresAt!,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                ],
-              ),
+                ),
+              )
+                  : const SizedBox.shrink(),
             ),
-
-            _buildActionsMenu(),
           ],
         ),
       ),
     );
   }
 
-  // STATUS BADGE`
+  // =========================================================
+  // DETAIL ROW
+  // =========================================================
+
+  Widget _buildDetailRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color:
+            const Color(0xFF0F766E).withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: Icon(
+            icon,
+            size: 16,
+            color: const Color(0xFF0F766E),
+          ),
+        ),
+
+        const SizedBox(width: 10),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 8.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.4,
+                  color: Color(0xFF94A3B8),
+                ),
+              ),
+
+              const SizedBox(height: 3),
+
+              Text(
+                value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF334155),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // =========================================================
+  // STATUS BADGE
+  // =========================================================
 
   Widget _buildStatusBadge() {
     Color backgroundColor;
@@ -277,7 +526,9 @@ class StaffCard extends StatelessWidget {
     );
   }
 
+  // =========================================================
   // AVATAR COLOR
+  // =========================================================
 
   Color get _avatarBackgroundColor {
     switch (staff.status) {
@@ -292,10 +543,14 @@ class StaffCard extends StatelessWidget {
     }
   }
 
-  // FALLBACK AVATAR
+  // =========================================================
+  // AVATAR FALLBACK
+  // =========================================================
 
   Widget _buildAvatarFallback() {
-    final value = staff.isPending ? staff.email : staff.name;
+    final value = staff.isPending
+        ? staff.email
+        : staff.name;
 
     final initial = value?.trim().isNotEmpty == true
         ? value!.trim()[0].toUpperCase()
@@ -315,7 +570,9 @@ class StaffCard extends StatelessWidget {
     );
   }
 
+  // =========================================================
   // ROLE NAME
+  // =========================================================
 
   String _roleName(String role) {
     switch (role.toLowerCase()) {
@@ -329,6 +586,20 @@ class StaffCard extends StatelessWidget {
         return role;
     }
   }
+
+  // =========================================================
+  // DATE
+  // =========================================================
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
+  }
+
+  // =========================================================
+  // ACTION MENU
+  // =========================================================
 
   Widget _buildActionsMenu() {
     final controller = Get.find<StaffController>();
@@ -352,16 +623,22 @@ class StaffCard extends StatelessWidget {
             break;
 
           case 'activate':
-            controller.changeStaffStatus(staff, true);
+            controller.changeStaffStatus(
+              staff,
+              true,
+            );
             break;
 
           case 'deactivate':
-            controller.changeStaffStatus(staff, false);
+            controller.changeStaffStatus(
+              staff,
+              false,
+            );
             break;
         }
       },
       itemBuilder: (context) {
-        // Pending
+        // Pending invitation
         if (staff.isPending) {
           return [
             if (staff.isInviteExpired)
@@ -397,7 +674,7 @@ class StaffCard extends StatelessWidget {
           ];
         }
 
-        // Active
+        // Active staff
         if (staff.isActive) {
           return const [
             PopupMenuItem<String>(
@@ -417,7 +694,7 @@ class StaffCard extends StatelessWidget {
           ];
         }
 
-        // Inactive
+        // Inactive staff
         return const [
           PopupMenuItem<String>(
             value: 'activate',

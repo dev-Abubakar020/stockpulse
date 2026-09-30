@@ -36,8 +36,9 @@ class SaleController extends GetxController {
   final RxMap<String, double> quantities = <String, double>{}.obs;
 
   /// Allows sale price to be changed for this sale only.
-  final RxMap<String, double> salePrices = <String, double>{}.obs;
-
+  // final RxMap<String, double> salePrices = <String, double>{}.obs;
+  /// productId -> manually overridden line total
+  final RxMap<String, double> lineTotals = <String, double>{}.obs;
   final RxDouble discount = 0.0.obs;
 
   final RxString paymentMethod = 'cash'.obs;
@@ -63,9 +64,19 @@ class SaleController extends GetxController {
   bool isSelected(String productId) => quantities.containsKey(productId);
 
   double quantityOf(String productId) => quantities[productId] ?? 0;
+  bool isDecimalUnit(ProductItemModel product) {
+    return product.unit == 'Kilogram (kg)' ||
+        product.unit == 'Litre (L)' ||
+        product.unit == 'Meter (m)';
+  }
 
-  double salePriceOf(ProductItemModel product) =>
-      salePrices[product.id] ?? product.salePrice;
+  double quantityStep(ProductItemModel product) {
+    return isDecimalUnit(product) ? 0.1 : 1.0;
+  }
+
+  double normalizeQuantity(double value) {
+    return double.parse(value.toStringAsFixed(3));
+  }
 
   void addProduct(ProductItemModel product) {
     final currentQty = quantityOf(product.id);
@@ -78,40 +89,84 @@ class SaleController extends GetxController {
       return;
     }
 
-    if (currentQty + 1 > product.currentStock) {
+    double newQty;
+    if (!isSelected(product.id) || currentQty <= 0) {
+      newQty = isDecimalUnit(product) ? 0.5 : 1.0;
+    } else {
+      final step = quantityStep(product);
+      newQty = normalizeQuantity(currentQty + step);
+    }
+
+    if (newQty > product.currentStock) {
       CustomSnackBar.warningSnackBar(
         title: AppConstants.insufficientStock,
         message:
-            'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
+        'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
       );
       return;
     }
 
-    quantities[product.id] = currentQty + 1;
-
-    salePrices.putIfAbsent(product.id, () => product.salePrice);
+    quantities[product.id] = newQty;
+    lineTotals.remove(product.id);
   }
 
   void decrementProduct(ProductItemModel product) {
     final currentQty = quantityOf(product.id);
+    final step = quantityStep(product);
 
-    if (currentQty <= 1) {
+    final newQty = normalizeQuantity(currentQty - step);
+
+    if (newQty <= 0) {
       removeProduct(product.id);
       return;
     }
 
-    quantities[product.id] = currentQty - 1;
+    quantities[product.id] = newQty;
+
+    // Quantity changed → calculate fresh line total
+    lineTotals.remove(product.id);
+  }
+
+  void updateQuantity(ProductItemModel product, String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      // Do not remove product or update while user is temporarily clearing the field during typing.
+      return;
+    }
+
+    var normalized = trimmed.startsWith('.') ? '0$trimmed' : trimmed;
+    if (normalized.endsWith('.')) {
+      normalized = '${normalized}0';
+    }
+
+    final parsed = double.tryParse(normalized);
+    if (parsed == null || parsed < 0) {
+      return;
+    }
+
+    if (parsed > product.currentStock) {
+      CustomSnackBar.warningSnackBar(
+        title: AppConstants.insufficientStock,
+        message:
+        'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
+      );
+      quantities[product.id] = normalizeQuantity(product.currentStock);
+      lineTotals.remove(product.id);
+      return;
+    }
+
+    quantities[product.id] = normalizeQuantity(parsed);
+    lineTotals.remove(product.id);
   }
 
   void removeProduct(String productId) {
     quantities.remove(productId);
-    salePrices.remove(productId);
+    lineTotals.remove(productId);
   }
 
   void clearCart() {
     quantities.clear();
-    salePrices.clear();
-
+    lineTotals.clear();
     discount.value = 0;
     paymentMethod.value = 'cash';
 
@@ -119,15 +174,37 @@ class SaleController extends GetxController {
     noteController.clear();
     receivedAmountController.clear();
   }
+  double lineTotal(ProductItemModel product) {
+    return lineTotals[product.id] ??
+        (quantityOf(product.id) * product.salePrice);
+  }
 
-  void updateSalePrice(String productId, String value) {
-    final price = double.tryParse(value);
-
-    if (price == null || price < 0) {
+  void updateLineTotal(String productId, String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      lineTotals.remove(productId);
       return;
     }
 
-    salePrices[productId] = price;
+    final amount = double.tryParse(trimmed);
+    if (amount == null || amount < 0) return;
+
+    lineTotals[productId] = amount;
+
+    final product = products.firstWhereOrNull((p) => p.id == productId);
+    if (product != null && product.salePrice > 0) {
+      final newQty = amount / product.salePrice;
+      if (newQty > product.currentStock) {
+        CustomSnackBar.warningSnackBar(
+          title: AppConstants.insufficientStock,
+          message:
+          'Only ${_formatQty(product.currentStock)} ${product.unit} available.',
+        );
+        quantities[productId] = normalizeQuantity(product.currentStock);
+      } else {
+        quantities[productId] = normalizeQuantity(newQty < 0 ? 0 : newQty);
+      }
+    }
   }
 
   void updateDiscount(String value) {
@@ -148,11 +225,12 @@ class SaleController extends GetxController {
     double total = 0;
 
     quantities.forEach((productId, quantity) {
-      final product = products.firstWhereOrNull((item) => item.id == productId);
+      final product =
+      products.firstWhereOrNull((item) => item.id == productId);
 
       if (product == null) return;
 
-      total += salePriceOf(product) * quantity;
+      total += lineTotal(product);
     });
 
     return total;
@@ -164,9 +242,6 @@ class SaleController extends GetxController {
     return value < 0 ? 0 : value;
   }
 
-  double lineTotal(ProductItemModel product) {
-    return quantityOf(product.id) * salePriceOf(product);
-  }
 
   double get receivedAmount {
     final text = receivedAmountController.text.trim();
@@ -192,9 +267,15 @@ class SaleController extends GetxController {
     final List<SaleItemModel> items = [];
 
     quantities.forEach((productId, quantity) {
-      final product = products.firstWhereOrNull((item) => item.id == productId);
+      final product =
+      products.firstWhereOrNull((item) => item.id == productId);
 
-      if (product == null) return;
+      if (product == null || quantity <= 0) return;
+
+      final total = lineTotal(product);
+
+      // Effective unit price based on final line total
+      final effectiveSalePrice = total / quantity;
 
       items.add(
         SaleItemModel(
@@ -204,7 +285,7 @@ class SaleController extends GetxController {
           size: product.size,
           unit: product.unit,
           quantity: quantity,
-          salePrice: salePriceOf(product),
+          salePrice: effectiveSalePrice,
         ),
       );
     });

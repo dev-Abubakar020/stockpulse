@@ -15,6 +15,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/alertDialog.dart';
+import '../../common/widgets/appbar.dart';
 import '../../common/widgets/premiumdial.dart';
 import '../../controllers/dashboardController.dart';
 import '../../controllers/loginController.dart';
@@ -36,7 +37,7 @@ class HomeView extends GetView<HomeController> {
 
     return CustomScreen(
       backgroundColor: theme.background,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: AppColors.onboardingLight,
         elevation: 5,
         title: Column(
@@ -71,37 +72,15 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: () {
-                Get.dialog(
-                  CustomConfirmDialog(
-                    title: AppConstants.logout,
-                    subtitle: AppConstants.logoutAlertSubTitle,
-                    confirmText: AppConstants.logout,
-                    onConfirm: () {
-                      Get.back();
-                      Get.find<LoginController>().logout();
-                    },
-                  ),
-                );
-              },
-              child: Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.20)),
-                ),
-                child: Icon(
-                  Icons.logout,
-                  size: 20,
-                  color: Colors.red.withValues(alpha: 0.7),
-                ),
+          Material(
+            color: Colors.transparent,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
               ),
+              child: Image.asset(AppConstants.splashImage),
             ),
           ),
         ],

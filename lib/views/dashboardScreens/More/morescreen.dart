@@ -35,38 +35,15 @@ class MoreScreen extends StatelessWidget {
       appBar: CustomAppBar(
         title: Text(AppConstants.moreTitle),
         actions: [
-          IconButton(
-            onPressed: () {
-              Get.dialog(
-                CustomConfirmDialog(
-                  title: AppConstants.logout,
-                  subtitle: AppConstants.logoutAlertSubTitle,
-                  confirmText: AppConstants.logout,
-                  onConfirm: () {
-                    Get.back();
-                    Get.find<LoginController>().logout();
-                  },
-                ),
-              );
-            },
-            icon: Material(
-              color: Colors.transparent,
-              child: Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.red.withValues(alpha: 0.20),
-                  ),
-                ),
-                child: Icon(
-                  Icons.logout,
-                  size: 20,
-                  color: Colors.red.withValues(alpha: 0.7),
-                ),
+          Material(
+            color: Colors.transparent,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
               ),
+              child: Image.asset(AppConstants.splashImage),
             ),
           ),
         ],
@@ -280,10 +257,57 @@ class MoreScreen extends StatelessWidget {
                   MoreMenuTile(
                     icon: Icons.info_outline_rounded,
                     title: AppConstants.aboutStockPulseTitle,
-                    showDivider: false,
+                    showDivider: true,
                     onTap: () {
                       _launchUrl2();
                     },
+                  ),
+                  SizedBox(height: 12,),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          Get.dialog(
+                              CustomConfirmDialog(
+                                title: AppConstants.logout,
+                                subtitle: AppConstants.logoutAlertSubTitle,
+                                confirmText: AppConstants.logout,
+                                onConfirm: () {
+                                  Get.back();
+                                  Get.find<LoginController>().logout();
+                                },
+                              ),
+                          );
+                        },
+                        child: Container(
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.red.withValues(alpha: 0.20),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(width: 10),
+                              Text(
+                                AppConstants.logout,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ]),
 

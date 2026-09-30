@@ -86,6 +86,7 @@ class AppConstants {
   static const String loginSlug = "Enter your credentials to access your Shop";
   static const String loginEmailLabel = 'Email';
   static const String nameLabel = 'Name';
+  static const String phoneLabel = 'Phone';
   static const String morningGreeting = "Good Morning ☀️";
   static const String afternoonGreeting = "Good Afternoon 🌤️";
   static const String eveningGreeting = "Good Evening 🌇";

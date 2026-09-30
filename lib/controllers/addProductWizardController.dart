@@ -30,9 +30,6 @@ class AddProductWizardController extends GetxController {
   final isCategoriesLoading = false.obs;
   final List<String> units = [
     'Piece (pcs)',
-    'Pack',
-    'Box',
-    'Dozen (doz)',
     'Kilogram (kg)',
     'Litre (L)',
     'Meter (m)',
@@ -46,12 +43,6 @@ class AddProductWizardController extends GetxController {
     switch (selectedUnit.value) {
       case 'Piece (pcs)':
         return 'pcs';
-      case 'Pack':
-        return 'pack';
-      case 'Box':
-        return 'box';
-      case 'Dozen (doz)':
-        return 'doz';
       case 'Kilogram (kg)':
         return 'kg';
       case 'Litre (L)':

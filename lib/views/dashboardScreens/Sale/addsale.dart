@@ -227,14 +227,14 @@ class _AddSaleState extends State<AddSale> {
                   children: List.generate(selectedProducts.length, (index) {
                     final product = selectedProducts[index];
                     final quantity = saleController.quantityOf(product.id);
-                    final salePrice = saleController.salePriceOf(product);
+                    final lineTotal = saleController.lineTotal(product);
 
                     return _SaleItemTile(
                       product: product,
                       index: index,
                       isDark: isDark,
                       quantity: quantity,
-                      salePrice: salePrice,
+                      lineTotal: lineTotal,
                       onIncrement: () {
                         saleController.addProduct(product);
                       },
@@ -244,8 +244,11 @@ class _AddSaleState extends State<AddSale> {
                       onRemove: () {
                         saleController.removeProduct(product.id);
                       },
-                      onPriceChanged: (value) {
-                        saleController.updateSalePrice(product.id, value);
+                      onQuantityChanged: (value) {
+                        saleController.updateQuantity(product, value);
+                      },
+                      onLineTotalChanged: (value) {
+                        saleController.updateLineTotal(product.id, value);
                       },
                     );
                   }),
@@ -325,14 +328,14 @@ class _AddSaleState extends State<AddSale> {
                       children: List.generate(selectedProducts.length, (index) {
                         final product = selectedProducts[index];
                         final quantity = saleController.quantityOf(product.id);
-                        final salePrice = saleController.salePriceOf(product);
+                        final lineTotal = saleController.lineTotal(product);
 
                         return _SaleItemTile(
                           product: product,
                           index: index,
                           isDark: isDark,
                           quantity: quantity,
-                          salePrice: salePrice,
+                          lineTotal: lineTotal,
                           onIncrement: () {
                             saleController.addProduct(product);
                           },
@@ -342,8 +345,11 @@ class _AddSaleState extends State<AddSale> {
                           onRemove: () {
                             saleController.removeProduct(product.id);
                           },
-                          onPriceChanged: (value) {
-                            saleController.updateSalePrice(product.id, value);
+                          onQuantityChanged: (value) {
+                            saleController.updateQuantity(product, value);
+                          },
+                          onLineTotalChanged: (value) {
+                            saleController.updateLineTotal(product.id, value);
                           },
                         );
                       }),
@@ -871,8 +877,8 @@ class _QtyBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 30,
-        height: 30,
+        width: 34,
+        height: 38,
         decoration: BoxDecoration(
           color: onTap != null
               ? accentColor.withValues(alpha: .1)
@@ -977,28 +983,31 @@ class _SaleItemTile extends StatelessWidget {
   final int index;
   final bool isDark;
   final double quantity;
-  final double salePrice;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onRemove;
-  final ValueChanged<String> onPriceChanged;
+  final double lineTotal;
+  final ValueChanged<String> onQuantityChanged;
+  final ValueChanged<String> onLineTotalChanged;
 
   const _SaleItemTile({
     required this.product,
     required this.index,
     required this.isDark,
     required this.quantity,
-    required this.salePrice,
+    required this.lineTotal,
     required this.onIncrement,
     required this.onDecrement,
     required this.onRemove,
-    required this.onPriceChanged,
+    required this.onQuantityChanged,
+    required this.onLineTotalChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     const green = AppColors.primary;
-    final lineTotal = quantity * salePrice;
+    final saleController = Get.find<SaleController>();
+    final isDecimal = saleController.isDecimalUnit(product);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1090,6 +1099,12 @@ class _SaleItemTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
+                    isDecimal
+                        ? _QuantityField(
+                            value: quantity,
+                            isDecimal: true,
+                            onChanged: onQuantityChanged,
+                          ):
                     Row(
                       children: [
                         _QtyBtn(
@@ -1097,16 +1112,15 @@ class _SaleItemTile extends StatelessWidget {
                           onTap: onDecrement,
                           accentColor: green,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            _formatQuantity(quantity),
-                            style: GoogleFonts.sora(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: _QuantityField(
+                            value: quantity,
+                            isDecimal: false,
+                            onChanged: onQuantityChanged,
                           ),
                         ),
+                        const SizedBox(width: 4),
                         _QtyBtn(
                           icon: Icons.add,
                           onTap: onIncrement,
@@ -1134,9 +1148,27 @@ class _SaleItemTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    _SalePriceField(
-                      initialValue: salePrice,
-                      onChanged: onPriceChanged,
+
+                    Container(
+                      height: 38,
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E2D44)
+                              : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Text(
+                        'Rs. ${product.salePrice.toStringAsFixed(0)}',
+                        style: GoogleFonts.sora(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -1160,12 +1192,11 @@ class _SaleItemTile extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              Text(
-                'Rs. ${lineTotal.toStringAsFixed(2)}',
-                style: GoogleFonts.sora(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: green,
+              SizedBox(
+                width: 140,
+                child: _LineTotalField(
+                  value: lineTotal,
+                  onChanged: onLineTotalChanged,
                 ),
               ),
             ],
@@ -1202,32 +1233,72 @@ class _SaleItemTile extends StatelessWidget {
 // SALE PRICE FIELD
 // ================================================================
 
-class _SalePriceField extends StatefulWidget {
-  final double initialValue;
+class _LineTotalField extends StatefulWidget {
+  final double value;
   final ValueChanged<String> onChanged;
 
-  const _SalePriceField({required this.initialValue, required this.onChanged});
+  const _LineTotalField({
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
-  State<_SalePriceField> createState() => _SalePriceFieldState();
+  State<_LineTotalField> createState() => _LineTotalFieldState();
 }
 
-class _SalePriceFieldState extends State<_SalePriceField> {
+class _LineTotalFieldState extends State<_LineTotalField> {
   late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+
+  bool _hasFocus = false;
+
+  String _formatAmount(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
 
   @override
   void initState() {
     super.initState();
+
     _controller = TextEditingController(
-      text: widget.initialValue.toStringAsFixed(2),
+      text: _formatAmount(widget.value),
     );
+
+    _focusNode = FocusNode();
+
+    _focusNode.addListener(() {
+      final hasFocus = _focusNode.hasFocus;
+
+      setState(() {
+        _hasFocus = hasFocus;
+      });
+
+      // User finished editing → show clean formatted value
+      if (!hasFocus) {
+        final value = _formatAmount(widget.value);
+
+        if (_controller.text != value) {
+          _controller.text = value;
+        }
+      }
+    });
   }
 
   @override
-  void didUpdateWidget(covariant _SalePriceField oldWidget) {
+  void didUpdateWidget(covariant _LineTotalField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialValue != widget.initialValue) {
-      final value = widget.initialValue.toStringAsFixed(2);
+
+    // Don't overwrite text while user is typing
+    if (!_hasFocus && oldWidget.value != widget.value) {
+      final value = _formatAmount(widget.value);
+
       if (_controller.text != value) {
         _controller.text = value;
       }
@@ -1237,35 +1308,159 @@ class _SalePriceFieldState extends State<_SalePriceField> {
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final roleService = Get.find<RoleService>();
+    final canEdit = roleService.canChangeSalePrice;
+
+    return TextFormField(
+      controller: _controller,
+      focusNode: _focusNode,
+
+      readOnly: !canEdit,
+
+      keyboardType: const TextInputType.numberWithOptions(
+        decimal: true,
+      ),
+
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(
+          RegExp(r'^\d*\.?\d{0,2}$'),
+        ),
+      ],
+
+      onChanged: canEdit ? widget.onChanged : null,
+
+      textAlign: TextAlign.center,
+
+      style: GoogleFonts.sora(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: AppColors.primary,
+      ),
+
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+}
+
+// ================================================================
+// QUANTITY FIELD
+// ================================================================
+
+class _QuantityField extends StatefulWidget {
+  final double value;
+  final bool isDecimal;
+  final ValueChanged<String> onChanged;
+
+  const _QuantityField({
+    required this.value,
+    required this.isDecimal,
+    required this.onChanged,
+  });
+
+  @override
+  State<_QuantityField> createState() => _QuantityFieldState();
+}
+
+class _QuantityFieldState extends State<_QuantityField> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+  bool _hasFocus = false;
+
+  String _formatValue(double value) {
+    if (!widget.isDecimal) {
+      return value.toInt().toString();
+    }
+
+    // Whole number → no decimal
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    // Max 3 decimals, remove trailing zeros
+    return value
+        .toStringAsFixed(3)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _formatValue(widget.value));
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      setState(() {
+        _hasFocus = _focusNode.hasFocus;
+      });
+      if (!_hasFocus) {
+        _controller.text = _formatValue(widget.value);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _QuantityField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      if (!_hasFocus) {
+        final newText = _formatValue(widget.value);
+        if (_controller.text != newText) {
+          _controller.text = newText;
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
-    final roleService = Get.isRegistered<RoleService>()
-        ? Get.find<RoleService>()
-        : Get.put(RoleService(), permanent: true);
 
     return TextFormField(
       controller: _controller,
-      enabled: roleService.canChangeSalePrice,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      focusNode: _focusNode,
+      keyboardType: widget.isDecimal
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+        if (widget.isDecimal)
+          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,3}$'))
+        else
+          FilteringTextInputFormatter.digitsOnly,
       ],
       onChanged: widget.onChanged,
-      style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w600),
+      textAlign: TextAlign.center,
+      style: GoogleFonts.sora(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+      ),
       decoration: InputDecoration(
-        hintText: '0.00',
-        prefixText: 'Rs. ',
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 10,
+          horizontal: 8,
+          vertical: 9,
         ),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
@@ -1280,10 +1475,23 @@ class _SalePriceFieldState extends State<_SalePriceField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+          ),
         ),
       ),
     );
+  }
+
+  String formatAmount(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
   }
 }
 
@@ -1497,7 +1705,7 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
 
   String _productSubtitle(ProductItemModel product) {
     final details = <String>[
-      'Rs. ${product.salePrice.toStringAsFixed(2)}',
+      'Rs. ${product.salePrice}',
       'Stock: ${_formatNumber(product.currentStock)}',
       product.unit,
     ];
@@ -1511,6 +1719,6 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
     if (value == value.roundToDouble()) {
       return value.toInt().toString();
     }
-    return value.toStringAsFixed(2);
+    return value.toStringAsFixed(0);
   }
 }

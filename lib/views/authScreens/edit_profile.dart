@@ -92,7 +92,22 @@ class EditProfileView extends GetView<EditProfileController> {
                         ),
                         keyboardType: TextInputType.name,
                         autofillHints: const [AutofillHints.name],
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Phone Field
+                      CustomTextField(
+                        controller: controller.phoneController,
+                        labelText: AppConstants.loginPhone,
+                        hintText: 'Enter phone number',
+                        prefixIcon: Icon(
+                          Icons.phone_outlined,
+                          color: theme.primary,
+                        ),
+                        keyboardType: TextInputType.phone,
+                        autofillHints: const [AutofillHints.telephoneNumber],
+                        textInputAction: TextInputAction.next,
                       ),
                       const SizedBox(height: 16),
 
