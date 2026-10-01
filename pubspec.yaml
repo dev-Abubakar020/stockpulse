@@ -42,6 +42,8 @@ dependencies:
   flutter_thermal_printer: ^2.3.0
   permission_handler: ^13.0.2
   fl_chart: ^1.2.0
+  mobile_scanner: ^7.4.2
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:

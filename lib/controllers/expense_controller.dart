@@ -138,6 +138,7 @@ class ExpenseController extends GetxController {
   // ---------------------------------------------------------
 
   Future<bool> addExpense() async {
+    if (isSaving.value) return false;
     final amountText = amountController.text.trim().replaceAll(',', '');
     final amount = double.tryParse(amountText);
 
@@ -214,6 +215,7 @@ class ExpenseController extends GetxController {
 
   Future<void> deleteExpense(ExpenseModel expense) async {
     if (expense.id == null) return;
+    if (isLoading.value) return;
 
     try {
       isLoading.value = true;

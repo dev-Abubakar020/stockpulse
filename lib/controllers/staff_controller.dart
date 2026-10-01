@@ -25,6 +25,7 @@ class StaffController extends GetxController {
   }
 
   Future<StaffInvitationModel?> sendInvitation() async {
+    if (isSending.value) return null;
     final email = emailController.text.trim();
 
     if (email.isEmpty) {
@@ -183,6 +184,7 @@ class StaffController extends GetxController {
   }
 
   Future<void> resendInvitation(StaffModel staff) async {
+    if (isSending.value) return;
     if (!staff.isPending ||
         staff.invitationId == null ||
         !staff.isInviteExpired) {

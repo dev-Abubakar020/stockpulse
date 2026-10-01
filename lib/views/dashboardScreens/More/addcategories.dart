@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
+import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../../common/widgets/appbar.dart';
@@ -271,29 +272,10 @@ class AddCategories extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Obx(() {
-            return SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: controller.isSaving.value
-                    ? null
-                    : () async {
-                        await controller.saveCategory();
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: controller.isSaving.value
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                  AppConstants.saveCategory,
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-              ),
+            return AppButton(
+              text: AppConstants.saveCategory,
+              onPressed: controller.saveCategory,
+              isLoading: controller.isSaving.value,
             );
           }),
         ],

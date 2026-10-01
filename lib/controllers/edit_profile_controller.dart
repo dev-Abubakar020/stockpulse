@@ -152,6 +152,7 @@ class EditProfileController extends GetxController {
   }
 
   Future<void> updateProfile() async {
+    if (isSaving.value) return;
     final name = nameController.text.trim();
     final phone = phoneController.text.trim();
 

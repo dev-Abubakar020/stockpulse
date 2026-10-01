@@ -146,6 +146,7 @@ class ShopCreateController extends GetxController {
   }
 
   Future<void> saveShop() async {
+    if (isSaving.value) return;
     final ownerName = ownerController.text.trim();
     final shopName = shopController.text.trim();
     final phone = phoneController.text.trim();
@@ -228,6 +229,7 @@ class ShopCreateController extends GetxController {
   }
 
   Future<void> updateShop() async {
+    if (isUpdating.value) return;
     final ownerName = ownerController.text.trim();
     final shopName = shopController.text.trim();
     final address = addressController.text.trim();

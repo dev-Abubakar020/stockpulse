@@ -60,7 +60,7 @@ class ProductItemModel {
 
       color: json['color'],
       size: json['size'],
-      barcode: json['barcode'],
+      barcode: json['barcode'] as String?,
       unit: json['unit'] ?? 'pcs',
 
       purchasePrice:
@@ -99,7 +99,9 @@ class ProductItemModel {
       'category_id': categoryId,
       'color': color,
       'size': size,
-      'barcode': barcode,
+      'barcode': barcode?.trim().isEmpty == true
+          ? null
+          : barcode?.trim(),
       'unit': unit,
       'purchase_price': purchasePrice,
       'sale_price': salePrice,

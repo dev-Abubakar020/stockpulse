@@ -74,6 +74,8 @@ class AppConstants {
   static const String delProduct = 'Delete Product';
   static const String businessInfo = 'Business Info';
   static const String invHealth = 'Inventory Health';
+  static const String barCode = 'BarCode';
+  static const String barCodeSubCheck = 'Save BarCode';
   static const String healthyStock = 'Healthy Stock';
   static const String calPerPiece = 'Calculated per piece sold';
   static const String currAvailability = 'Current Available';
@@ -754,7 +756,7 @@ class AppConstants {
   static const String noCategoriesAvailable = 'No categories available';
   static const String skuBarcodeHeader = 'SKU / BARCODE';
   static const String eanUpcSubHeader = 'EAN-13 / UPC';
-  static const String enterCodeHint = 'Enter code';
+  static const String enterCodeHint = 'e.g. SHIRT001';
   static const String measurementUnitHeader = 'MEASUREMENT UNIT';
   static const String continueToPricingStock = 'Continue to Pricing & Stock';
   static const String pricingDetailsHeader = 'PRICING DETAILS';

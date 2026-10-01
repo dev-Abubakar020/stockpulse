@@ -205,6 +205,7 @@ class SignupController extends GetxController {
 
 
   Future<void> signInWithGoogle() async {
+    if (isGoogleLoading.value) return;
     if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
@@ -225,6 +226,7 @@ class SignupController extends GetxController {
   }
 
   Future<void> signup() async {
+    if (isLoading.value) return;
     final name = nameController.text.trim();
     final email = emailController.text.trim();
     final phone = phoneController.text.trim();

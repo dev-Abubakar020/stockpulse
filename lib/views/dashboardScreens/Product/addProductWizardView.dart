@@ -450,14 +450,24 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               ),
               const SizedBox(height: 8),
               _buildTextField(
-                controller.skuController,
+                controller.barcodeController,
                 AppConstants.enterCodeHint,
                 theme,
-                // suffixIcon: IconButton(
-                //   icon: Icon(Icons.qr_code_scanner, color: theme.primary),
-                //   onPressed: () {},
-                // ),
+                textCapitalization: TextCapitalization.characters,
+                prefixIcon: Icon(
+                  Icons.qr_code_2_rounded,
+                  color: theme.textSecondary,
+                ),
               ),
+              // _buildTextField(
+              //   controller.barcodeController,
+              //   AppConstants.enterCodeHint,
+              //   theme,
+              //   // suffixIcon: IconButton(
+              //   //   icon: Icon(Icons.qr_code_scanner, color: theme.primary),
+              //   //   onPressed: () {},
+              //   // ),
+              // ),
               const SizedBox(height: 20),
 
               // MEASUREMENT UNIT field
@@ -1105,7 +1115,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     const SizedBox(height: 16),
                     const Divider(),
                     const SizedBox(height: 8),
-                    _buildSummaryRow(AppConstants.barcodeHeader, controller.skuController.text, theme),
+                    _buildSummaryRow(AppConstants.barcodeHeader, controller.barcodeController.text, theme),
                     _buildSummaryRow(AppConstants.purchasePriceLabel, '${AppConstants.defaultCurrency}${controller.purchasePriceController.text}', theme),
                     _buildSummaryRow(AppConstants.salePriceLabel, '${AppConstants.defaultCurrency}${controller.salePriceController.text}', theme, isBoldValue: true),
                     _buildSummaryRow(AppConstants.currentStockHeader,
@@ -1200,33 +1210,66 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String hint,
-    AppThemeHelper theme, {
-    TextInputType keyboardType = TextInputType.text,
-    Widget? suffixIcon,
-    String? prefixText,
-  }) {
+      TextEditingController controller,
+      String hint,
+      AppThemeHelper theme, {
+        TextInputType keyboardType = TextInputType.text,
+        Widget? suffixIcon,
+        Widget? prefixIcon,
+        String? prefixText,
+        TextCapitalization textCapitalization = TextCapitalization.none,
+      }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: GoogleFonts.plusJakartaSans(fontSize: 14, color: theme.textPrimary, fontWeight: FontWeight.w500),
+      textCapitalization: textCapitalization,
+
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 14,
+        color: theme.textPrimary,
+        fontWeight: FontWeight.w500,
+      ),
+
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.plusJakartaSans(fontSize: 14, color: theme.textHint),
+        hintStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 14,
+          color: theme.textHint,
+        ),
+
+        prefixIcon: prefixIcon,
         prefixText: prefixText,
-        prefixStyle: GoogleFonts.plusJakartaSans(fontSize: 14, color: theme.textPrimary, fontWeight: FontWeight.w500),
+
+        prefixStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 14,
+          color: theme.textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+
         suffixIcon: suffixIcon,
+
         filled: true,
         fillColor: theme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: theme.border, width: 1),
+          borderSide: BorderSide(
+            color: theme.border,
+            width: 1,
+          ),
         ),
+
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: theme.primary, width: 1.5),
+          borderSide: BorderSide(
+            color: theme.primary,
+            width: 1.5,
+          ),
         ),
       ),
     );

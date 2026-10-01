@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,6 +15,9 @@ import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../controllers/allProductsController.dart';
 import '../../../models/productItemModel.dart';
+import 'package:barcode/barcode.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 class ProductDetailView extends GetView<ProductController> {
   const ProductDetailView({super.key});
@@ -361,6 +365,34 @@ class ProductDetailView extends GetView<ProductController> {
                 ],
               ),
             ),
+
+            const SizedBox(height: 16),
+
+            _buildSectionCard(
+              theme,
+              title: AppConstants.barCode,
+              icon: CupertinoIcons.barcode,
+              headerAction: product.barcode?.trim().isNotEmpty == true
+                  ? const CustomStatusChip(
+                textTitle: AppConstants.barCodeSubCheck,
+                type: StatusType.success,
+              )
+                  : null,
+              child: product.barcode?.trim().isNotEmpty == true
+                  ? _buildBarcode(
+                product.barcode,
+                theme,
+              )
+                  : Center(
+                    child: Text('No barcode assigned',
+                      style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    color: theme.textSecondary,
+                                    ),
+                                  ),
+                  ),
+            ),
+
             const SizedBox(height: 20),
 
             if (roleService.canManageProducts) ...[
@@ -523,6 +555,59 @@ class ProductDetailView extends GetView<ProductController> {
         ],
       ),
     );
+  }
+
+  Widget _buildBarcode(
+      String? barcodeValue,
+      AppThemeHelper theme,
+      ) {
+    if (barcodeValue == null || barcodeValue.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final value = barcodeValue.trim();
+
+    try {
+      final barcode = Barcode.code128();
+
+      final svg = barcode.toSvg(
+        value,
+        width: 280,
+        height: 90,
+        drawText: false,
+      );
+
+      return Column(
+        children: [
+          const SizedBox(height: 8),
+
+          Center(
+            child: SvgPicture.string(
+              svg,
+              width: 280,
+              height: 90,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: theme.textSecondary,
+              letterSpacing: 1.2,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+        ],
+      );
+    } catch (_) {
+      return const SizedBox.shrink();
+    }
   }
 
   void _confirmDelete(BuildContext context, ProductItemModel product) {

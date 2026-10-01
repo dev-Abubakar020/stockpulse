@@ -85,6 +85,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> signInWithGoogle() async {
+    if (isGoogleLoading.value) return;
     if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
@@ -105,6 +106,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
+    if (isLoading.value) return;
     final email = emailController.text.trim();
     final password = passwordController.text;
 
@@ -152,6 +154,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> sendOtp({required String dialCode}) async {
+    if (isPhoneLoading.value) return;
     final localPhone = phoneController.text.replaceAll(RegExp(r'\D'), '');
 
     final phoneError = CustomValidator.validatePhone(localPhone);
@@ -200,6 +203,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> verifyOtp() async {
+    if (isPhoneLoading.value) return;
     final otp = otpController.text.trim();
 
     final otpError = CustomValidator.validateOtp(otp);

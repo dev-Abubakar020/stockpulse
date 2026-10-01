@@ -26,7 +26,7 @@ class AddProductWizardController extends GetxController {
   final nameController = TextEditingController();
   final categories = <CategoryModel>[].obs;
   final Rxn<CategoryModel> selectedCategory = Rxn<CategoryModel>();
-  final skuController = TextEditingController();
+  final barcodeController = TextEditingController();
   final isCategoriesLoading = false.obs;
   final List<String> units = [
     'Piece (pcs)',
@@ -93,7 +93,7 @@ class AddProductWizardController extends GetxController {
       _prefillFields();
     } else {
       nameController.text = '';
-      skuController.text = '';
+      barcodeController.text = '';
     }
 
     fetchCategories();
@@ -102,11 +102,17 @@ class AddProductWizardController extends GetxController {
     salePriceController.addListener(calculateMargin);
   }
 
+  String? get barcodeValue {
+    final value = barcodeController.text.trim().toUpperCase();
+
+    return value.isEmpty ? null : value;
+  }
+
   void _prefillFields() {
     final p = editingProduct.value!;
 
     nameController.text = p.article;
-    skuController.text = p.barcode ?? '';
+    barcodeController.text = p.barcode ?? '';
     selectedUnit.value = p.unit;
 
     purchasePriceController.text =
@@ -185,6 +191,7 @@ class AddProductWizardController extends GetxController {
   }
 
   Future<void> saveProduct() async {
+    if (isUploading.value) return;
     if (!await NetworkManager.instance.checkInternet()) return;
 
     final roleService = Get.find<RoleService>();
@@ -250,11 +257,7 @@ class AddProductWizardController extends GetxController {
 
         minStockThreshold:
         double.tryParse(lowStockController.text.trim()) ?? 0.0,
-
-        barcode: skuController.text.trim().isEmpty
-            ? null
-            : skuController.text.trim(),
-
+        barcode: barcodeValue,
         isActive: activeForSale.value,
         imageUrl: imageUrl,
       );
@@ -366,7 +369,7 @@ class AddProductWizardController extends GetxController {
   void resetWizard() {
     currentStep.value = 1;
     nameController.text = '';
-    skuController.text = '5449000000996';
+    barcodeController.text = '';
     purchasePriceController.text = '0';
     salePriceController.text = '0';
     selectedCategory.value = categories.isNotEmpty ? categories.first : null;
@@ -390,7 +393,7 @@ class AddProductWizardController extends GetxController {
     lowStockController.dispose();
 
     nameController.dispose();
-    skuController.dispose();
+    barcodeController.dispose();
 
     super.onClose();
   }

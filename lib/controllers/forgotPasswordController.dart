@@ -35,6 +35,7 @@ class ForgotPasswordController extends GetxController {
   }
 
   Future<void> sendRecoveryCode() async {
+    if (isLoading.value) return;
     final input = emailOrPhoneController.text.trim();
 
     if (selectedRecoveryMethod.value == 0) {
@@ -111,6 +112,7 @@ class ForgotPasswordController extends GetxController {
   }
 
   Future<void> verifyOtp() async {
+    if (isLoading.value) return;
     final otp = otpController.text.trim();
     final otpError = CustomValidator.validateOtp(otp);
     if (otpError != null) {
@@ -151,6 +153,7 @@ class ForgotPasswordController extends GetxController {
   }
 
   Future<void> updatePassword() async {
+    if (isLoading.value) return;
     final pass = newPasswordController.text;
     final confirmPass = confirmPasswordController.text;
 

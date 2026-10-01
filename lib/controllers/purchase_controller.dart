@@ -296,6 +296,7 @@ class PurchaseController extends GetxController {
   // =========================
 
   Future<String?> createPurchase() async {
+    if (isLoading.value) return null;
     if (quantities.isEmpty) {
       CustomSnackBar.warningSnackBar(
         title: AppConstants.warningTitle,

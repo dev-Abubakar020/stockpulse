@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
+import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/controllers/staff_controller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
@@ -135,54 +136,20 @@ class AddStaff extends StatelessWidget {
 
           // Send Invitation
           Obx(
-                () => SafeArea(
-                  child: SizedBox(
-                                width: double.infinity,
-                                height: 52,
-                                child: ElevatedButton.icon(
-                  onPressed: controller.isSending.value
-                      ? null
-                      : () async {
-                    await controller.sendInvitation();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor:
-                    Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: controller.isSending.value
-                      ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                      : const Icon(
-                    Icons.send_rounded,
-                    size: 20,
-                  ),
-                  label: Text(
-                    controller.isSending.value
-                        ? AppConstants.btnSending
-                        : AppConstants.btnSendInvitation,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                                ),
-                              ),
+            () => SafeArea(
+              child: AppButton(
+                text: controller.isSending.value
+                    ? AppConstants.btnSending
+                    : AppConstants.btnSendInvitation,
+                onPressed: controller.sendInvitation,
+                isLoading: controller.isSending.value,
+                prefixIcon: const Icon(
+                  Icons.send_rounded,
+                  size: 20,
+                  color: Colors.white,
                 ),
+              ),
+            ),
           ),
         ],
       ),

@@ -95,6 +95,7 @@ class CategoryController extends GetxController {
 
   // Add a new category
   Future<bool> saveCategory() async {
+    if (isSaving.value) return false;
     final name = nameController.text.trim();
 
     if (name.isEmpty) {

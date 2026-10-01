@@ -121,9 +121,11 @@ class ProductController extends GetxController {
   // =========================
 
   Future<void> deleteProduct(ProductItemModel product) async {
+    if (isSaving.value) return;
     if (!await NetworkManager.instance.checkInternet()) return;
 
     try {
+      isSaving.value = true;
       await repository.deleteProduct(product.id);
 
       products.removeWhere((item) => item.id == product.id);
@@ -143,6 +145,9 @@ class ProductController extends GetxController {
         title: AppConstants.errorTitle,
         message: exception.message,
       );
+    } finally {
+      isSaving.value = false;
     }
   }
-}
+    }
+
