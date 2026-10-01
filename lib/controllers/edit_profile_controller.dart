@@ -29,10 +29,43 @@ class EditProfileController extends GetxController {
   final isSaving = false.obs;
   final isLoading = false.obs;
 
+  // Baseline variables to track initial form state
+  String _initialName = '';
+  String _initialPhone = '';
+  String _initialImageUrl = '';
+
+  // Reactive state to enable/disable submit button
+  final isFormChanged = false.obs;
+
   @override
   void onInit() {
     super.onInit();
+    // Listen to text controller changes
+    nameController.addListener(_checkFormChanged);
+    phoneController.addListener(_checkFormChanged);
+
+    // Listen to reactive image changes
+    ever(selectedImage, (_) => _checkFormChanged());
+    ever(profileImageUrl, (_) => _checkFormChanged());
+
     loadUserProfile();
+  }
+
+  @override
+  void onClose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    super.onClose();
+  }
+
+  /// Compares current form values against baseline values
+  void _checkFormChanged() {
+    final hasNameChanged = nameController.text.trim() != _initialName;
+    final hasPhoneChanged = phoneController.text.trim() != _initialPhone;
+    final hasImageChanged = selectedImage.value != null || profileImageUrl.value != _initialImageUrl;
+
+    isFormChanged.value = hasNameChanged || hasPhoneChanged || hasImageChanged;
   }
 
   Future<void> loadUserProfile() async {
@@ -40,24 +73,24 @@ class EditProfileController extends GetxController {
       isLoading.value = true;
       final user =
           authRepository.currentUser ??
-          Supabase.instance.client.auth.currentUser;
+              Supabase.instance.client.auth.currentUser;
       emailController.text = user?.email ?? '';
 
       final metadata = user?.userMetadata ?? <String, dynamic>{};
       var name =
-          (metadata['name'] ??
-                  metadata['full_name'] ??
-                  metadata['display_name'] ??
-                  user?.email?.split('@').first ??
-                  '')
-              .toString();
+      (metadata['name'] ??
+          metadata['full_name'] ??
+          metadata['display_name'] ??
+          user?.email?.split('@').first ??
+          '')
+          .toString();
       var phone = (metadata['phone'] ?? '').toString();
       var img =
-          (metadata['profile_img'] ??
-                  metadata['avatar_url'] ??
-                  metadata['picture'] ??
-                  '')
-              .toString();
+      (metadata['profile_img'] ??
+          metadata['avatar_url'] ??
+          metadata['picture'] ??
+          '')
+          .toString();
 
       if (user != null) {
         final profile = await authRepository.getProfile(user.id);
@@ -86,6 +119,14 @@ class EditProfileController extends GetxController {
       nameController.text = name;
       phoneController.text = phone;
       profileImageUrl.value = img;
+
+      // Set baseline values after initial load
+      _initialName = name.trim();
+      _initialPhone = phone.trim();
+      _initialImageUrl = img.trim();
+
+      // Reset change flag
+      isFormChanged.value = false;
     } finally {
       isLoading.value = false;
     }
@@ -107,6 +148,7 @@ class EditProfileController extends GetxController {
   void removeSelectedImage() {
     selectedImage.value = null;
     imageBytes.value = null;
+    profileImageUrl.value = '';
   }
 
   Future<void> updateProfile() async {
@@ -144,6 +186,14 @@ class EditProfileController extends GetxController {
             ? profileImageUrl.value
             : null,
       );
+
+      // Update baseline values upon successful save
+      _initialName = name;
+      _initialPhone = phone;
+      _initialImageUrl = profileImageUrl.value;
+      selectedImage.value = null;
+      imageBytes.value = null;
+      isFormChanged.value = false;
 
       // Refresh Shop / More screen state
       if (Get.isRegistered<ShopCreateController>()) {
