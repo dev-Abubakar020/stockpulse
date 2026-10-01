@@ -14,6 +14,7 @@ import '../../../common/widgets/custom_MenuTile.dart';
 import '../../../common/widgets/custom_shimmer.dart';
 import '../../../controllers/loginController.dart';
 import '../../../controllers/shopCreateController.dart';
+import '../../../repositories/shop_repository.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -22,10 +23,14 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!Get.isRegistered<ShopCreateController>()) {
-      return const SizedBox.shrink();
-    }
-    final ShopCreateController controller = Get.find<ShopCreateController>();
+    final ShopCreateController controller =
+    Get.isRegistered<ShopCreateController>()
+        ? Get.find<ShopCreateController>()
+        : Get.put(
+      ShopCreateController(
+        Get.find<ShopRepository>(),
+      ),
+    );
     final roleService = Get.isRegistered<RoleService>()
         ? Get.find<RoleService>()
         : Get.put(RoleService(), permanent: true);
