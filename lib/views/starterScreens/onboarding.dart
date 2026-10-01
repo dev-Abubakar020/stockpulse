@@ -114,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ? Padding(
                           padding: const EdgeInsets.all(30),
                           child: AppButton(
-                            text: 'START',
+                            text: AppConstants.start,
                             onPressed: () {
                               Get.find<LocalStorageService>().setNotFirstTime();
                               Get.offAllNamed(Routes.login);
@@ -139,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  "SKIP",
+                                  AppConstants.skip,
                                   style: GoogleFonts.manrope(
                                     color: Theme.of(context)
                                         .colorScheme
@@ -148,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                               ),
                               AppButton(
-                                text: 'NEXT',
+                                text: AppConstants.next,
                                 fullWidth: false,
                                 onPressed: () {
                                   _controller.nextPage(

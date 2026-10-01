@@ -51,7 +51,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
-        title: const Text('Purchase Details'),
+        title: Text(AppConstants.purchaseDetailsTitle),
         showBackArrow: true,
       ),
       body: SingleChildScrollView(
@@ -90,11 +90,11 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                   const SizedBox(height: 12),
                   Divider(color: theme.border),
                   const SizedBox(height: 12),
-                  _buildInfoRow('Date & Time', dateStr, theme),
+                  _buildInfoRow(AppConstants.dateTime, dateStr, theme),
                   const SizedBox(height: 8),
                   Obx(
                     () => _buildInfoRow(
-                      'Created By',
+                      AppConstants.createdByLabel,
                       controller.creatorName.value,
                       theme,
                     ),
@@ -102,7 +102,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                   if (purchase.notes != null &&
                       purchase.notes!.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    _buildInfoRow('Notes', purchase.notes!, theme),
+                    _buildInfoRow(AppConstants.notesLabel, purchase.notes!, theme),
                   ],
                 ],
               ),
@@ -111,7 +111,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
 
             // --- Items Section ---
             Text(
-              'Purchased Items',
+              AppConstants.purchasedItemsHeader,
               style: GoogleFonts.sora(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                     border: Border.all(color: theme.border),
                   ),
                   child: Text(
-                    'No items found for this purchase.',
+                    AppConstants.noItemsPurchase,
                     style: GoogleFonts.plusJakartaSans(
                       color: theme.textSecondary,
                     ),
@@ -225,14 +225,14 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
               child: Column(
                 children: [
                   _buildSummaryRow(
-                    'Subtotal',
-                    'Rs. ${purchase.subtotal.toInt()}',
+                    AppConstants.subtotal,
+                    '${AppConstants.defaultCurrency}${purchase.subtotal.toInt()}',
                     theme,
                   ),
                   const SizedBox(height: 8),
                   _buildSummaryRow(
-                    'Discount',
-                    '- Rs. ${purchase.discount.toInt()}',
+                    AppConstants.discountLabel,
+                    '- ${AppConstants.defaultCurrency}${purchase.discount.toInt()}',
                     theme,
                     isDiscount: true,
                   ),
@@ -244,7 +244,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total Amount',
+                        AppConstants.totalAmountLabel,
                         style: GoogleFonts.sora(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -252,7 +252,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                         ),
                       ),
                       Text(
-                        'Rs. ${purchase.totalAmount.toInt()}',
+                        '${AppConstants.defaultCurrency}${purchase.totalAmount.toInt()}',
                         style: GoogleFonts.sora(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

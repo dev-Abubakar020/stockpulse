@@ -106,16 +106,16 @@ class SignupController extends GetxController {
 
       CustomSnackBar.errorSnackBar(
         title: isStaffInviteExpired.value
-            ? 'Invitation Expired'
-            : 'Invalid Invitation',
+            ? AppConstants.inviteExpired
+            : AppConstants.invalidInvitation,
         message: e.message,
       );
     } catch (e) {
       debugPrint('Error loading staff invitation: $e');
 
       CustomSnackBar.errorSnackBar(
-        title: 'Invalid Invitation',
-        message: 'Unable to load staff invitation.',
+        title: AppConstants.invalidInvitation,
+        message: AppConstants.unableToLoad,
       );
     } finally {
       isInviteLoading.value = false;
@@ -166,8 +166,8 @@ class SignupController extends GetxController {
     if (roleService.hasMembership.value) {
       if (roleService.isStaff && !roleService.isActive.value) {
         CustomSnackBar.errorSnackBar(
-          title: 'Account Inactive',
-          message: 'Your staff account is inactive. Please contact the shop owner.',
+          title: AppConstants.accInActive,
+          message: AppConstants.accInValidSubTitle,
         );
         await Supabase.instance.client.auth.signOut();
         Get.offAllNamed(Routes.login);

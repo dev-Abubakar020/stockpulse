@@ -29,14 +29,6 @@ class EditProfileView extends GetView<EditProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  AppConstants.editProfileSubtitle,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: theme.textSecondary,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
@@ -100,7 +92,7 @@ class EditProfileView extends GetView<EditProfileController> {
                       CustomTextField(
                         controller: controller.phoneController,
                         labelText: AppConstants.loginPhone,
-                        hintText: 'Enter phone number',
+                        hintText: AppConstants.enterPhoneNumber,
                         prefixIcon: Icon(
                           Icons.phone_outlined,
                           color: theme.primary,
@@ -155,18 +147,25 @@ class EditProfileView extends GetView<EditProfileController> {
                       const SizedBox(height: 28),
 
                       // Update Button
-                      Obx(
-                        () => AppButton(
+                      Obx(() {
+                        final canSubmit =
+                            controller.isFormChanged.value &&
+                                !controller.isSaving.value;
+
+                        return AppButton(
                           text: AppConstants.updateProfileBtn,
-                          onPressed: controller.updateProfile,
+                          backgroundColor:
+                          canSubmit ? null : Colors.grey.shade400,
+                          onPressed:
+                          canSubmit ? controller.updateProfile : null,
                           isLoading: controller.isSaving.value,
                           suffixIcon: const Icon(
                             Icons.check_rounded,
                             color: Colors.white,
                             size: 18,
                           ),
-                        ),
-                      ),
+                        );
+                      })
                     ],
                   ),
                 ),

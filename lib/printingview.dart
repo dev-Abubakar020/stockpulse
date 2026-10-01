@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_thermal_printer/utils/printer.dart';
 import 'package:get/get.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 import '../../services/thermal_printer_service.dart';
 import 'common/widgets/StandardScreen.dart';
 import 'common/widgets/appbar.dart';
@@ -18,14 +19,14 @@ class PrinterSettingsView extends StatelessWidget {
 
   final ThermalPrinterService printerService =
   Get.find<ThermalPrinterService>();
+
   @override
   Widget build(BuildContext context) {
     return CustomScreen(
       appBar: CustomAppBar(
         showBackArrow: true,
-        title: const Text('Printer Settings'),
+        title: const Text(AppConstants.printerSettingsTitle),
       ),
-
       body: Obx(() {
         return Column(
           children: [
@@ -38,36 +39,29 @@ class PrinterSettingsView extends StatelessWidget {
                 icon: const Icon(Icons.search),
                 label: Text(
                   printerService.isScanning.value
-                      ? 'Scanning...'
-                      : 'Scan Printers',
+                      ? AppConstants.btnScanning
+                      : AppConstants.btnScanPrinters,
                 ),
               ),
             ),
-
             Expanded(
               child: printerService.printers.isEmpty
                   ? const Center(
                 child: Text(
-                  'No printers found',
+                  AppConstants.txtNoPrintersFound,
                 ),
               )
                   : ListView.separated(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                 ),
-                itemCount:
-                printerService.printers.length,
-                separatorBuilder: (_, __) =>
-                const Divider(),
+                itemCount: printerService.printers.length,
+                separatorBuilder: (_, __) => const Divider(),
                 itemBuilder: (_, index) {
-                  final printer =
-                  printerService.printers[index];
+                  final printer = printerService.printers[index];
 
                   final selected =
-                      printerService
-                          .selectedPrinter
-                          .value ==
-                          printer;
+                      printerService.selectedPrinter.value == printer;
 
                   return ListTile(
                     leading: const CircleAvatar(
@@ -75,17 +69,12 @@ class PrinterSettingsView extends StatelessWidget {
                         Icons.print_outlined,
                       ),
                     ),
-
                     title: Text(
-                      printer.name ??
-                          'Thermal Printer',
+                      printer.name ?? AppConstants.defaultPrinterName,
                     ),
-
                     subtitle: Text(
-                      printer.address ??
-                          'Unknown device',
+                      printer.address ?? AppConstants.defaultDeviceAddress,
                     ),
-
                     trailing: selected
                         ? const Icon(
                       Icons.check_circle,
@@ -94,18 +83,17 @@ class PrinterSettingsView extends StatelessWidget {
                         : const Icon(
                       Icons.chevron_right,
                     ),
-
                     onTap: () async {
                       final connected =
-                      await printerService
-                          .connectPrinter(
+                      await printerService.connectPrinter(
                         printer,
                       );
 
                       if (connected) {
                         CustomSnackBar.successSnackBar(
-                          title: 'Connected',
-                          message: printer.name ?? 'Printer connected',
+                          title: AppConstants.snackbarTitleConnected,
+                          message: printer.name ??
+                              AppConstants.msgPrinterConnected,
                         );
                       }
                     },

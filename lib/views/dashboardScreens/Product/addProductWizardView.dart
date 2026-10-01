@@ -11,6 +11,7 @@ import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import '../../../common/theme/theme_helper.dart';
 import '../../../controllers/addProductWizardController.dart';
 import '../../../models/category_model.dart';
+import '../../../utils/app_constants.dart';
 
 
 class AddProductWizardView extends GetView<AddProductWizardController> {
@@ -38,7 +39,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                 },
               )),
         title: Obx(() => Text(
-          controller.editingProduct.value != null ? 'Edit Product' : 'Add Product',
+          controller.editingProduct.value != null ? AppConstants.editProduct : AppConstants.addProductTitle,
           style: GoogleFonts.sora(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -103,11 +104,11 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
         children: [
           Row(
             children: [
-              _buildStepNode(1, 'Details', step >= 1, step == 1, theme),
+              _buildStepNode(1, AppConstants.stepDetails, step >= 1, step == 1, theme),
               _buildStepLine(step >= 2, theme),
-              _buildStepNode(2, 'Pricing & Stock', step >= 2, step == 2, theme),
+              _buildStepNode(2, AppConstants.stepPricingStock, step >= 2, step == 2, theme),
               _buildStepLine(step >= 3, theme),
-              _buildStepNode(3, 'Review', step == 3, step == 3, theme),
+              _buildStepNode(3, AppConstants.stepReview, step == 3, step == 3, theme),
             ],
           ),
         ],
@@ -213,7 +214,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                       Padding(
                         padding: const EdgeInsets.only(top:18),
                         child: Text(
-                          'Quick Inventory Wizard',
+                          AppConstants.quickInventoryWizard,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -309,7 +310,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  'Add Product Image',
+                                  AppConstants.addProductImage,
                                   style: GoogleFonts.sora(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -318,7 +319,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Supports PNG, JPG, or snap photo',
+                                  AppConstants.supportsImageFormats,
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     color: theme.textSecondary,
@@ -352,23 +353,23 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 24),
 
               // NAME field
-              _buildFieldLabel('NAME',isRequired: true, theme),
+              _buildFieldLabel(AppConstants.nameHeader, isRequired: true, theme),
               const SizedBox(height: 8),
-              _buildTextField(controller.nameController, 'Enter product name', theme),
+              _buildTextField(controller.nameController, AppConstants.enterProductNameHint, theme),
               const SizedBox(height: 20),
 
               // Category row selection label + New Category link
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildFieldLabel('CATEGORY',isRequired: true, theme),
+                  _buildFieldLabel(AppConstants.categoryHeader, isRequired: true, theme),
                   GestureDetector(
                     onTap: () async {
                       await Get.toNamed(Routes.addCategories);
                       controller.fetchCategories();
                     },
                     child: Text(
-                      '+ New Category',
+                      AppConstants.newCategoryBtn,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -400,7 +401,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       child: Text(
-                        'No categories available',
+                        AppConstants.noCategoriesAvailable,
                         style: GoogleFonts.plusJakartaSans(color: theme.textSecondary, fontSize: 14),
                       ),
                     );
@@ -440,9 +441,9 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildFieldLabel('SKU / BARCODE', theme),
+                  _buildFieldLabel(AppConstants.skuBarcodeHeader, theme),
                   Text(
-                    'EAN-13 / UPC',
+                    AppConstants.eanUpcSubHeader,
                     style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
                   ),
                 ],
@@ -450,7 +451,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 8),
               _buildTextField(
                 controller.skuController,
-                'Enter code',
+                AppConstants.enterCodeHint,
                 theme,
                 // suffixIcon: IconButton(
                 //   icon: Icon(Icons.qr_code_scanner, color: theme.primary),
@@ -460,7 +461,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 20),
 
               // MEASUREMENT UNIT field
-              _buildFieldLabel('MEASUREMENT UNIT',isRequired: true, theme),
+              _buildFieldLabel(AppConstants.measurementUnitHeader, isRequired: true, theme),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -508,16 +509,14 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Obx(() => Text(
-                  controller.editingProduct.value != null 
-                      ? 'Continue to Pricing & Stock' 
-                      : 'Continue to Pricing & Stock', // Actually same for Step 1
+                Text(
+                  AppConstants.continueToPricingStock,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
-                )),
+                ),
                 const SizedBox(width: 8),
                 const Icon(Icons.arrow_forward, color: Colors.white, size: 18),
               ],
@@ -542,7 +541,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'PRICING DETAILS',
+                    AppConstants.pricingDetailsHeader,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -557,7 +556,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      'Step 2 of 3',
+                      AppConstants.step2Of3,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -576,18 +575,18 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildFieldLabel('Purchase Price',isRequired: true, theme),
+                        _buildFieldLabel(AppConstants.purchasePriceLabel, isRequired: true, theme),
                         const SizedBox(height: 8),
                         _buildTextField(
                           controller.purchasePriceController,
-                          'Rs. 0',
+                          AppConstants.zeroPrice,
                           theme,
                           keyboardType: TextInputType.number,
-                          prefixText: 'Rs. ',
+                          prefixText: AppConstants.defaultCurrency,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Cost per unit',
+                          AppConstants.costPerUnit,
                           style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
                         ),
                       ],
@@ -598,18 +597,18 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildFieldLabel('Sale Price',isRequired: true, theme),
+                        _buildFieldLabel(AppConstants.salePriceLabel, isRequired: true, theme),
                         const SizedBox(height: 8),
                         _buildTextField(
                           controller.salePriceController,
-                          'Rs. 0',
+                          AppConstants.zeroPrice,
                           theme,
                           keyboardType: TextInputType.number,
-                          prefixText: 'Rs. ',
+                          prefixText: AppConstants.defaultCurrency,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Retail customer price',
+                          AppConstants.retailCustomerPrice,
                           style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
                         ),
                       ],
@@ -643,7 +642,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Estimated Profit',
+                            AppConstants.estimatedProfit,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               color: const Color(0xFF166534),
@@ -652,7 +651,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Rs. ${controller.estimatedProfit.value.toStringAsFixed(2)} / unit',
+                            '${AppConstants.defaultCurrency}${controller.estimatedProfit.value.toStringAsFixed(2)}${AppConstants.perUnitSuffix}',
                             style: GoogleFonts.sora(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
@@ -670,7 +669,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                         border: Border.all(color: const Color(0xFF86EFAC)),
                       ),
                       child: Text(
-                        '${controller.marginPercentage.value.toStringAsFixed(1)}% Margin',
+                        '${controller.marginPercentage.value.toStringAsFixed(1)}${AppConstants.marginSuffix}',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -684,7 +683,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               const SizedBox(height: 24),
 
               Text(
-                'STOCK & INVENTORY',
+                AppConstants.stockInventoryHeader,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -696,7 +695,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
 
               // Initial Stock Quantity counter widget box stepper row
               _buildFieldLabel(
-                'Initial Stock Quantity',
+                AppConstants.initialStockQty,
                 isRequired: true,
                 theme,
               ),
@@ -771,7 +770,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
 
               // Low Stock Alert Limit stepper row element
               _buildFieldLabel(
-                'Low Stock Alert Limit',
+                AppConstants.lowStockAlertLimit,
                 isRequired: true,
                 theme,
               ),
@@ -846,8 +845,8 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
 
               // Track Stock Switch Toggle Row
               _buildSwitchRow(
-                'Track Stock Quantity',
-                'Deduct automatically with each sale',
+                AppConstants.trackStockQty,
+                AppConstants.deductAutoSale,
                 controller.trackStock,
                 theme,
               ),
@@ -855,8 +854,8 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
 
               // Active & Available Switch Toggle Row
               _buildSwitchRow(
-                'Active & Available for Sale',
-                'Visible in catalog and POS checkout',
+                AppConstants.activeAvailableSale,
+                AppConstants.visibleCatalogPos,
                 controller.activeForSale,
                 theme,
               ),
@@ -880,7 +879,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(
-                    'Back',
+                    AppConstants.backBtn,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -902,8 +901,8 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                   ),
                   child: Obx(() => Text(
                     controller.editingProduct.value != null 
-                        ? 'Update & Review →' 
-                        : 'Save & Review →',
+                        ? AppConstants.updateAndReview 
+                        : AppConstants.saveAndReview,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -946,8 +945,8 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
               Center(
                 child: Obx(() => Text(
                   controller.editingProduct.value != null 
-                      ? 'Product Updated Successfully' 
-                      : 'Product Added Successfully',
+                      ? AppConstants.productUpdatedSuccess 
+                      : AppConstants.productAddedSuccess,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.sora(
                     fontSize: 20,
@@ -972,8 +971,8 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                         ),
                         TextSpan(
                           text: controller.editingProduct.value != null 
-                              ? ' has been updated in your store inventory.' 
-                              : ' has been listed and is now live in store inventory.',
+                              ? AppConstants.hasBeenUpdatedInventory 
+                              : AppConstants.hasBeenListedLive,
                         ),
                       ],
                     ),
@@ -1032,7 +1031,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      'Live',
+                                      AppConstants.liveStatus,
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 9,
                                         fontWeight: FontWeight.bold,
@@ -1106,10 +1105,10 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                     const SizedBox(height: 16),
                     const Divider(),
                     const SizedBox(height: 8),
-                    _buildSummaryRow('Barcode', controller.skuController.text, theme),
-                    _buildSummaryRow('Purchase Price', 'Rs. ${controller.purchasePriceController.text}', theme),
-                    _buildSummaryRow('Sale Price', 'Rs. ${controller.salePriceController.text}', theme, isBoldValue: true),
-                    _buildSummaryRow('Current Stock',
+                    _buildSummaryRow(AppConstants.barcodeHeader, controller.skuController.text, theme),
+                    _buildSummaryRow(AppConstants.purchasePriceLabel, '${AppConstants.defaultCurrency}${controller.purchasePriceController.text}', theme),
+                    _buildSummaryRow(AppConstants.salePriceLabel, '${AppConstants.defaultCurrency}${controller.salePriceController.text}', theme, isBoldValue: true),
+                    _buildSummaryRow(AppConstants.currentStockHeader,
                         '${controller.formatQuantity(controller.initialStock)} '
                             '${controller.unitSymbol}',
                         theme),
@@ -1136,7 +1135,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                   elevation: 0,
                 ),
                 child: Text(
-                  'View in Inventory →',
+                  AppConstants.viewInInventory,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -1151,7 +1150,7 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                   minimumSize: const Size(double.infinity, 48),
                 ),
                 child: Text(
-                  '+ Add Another Product',
+                  AppConstants.addAnotherProduct,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

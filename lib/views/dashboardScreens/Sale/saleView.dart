@@ -118,7 +118,7 @@ class SaleView extends StatelessWidget {
                     return CustomTransactionTile(
                       reference: sale.saleNo,
                       dateTime: dateStr,
-                      amount: 'Rs. ${sale.totalAmount.toInt()}',
+                      amount: '${AppConstants.defaultCurrency}${sale.totalAmount.toInt()}',
                       status: sale.status,
                       statusType: statusType,
                       onTap: () {

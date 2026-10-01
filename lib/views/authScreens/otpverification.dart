@@ -22,7 +22,7 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   dynamic get controller {
-    if (Get.arguments is Map && Get.arguments['type'] == 'forgot_password') {
+    if (Get.arguments is Map && Get.arguments['type'] == AppConstants.forgotType) {
       return Get.find<ForgotPasswordController>();
     }
     return Get.find<LoginController>();

@@ -73,7 +73,7 @@ class _PremiumSpeedDialState extends State<PremiumSpeedDial>
           _SpeedDialAction(
             animation: _controller,
             interval: const Interval(0.15, 1),
-            title: AppConstants.addExpenses,
+            title: AppConstants.addExpense,
             icon: Icons.account_balance_wallet_outlined,
             color: const Color(0xFFEF6C00),
             onTap: () => _navigate(Routes.addExpense),

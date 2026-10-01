@@ -24,7 +24,7 @@ class AddExpenses extends GetView<ExpenseController> {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
-        title: const Text(AppConstants.addExpenses),
+        title: const Text(AppConstants.addExpense),
         showBackArrow: true,
         actions: [
           CustomTextButton(

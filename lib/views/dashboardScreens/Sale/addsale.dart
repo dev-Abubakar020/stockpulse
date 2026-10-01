@@ -123,12 +123,12 @@ class _AddSaleState extends State<AddSale> {
     // Step 1
     if (_currentStep == 1) {
       return CustomAppBar(
-        title: const Text('Cart Details'),
+        title: Text(AppConstants.cartDetailsTitle),
         showBackArrow: true,
         leadingOnPressed: _handleBack,
         actions: [
           CustomTextButton(
-            text: 'Reset',
+            text: AppConstants.reset,
             onPressed: _resetSale,
           ),
         ],
@@ -142,7 +142,7 @@ class _AddSaleState extends State<AddSale> {
       leadingOnPressed: _handleBack,
       actions: [
         CustomTextButton(
-          text: 'Reset',
+          text: AppConstants.reset,
           onPressed: _resetSale,
         ),
       ],
@@ -201,7 +201,7 @@ class _AddSaleState extends State<AddSale> {
         return _SectionCard(
           icon: Icons.shopping_cart_rounded,
           iconColor: primaryGreen,
-          title: 'Sale Items',
+          title: AppConstants.saleItemsHeader,
           trailing: GestureDetector(
             onTap: () => _showProductPicker(context),
             child: Container(
@@ -229,8 +229,8 @@ class _AddSaleState extends State<AddSale> {
           ),
           child: selectedProducts.isEmpty
               ? const _EmptyItems(
-                  label: 'No items added yet',
-                  hint: 'Tap "+ Add" to add products to sale',
+                  label: AppConstants.noItemsAddedYet,
+                  hint: AppConstants.tapAddProductsSale,
                 )
               : Column(
                   children: List.generate(selectedProducts.length, (index) {
@@ -288,13 +288,13 @@ class _AddSaleState extends State<AddSale> {
             _SectionCard(
               icon: Icons.inventory_2_rounded,
               iconColor: primaryGreen,
-              title: 'Cart Items',
+              title: AppConstants.cartItemsHeader,
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (selectedProducts.isNotEmpty)
                     CustomTextButton(
-                      text: 'Clear',
+                      text: AppConstants.clearBtn,
                       onPressed: saleController.clearCart,
                     ),
                   const SizedBox(width: 6),
@@ -315,7 +315,7 @@ class _AddSaleState extends State<AddSale> {
                           const Icon(Icons.add, color: Colors.white, size: 16),
                           const SizedBox(width: 4),
                           Text(
-                            'Add',
+                            AppConstants.add,
                             style: GoogleFonts.sora(
                               color: Colors.white,
                               fontSize: 13,
@@ -330,8 +330,8 @@ class _AddSaleState extends State<AddSale> {
               ),
               child: selectedProducts.isEmpty
                   ? const _EmptyItems(
-                      label: 'No items in cart',
-                      hint: 'Tap "+ Add" to add products to sale',
+                      label: AppConstants.noItemsInCart,
+                      hint: AppConstants.tapAddProductsSale,
                     )
                   : Column(
                       children: List.generate(selectedProducts.length, (index) {
@@ -371,14 +371,14 @@ class _AddSaleState extends State<AddSale> {
             _SectionCard(
               icon: Icons.calculate_rounded,
               iconColor: const Color(0xFF059669),
-              title: 'Cost Summary',
+              title: AppConstants.costSummaryHeader,
               child: Column(
                 children: [
                   if (Get.find<RoleService>().canApplyDiscount) ...[
                     CustomTextField(
                       controller: saleController.discountController,
                       hintText: '0',
-                      labelText: 'Discount (Rs.)',
+                      labelText: AppConstants.disTitle,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
@@ -393,21 +393,21 @@ class _AddSaleState extends State<AddSale> {
                     const SizedBox(height: 18),
                   ],
                   _OrderSummaryRow(
-                    label: 'Subtotal',
-                    value: 'Rs. ${saleController.subtotal.toStringAsFixed(2)}',
+                    label: AppConstants.subtotal,
+                    value: '${AppConstants.defaultCurrency}${saleController.subtotal.toStringAsFixed(2)}',
                   ),
                   const SizedBox(height: 4),
                   _OrderSummaryRow(
-                    label: 'Discount',
+                    label: AppConstants.discountLabel,
                     value:
-                        '- Rs. ${saleController.discount.value.toStringAsFixed(2)}',
+                        '- ${AppConstants.defaultCurrency}${saleController.discount.value.toStringAsFixed(2)}',
                     valueColor: Colors.red,
                   ),
                   const Divider(height: 24),
                   _OrderSummaryRow(
-                    label: 'Total',
+                    label: AppConstants.total,
                     value:
-                        'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
+                        '${AppConstants.defaultCurrency}${saleController.totalAmount.toStringAsFixed(2)}',
                     isBold: true,
                     valueColor: primaryGreen,
                   ),
@@ -421,7 +421,7 @@ class _AddSaleState extends State<AddSale> {
             _SectionCard(
               icon: Icons.person_rounded,
               iconColor: primaryGreen,
-              title: 'Customer & Notes',
+              title: AppConstants.customerAndNotesHeader,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -473,7 +473,7 @@ class _AddSaleState extends State<AddSale> {
                   CustomTextField(
                     controller: saleController.noteController,
                     hintText: AppConstants.noteHint,
-                    labelText: 'Notes',
+                    labelText: AppConstants.notesLabel,
                     prefixIcon: const Icon(Icons.edit_note_rounded, size: 20),
                   ),
                 ],
@@ -934,7 +934,7 @@ class _BottomSaveBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Total',
+                  AppConstants.total,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     color: AppColors.textSecondary,
@@ -1137,7 +1137,7 @@ class _SaleItemTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sale Price (Rs.)',
+                      AppConstants.salePriceRs,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
                         color: AppColors.textSecondary,
@@ -1160,7 +1160,7 @@ class _SaleItemTile extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Rs. ${product.salePrice.toStringAsFixed(0)}',
+                        '${AppConstants.defaultCurrency}${product.salePrice.toStringAsFixed(0)}',
                         style: GoogleFonts.sora(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -1182,7 +1182,7 @@ class _SaleItemTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Line Total',
+                AppConstants.lineTotalHeader,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -1559,7 +1559,7 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Add Product to Sale',
+                      AppConstants.addProductToSale,
                       style: GoogleFonts.sora(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
@@ -1584,7 +1584,7 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search product or barcode...',
+                  hintText: AppConstants.searchProductOrBarcode,
                   prefixIcon: const Icon(Icons.search_rounded),
                   filled: true,
                   fillColor: Theme.of(context)

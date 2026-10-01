@@ -269,7 +269,7 @@ class _SignupCard extends StatelessWidget {
             () => CustomTextField(
               controller: controller.passwordController,
               labelText: AppConstants.loginPasswordLabel,
-              hintText: 'At least 8 characters',
+              hintText: AppConstants.passLength,
               obscureText: controller.obscurePassword.value,
               prefixIcon: Icon(
                 Icons.lock_outline_rounded,
@@ -368,7 +368,7 @@ class _SignupCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _SocialTile(
-                  tooltip: 'Google',
+                  tooltip: AppConstants.loginGoogle,
                   onTap: controller.signInWithGoogle,
                   child: Obx(
                     () => controller.isGoogleLoading.value
@@ -393,7 +393,7 @@ class _SignupCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _SocialTile(
-                    tooltip: 'Apple',
+                    tooltip: AppConstants.loginApple,
                     onTap: () {},
                     child: Image.asset(
                       AppConstants.appleLogo,

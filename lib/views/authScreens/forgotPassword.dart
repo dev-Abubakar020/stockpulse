@@ -119,11 +119,11 @@ class ForgotPasswordScreen extends GetView<ForgotPasswordController> {
                           labelText:
                           controller.selectedRecoveryMethod.value == 0
                               ? AppConstants.regEmailAddress
-                              : 'Registered Phone Number',
+                              : AppConstants.regPhone,
                           hintText:
                           controller.selectedRecoveryMethod.value == 0
                               ? AppConstants.emailHint
-                              : '+1 (555) 000-0000',
+                              : AppConstants.regPhoneHint,
                           prefixIcon: Icon(
                             controller.selectedRecoveryMethod.value == 0
                                 ? Icons.mail_outline_rounded

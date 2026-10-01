@@ -81,11 +81,11 @@ class _AddPurchaseState extends State<AddPurchase> {
       backgroundColor: theme.background,
 
       appBar: CustomAppBar(
-        title: const Text('New Purchase'),
+        title: Text(AppConstants.newPurchaseTitle),
         showBackArrow: true,
         actions: [
           CustomTextButton(
-            text: 'Reset',
+            text: AppConstants.reset,
             onPressed: purchaseController.clearCart,
           ),
         ],
@@ -113,8 +113,8 @@ class _AddPurchaseState extends State<AddPurchase> {
       bottomNavigationBar: Obx(
             () => _BottomSaveBar(
           label:
-          'Rs. ${purchaseController.totalAmount.toStringAsFixed(2)}',
-          buttonText: 'Save Purchase',
+          '${AppConstants.defaultCurrency}${purchaseController.totalAmount.toStringAsFixed(2)}',
+          buttonText: AppConstants.savePurchaseBtn,
           buttonColor: AppColors.primary,
           isLoading: purchaseController.isLoading.value,
           onSave: purchaseController.isLoading.value
@@ -136,7 +136,7 @@ class _AddPurchaseState extends State<AddPurchase> {
     return _SectionCard(
       icon: Icons.inventory_2_rounded,
       iconColor: AppColors.primary,
-      title: 'Purchase Items',
+      title: AppConstants.purchaseItemsHeader,
 
       trailing: GestureDetector(
         onTap: () => _showProductPicker(context),
@@ -159,7 +159,7 @@ class _AddPurchaseState extends State<AddPurchase> {
               ),
               const SizedBox(width: 4),
               Text(
-                'Add',
+                AppConstants.add,
                 style: GoogleFonts.sora(
                   color: Colors.white,
                   fontSize: 13,
@@ -173,9 +173,8 @@ class _AddPurchaseState extends State<AddPurchase> {
 
       child: selectedProducts.isEmpty
           ? const _EmptyItems(
-        label: 'No items added yet',
-        hint:
-        'Tap "+ Add" to add products to purchase',
+        label: AppConstants.noItemsAddedYet,
+        hint: AppConstants.tapAddProductsPurchase,
       )
           : Column(
         children: List.generate(
@@ -219,31 +218,31 @@ class _AddPurchaseState extends State<AddPurchase> {
     return _SectionCard(
       icon: Icons.calculate_rounded,
       iconColor: const Color(0xFF059669),
-      title: 'Cost Summary',
+      title: AppConstants.costSummaryHeader,
       child: Column(
         children: [
 
           _OrderSummaryRow(
-            label: 'Subtotal',
+            label: AppConstants.subtotal,
             value:
-            'Rs. ${purchaseController.subtotal.toStringAsFixed(2)}',
+            '${AppConstants.defaultCurrency}${purchaseController.subtotal.toStringAsFixed(2)}',
           ),
 
           const SizedBox(height: 4),
 
           _OrderSummaryRow(
-            label: 'Discount',
+            label: AppConstants.discountLabel,
             value:
-            '- Rs. ${purchaseController.discount.value.toStringAsFixed(2)}',
+            '- ${AppConstants.defaultCurrency}${purchaseController.discount.value.toStringAsFixed(2)}',
             valueColor: Colors.red,
           ),
 
           const Divider(height: 24),
 
           _OrderSummaryRow(
-            label: 'Total',
+            label: AppConstants.total,
             value:
-            'Rs. ${purchaseController.totalAmount.toStringAsFixed(2)}',
+            '${AppConstants.defaultCurrency}${purchaseController.totalAmount.toStringAsFixed(2)}',
             isBold: true,
             valueColor: const Color(0xFF2563EB),
           ),
@@ -459,7 +458,7 @@ class _PurchaseItemTile extends StatelessWidget {
                   CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Purchase Price (Rs.)',
+                      AppConstants.purchasePriceRs,
                       style:
                       GoogleFonts.plusJakartaSans(
                         fontSize: 11,
@@ -486,7 +485,7 @@ class _PurchaseItemTile extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Rs. ${product.purchasePrice.toStringAsFixed(0)}',
+                        '${AppConstants.defaultCurrency}${product.purchasePrice.toStringAsFixed(0)}',
                         style: GoogleFonts.sora(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -512,7 +511,7 @@ class _PurchaseItemTile extends StatelessWidget {
             MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Line Total',
+                AppConstants.lineTotalHeader,
                 style:
                 GoogleFonts.plusJakartaSans(
                   fontSize: 12,
@@ -915,7 +914,7 @@ class _PurchaseProductPickerSheetState
                 children: [
                   Expanded(
                     child: Text(
-                      'Add Product to Purchase',
+                      AppConstants.addProductToPurchase,
                       style:
                       GoogleFonts.sora(
                         fontSize: 17,
@@ -961,7 +960,7 @@ class _PurchaseProductPickerSheetState
                 decoration:
                 InputDecoration(
                   hintText:
-                  'Search product or barcode...',
+                  AppConstants.searchProductOrBarcode,
 
                   prefixIcon:
                   const Icon(
@@ -1015,8 +1014,8 @@ class _PurchaseProductPickerSheetState
 
                     Text(
                       _query.isEmpty
-                          ? 'No products available'
-                          : 'No products found',
+                          ? AppConstants.noProductsAvailable
+                          : AppConstants.noProductsFound,
                       style: GoogleFonts
                           .plusJakartaSans(
                         color: AppColors
@@ -1522,7 +1521,7 @@ class _BottomSaveBar
               MainAxisSize.min,
               children: [
                 Text(
-                  'Total',
+                  AppConstants.total,
                   style: GoogleFonts
                       .plusJakartaSans(
                     fontSize: 11,

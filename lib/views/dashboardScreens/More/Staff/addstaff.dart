@@ -39,7 +39,7 @@ class AddStaff extends StatelessWidget {
                       // Email Label
                       RichText(
                         text: const TextSpan(
-                          text: 'Staff Email',
+                          text: AppConstants.labelStaffEmail,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -173,8 +173,8 @@ class AddStaff extends StatelessWidget {
                   ),
                   label: Text(
                     controller.isSending.value
-                        ? 'Sending...'
-                        : 'Send Invitation',
+                        ? AppConstants.btnSending
+                        : AppConstants.btnSendInvitation,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

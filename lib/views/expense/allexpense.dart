@@ -25,7 +25,7 @@ class AllExpenses extends GetView<ExpenseController> {
       body: Column(
         children: [
           CustomSearchField(
-            hintText: 'Search expense...',
+            hintText: AppConstants.searchExpenseHint,
             showScanner: false,
             onChanged: (value) {
               controller.searchQuery.value = value;
@@ -68,7 +68,7 @@ class AllExpenses extends GetView<ExpenseController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Total Expenses',
+                            AppConstants.totalExpenses,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               color: AppColors.textSecondary,
@@ -134,7 +134,7 @@ class AllExpenses extends GetView<ExpenseController> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'No expenses found',
+                        AppConstants.noExpensesFound,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 15,
                           color: Colors.grey.shade600,
@@ -170,7 +170,7 @@ class AllExpenses extends GetView<ExpenseController> {
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
         label: Text(
-          AppConstants.addExpenses,
+          AppConstants.addExpense,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -340,7 +340,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                     Row(
                       children: [
                         Text(
-                          'EXPENSE NOTE',
+                          AppConstants.expenseNoteHeader,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
@@ -413,8 +413,8 @@ class _ExpenseCardState extends State<ExpenseCard> {
                               CustomConfirmDialog(
                                 title: 'Delete Expense',
                                 subtitle:
-                                'Are you sure you want to delete this expense?',
-                                confirmText: 'Delete',
+                                AppConstants.expenseDeleteSubtitle,
+                                confirmText: AppConstants.btnDelete,
                                 onConfirm: () {
                                   Get.back();
                                   controller.deleteExpense(expense);
@@ -438,7 +438,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Delete Expense',
+                                  AppConstants.btnDeleteExpense,
                                   style:
                                   GoogleFonts.plusJakartaSans(
                                     fontSize: 9.5,

@@ -114,7 +114,7 @@ class PurchasePage extends StatelessWidget {
                       dateTime: _formatPurchaseDate(purchase.purchaseDate),
 
                       amount:
-                          'Rs. ${purchase.totalAmount.toStringAsFixed(2)}',
+                          '${AppConstants.defaultCurrency}${purchase.totalAmount.toStringAsFixed(2)}',
 
                       status: _statusLabel(purchase.status),
 
@@ -211,9 +211,9 @@ class PurchasePage extends StatelessWidget {
     String day;
 
     if (purchaseDay == today) {
-      day = 'Today';
+      day = AppConstants.today;
     } else if (purchaseDay == yesterday) {
-      day = 'Yesterday';
+      day = AppConstants.yesterday;
     } else {
       day =
           '${localDate.day.toString().padLeft(2, '0')}/'

@@ -194,7 +194,7 @@ class _StaffCardState extends State<StaffCard> {
                             child: Text(
                               staff.isPending ||
                                   staff.name.trim().isEmpty
-                                  ? 'Staff Member'
+                                  ? AppConstants.staffMemberRole
                                   : staff.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -229,7 +229,7 @@ class _StaffCardState extends State<StaffCard> {
                           Expanded(
                             child: Text(
                               staff.isPending
-                                  ? 'Invitation Pending'
+                                  ? AppConstants.invitationPending
                                   : _roleName(staff.role),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -306,7 +306,7 @@ class _StaffCardState extends State<StaffCard> {
                       Row(
                         children: [
                           Text(
-                            'STAFF DETAILS',
+                            AppConstants.staffDetailsHeader,
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
@@ -333,8 +333,8 @@ class _StaffCardState extends State<StaffCard> {
                             ),
                             child: Text(
                               staff.isPending
-                                  ? 'Invitation'
-                                  : 'Account',
+                                  ? AppConstants.invitation
+                                  : AppConstants.account,
                               style: const TextStyle(
                                 fontSize: 8,
                                 fontWeight: FontWeight.w600,
@@ -350,12 +350,12 @@ class _StaffCardState extends State<StaffCard> {
                       // Email
                       _buildDetailRow(
                         icon: Icons.email_outlined,
-                        label: 'Email',
+                        label: AppConstants.loginEmailLabel,
                         value:
                         staff.email?.trim().isNotEmpty ==
                             true
                             ? staff.email!
-                            : 'Not available',
+                            : AppConstants.notAvailable,
                       ),
 
                       // Phone
@@ -364,14 +364,14 @@ class _StaffCardState extends State<StaffCard> {
 
                         _buildDetailRow(
                           icon: Icons.phone_outlined,
-                          label: 'Phone',
+                          label: AppConstants.phoneLabel,
                           value:
                           staff.phone
                               ?.trim()
                               .isNotEmpty ==
                               true
                               ? staff.phone!
-                              : 'Not available',
+                              : AppConstants.notAvailable,
                         ),
                       ],
 
@@ -383,7 +383,7 @@ class _StaffCardState extends State<StaffCard> {
                         _buildDetailRow(
                           icon:
                           Icons.calendar_today_outlined,
-                          label: 'Joined',
+                          label: AppConstants.joined,
                           value: _formatDate(
                             staff.joinedAt!,
                           ),
@@ -397,7 +397,7 @@ class _StaffCardState extends State<StaffCard> {
 
                         _buildDetailRow(
                           icon: Icons.timer_outlined,
-                          label: 'Invitation Expires',
+                          label: AppConstants.invitationExpires,
                           value: _formatDate(
                             staff.expiresAt!,
                           ),
@@ -577,10 +577,10 @@ class _StaffCardState extends State<StaffCard> {
   String _roleName(String role) {
     switch (role.toLowerCase()) {
       case 'owner':
-        return 'Owner';
+        return AppConstants.ownerRole;
 
       case 'staff':
-        return 'Staff Member';
+        return AppConstants.staffMemberRole;
 
       default:
         return role;
@@ -652,7 +652,7 @@ class _StaffCardState extends State<StaffCard> {
                       size: 20,
                     ),
                     SizedBox(width: 10),
-                    Text('Resend Invitation'),
+                    Text(AppConstants.resendInvitation),
                   ],
                 ),
               ),
@@ -667,7 +667,7 @@ class _StaffCardState extends State<StaffCard> {
                     size: 20,
                   ),
                   SizedBox(width: 10),
-                  Text('Cancel Invitation'),
+                  Text(AppConstants.cancelInvitation),
                 ],
               ),
             ),
@@ -687,7 +687,7 @@ class _StaffCardState extends State<StaffCard> {
                     size: 20,
                   ),
                   SizedBox(width: 10),
-                  Text('Mark Inactive'),
+                  Text(AppConstants.markInActive),
                 ],
               ),
             ),
@@ -706,7 +706,7 @@ class _StaffCardState extends State<StaffCard> {
                   size: 20,
                 ),
                 SizedBox(width: 10),
-                Text('Mark Active'),
+                Text(AppConstants.markActive),
               ],
             ),
           ),

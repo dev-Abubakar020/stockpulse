@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../models/sale_model.dart';
 import '../../models/sale_item_model.dart';
@@ -19,7 +20,7 @@ class ThermalSaleReceipt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = DateFormat(
-      'dd-MM-yyyy hh:mm a',
+      AppConstants.dateFormat2,
     ).format(sale.saleDate.toLocal());
 
     final totalQty = items.fold<double>(
@@ -44,7 +45,7 @@ class ThermalSaleReceipt extends StatelessWidget {
           CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'STOCKPULSE',
+              AppConstants.receiptStoreName,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,
@@ -56,7 +57,7 @@ class ThermalSaleReceipt extends StatelessWidget {
             const SizedBox(height: 3),
 
             const Text(
-              'SALE RECEIPT',
+              AppConstants.receiptSaleTitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,
@@ -71,29 +72,29 @@ class ThermalSaleReceipt extends StatelessWidget {
             const SizedBox(height: 8),
 
             _row(
-              'INVOICE:',
+              AppConstants.receiptLabelSale,
               sale.saleNo,
             ),
 
             _row(
-              'DATE:',
+              AppConstants.receiptLabelDate,
               date,
             ),
 
             _row(
-              'TERMINAL:',
-              'POS-TERMINAL-01',
+              AppConstants.receiptLabelTerminal,
+              AppConstants.receiptDefaultTerminal,
             ),
 
             _row(
-              'OPERATOR:',
+              AppConstants.receiptLabelOperator,
               creatorName.trim().isEmpty
-                  ? 'Auth-User'
+                  ? AppConstants.receiptDefaultOperator
                   : creatorName,
             ),
 
             _row(
-              'PAYMENT:',
+              AppConstants.receiptLabelTerminal,
               sale.paymentMethod.toUpperCase(),
             ),
 
@@ -106,7 +107,7 @@ class ThermalSaleReceipt extends StatelessWidget {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    'ITEM',
+                    AppConstants.receiptHeaderItem,
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -115,7 +116,7 @@ class ThermalSaleReceipt extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'QTY',
+                    AppConstants.receiptHeaderQty,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black,
@@ -126,7 +127,7 @@ class ThermalSaleReceipt extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'TOTAL',
+                    AppConstants.receiptHeaderTotal,
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       color: Colors.black,
@@ -185,21 +186,21 @@ class ThermalSaleReceipt extends StatelessWidget {
             const SizedBox(height: 7),
 
             _row(
-              'TOTAL ITEMS:',
-              '${items.length} SKU (${_qty(totalQty)} Units)',
+              AppConstants.receiptLabelTotalItems,
+              '${items.length} ${AppConstants.unitSku}  (${_qty(totalQty)} ${AppConstants.unit})',
             ),
 
             const SizedBox(height: 7),
 
             _row(
-              'SUBTOTAL:',
-              'Rs. ${_money(sale.subtotal)}',
+              AppConstants.receiptLabelSubtotal,
+              '${AppConstants.defaultCurrency} ${_money(sale.subtotal)}',
             ),
 
             if (sale.discount > 0)
               _row(
-                'DISCOUNT:',
-                '- Rs. ${_money(sale.discount)}',
+                AppConstants.receiptLabelDiscount,
+                '- ${AppConstants.defaultCurrency} ${_money(sale.discount)}',
               ),
 
             const SizedBox(height: 6),
@@ -207,8 +208,8 @@ class ThermalSaleReceipt extends StatelessWidget {
             const SizedBox(height: 6),
 
             _row(
-              'NET TOTAL:',
-              'Rs. ${_money(sale.totalAmount)}',
+              AppConstants.receiptLabelNetTotal,
+              '${AppConstants.defaultCurrency} ${_money(sale.totalAmount)}',
               bold: true,
             ),
 
@@ -217,7 +218,7 @@ class ThermalSaleReceipt extends StatelessWidget {
             const SizedBox(height: 15),
 
             const Text(
-              'Thank you for your business!',
+              AppConstants.receiptThanks,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,

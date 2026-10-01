@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           CustomTextButton(
-                            text: 'Sign Up',
+                            text: AppConstants.signUpText,
                             fontSize: 14,
                             color: theme.primary,
                             onPressed: () => Get.toNamed(Routes.register),
@@ -222,7 +222,7 @@ class _LoginCard extends StatelessWidget {
             () => CustomTextField(
               controller: controller.passwordController,
               labelText: AppConstants.loginPasswordLabel,
-              hintText: '••••••••••••',
+              hintText: AppConstants.passHint,
               obscureText: controller.obscurePassword.value,
               prefixIcon: Icon(
                 Icons.lock_outline_rounded,
@@ -308,7 +308,7 @@ class _LoginCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _SocialTile(
-                  tooltip: 'Google',
+                  tooltip: AppConstants.loginGoogle,
                   onTap: controller.signInWithGoogle,
                   child: Obx(
                     () => controller.isGoogleLoading.value
@@ -333,7 +333,7 @@ class _LoginCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _SocialTile(
-                    tooltip: 'Apple',
+                    tooltip: AppConstants.loginApple,
                     onTap: () {},
                     child: Image.asset(
                       AppConstants.appleLogo,

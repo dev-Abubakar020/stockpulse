@@ -205,7 +205,7 @@ class ProductDetailView extends GetView<ProductController> {
             _buildSectionCard(
               theme,
               title: AppConstants.priceMargin,
-              subtitle: 'Unit: ${product.unit}',
+              subtitle: '${AppConstants.unitLabel}: ${product.unit}',
               icon: Icons.account_balance_wallet_outlined,
               child: Column(
                 children: [
@@ -214,7 +214,7 @@ class ProductDetailView extends GetView<ProductController> {
                       Expanded(
                         child: _buildPriceBox(
                           AppConstants.retailPrice,
-                          'Rs. ${product.salePrice.toInt()}',
+                          '${AppConstants.defaultCurrency}${product.salePrice.toInt()}',
                           'per ${AppConstants.unit}',
                           theme,
                         ),
@@ -224,7 +224,7 @@ class ProductDetailView extends GetView<ProductController> {
                         Expanded(
                           child: _buildPriceBox(
                             AppConstants.wholeSaleP,
-                            'Rs. ${product.purchasePrice.toInt()}',
+                            '${AppConstants.defaultCurrency}${product.purchasePrice.toInt()}',
                             AppConstants.costBasis,
                             theme,
                           ),
@@ -250,7 +250,7 @@ class ProductDetailView extends GetView<ProductController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '+Rs. ${profit.toInt()} Net Profit',
+                                    '+${AppConstants.defaultCurrency}${profit.toInt()} ${AppConstants.netProfit}',
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -275,7 +275,7 @@ class ProductDetailView extends GetView<ProductController> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              '${margin.toStringAsFixed(1)}% Margin',
+                              '${margin.toStringAsFixed(1)}${AppConstants.marginSuffix}',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -323,7 +323,7 @@ class ProductDetailView extends GetView<ProductController> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: 'pcs',
+                                    text: AppConstants.pcsUnit,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 14,
                                       color: theme.textSecondary,
@@ -350,7 +350,7 @@ class ProductDetailView extends GetView<ProductController> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${(stockProgress * 100).toInt()}% of capacity',
+                              '${(stockProgress * 100).toInt()}${AppConstants.ofCapacity}',
                               style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
                             ),
                           ],
@@ -529,12 +529,12 @@ class ProductDetailView extends GetView<ProductController> {
     Get.dialog(
       CustomConfirmDialog(
         title: '${AppConstants.delProduct}?',
-        subtitle: 'Are you sure you want to delete ${product.article}? This action cannot be undone.',
-        confirmText: 'Logout',
+        subtitle: AppConstants.deleteProductConfirmMsg(product.article),
+        confirmText: AppConstants.btnDelete,
         onConfirm: () async {
           Get.back();
           await controller.deleteProduct(product);
-          Get.back(); // Return to All Products list
+          Get.back();
         },
       ),
     );

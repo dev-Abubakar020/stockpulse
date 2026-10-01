@@ -50,7 +50,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
-        title: const Text('Sale Details'),
+        title: Text(AppConstants.saleDetailsTitle),
         showBackArrow: true,
       ),
       body: SingleChildScrollView(
@@ -88,24 +88,24 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                   const SizedBox(height: 12),
                   Divider(color: theme.border),
                   const SizedBox(height: 12),
-                  _buildInfoRow('Date & Time', dateStr, theme),
+                  _buildInfoRow(AppConstants.dateTime, dateStr, theme),
                   const SizedBox(height: 8),
                   _buildInfoRow(
-                    'Payment Method',
+                    AppConstants.paymentMethodLabel,
                     sale.paymentMethod.toUpperCase(),
                     theme,
                   ),
                   const SizedBox(height: 8),
                   Obx(
                     () => _buildInfoRow(
-                      'Created By',
+                      AppConstants.createdByLabel,
                       controller.creatorName.value,
                       theme,
                     ),
                   ),
                   if (sale.notes != null && sale.notes!.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    _buildInfoRow('Notes', sale.notes!, theme),
+                    _buildInfoRow(AppConstants.notesLabel, sale.notes!, theme),
                   ],
                 ],
               ),
@@ -114,7 +114,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
 
             // --- Items Section ---
             Text(
-              'Sold Items',
+              AppConstants.soldItemsHeader,
               style: GoogleFonts.sora(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                     border: Border.all(color: theme.border),
                   ),
                   child: Text(
-                    'No items found for this sale.',
+                    AppConstants.noItemsSale,
                     style: GoogleFonts.plusJakartaSans(
                       color: theme.textSecondary,
                     ),
@@ -227,14 +227,14 @@ class _SaleDetailViewState extends State<SaleDetailView> {
               child: Column(
                 children: [
                   _buildSummaryRow(
-                    'Subtotal',
-                    'Rs. ${sale.subtotal.toInt()}',
+                    AppConstants.subtotal,
+                    '${AppConstants.defaultCurrency}${sale.subtotal.toInt()}',
                     theme,
                   ),
                   const SizedBox(height: 8),
                   _buildSummaryRow(
-                    'Discount',
-                    '- Rs. ${sale.discount.toInt()}',
+                    AppConstants.discountLabel,
+                    '- ${AppConstants.defaultCurrency}${sale.discount.toInt()}',
                     theme,
                     isDiscount: true,
                   ),
@@ -246,7 +246,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total Amount',
+                        AppConstants.totalAmountLabel,
                         style: GoogleFonts.sora(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -254,7 +254,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                         ),
                       ),
                       Text(
-                        'Rs. ${sale.totalAmount.toInt()}',
+                        '${AppConstants.defaultCurrency}${sale.totalAmount.toInt()}',
                         style: GoogleFonts.sora(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

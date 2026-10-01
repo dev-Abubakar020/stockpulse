@@ -44,6 +44,9 @@ class AppConstants {
   static const String unableToSentLink = 'Unable to verify password reset link. Please request a new one.';
   static const String loginWelcomeTitle = 'Welcome Back';
   static const String phoneLoginTitle = 'Login Via Phone';
+  static const String start = 'START';
+  static const String skip = 'SKIP';
+  static const String next = 'NEXT';
   static const String signupTitle = 'Create Account';
   static const String saleTitle = 'Sale';
   static const String saleSummary = 'Sale Summary';
@@ -62,7 +65,6 @@ class AppConstants {
   static const String addPurchase = 'Add Purchase';
   static const String addProducts = 'Add Inventory';
   static const String uncatProduct = 'Uncategorized';
-  static const String addExpenses = 'Add Expense';
   static const String report = 'Reports';
   static const String lowStockTitle = 'Low Stock';
   static const String profitTitle = 'Profit';
@@ -76,6 +78,8 @@ class AppConstants {
   static const String calPerPiece = 'Calculated per piece sold';
   static const String currAvailability = 'Current Available';
   static const String enterPhoneNumber = "Enter Phone Number";
+  static const String regPhone = 'Registered Phone Number';
+  static const String regPhoneHint = '+1 (555) 000-0000';
   static const String signupSubtitle =
       'Enter your details to register your secure zero-knowledge workspace';
   static const String loginWelcomeSubtitle =
@@ -116,6 +120,7 @@ class AppConstants {
   static const String dateNotes = 'Date and Notes';
   static const String dateFormat = 'D/MM/YYYY';
   static const String dateFormat1 = 'dd MMM, hh:mm a';
+  static const String dateFormat2 = 'dd-MM-yyyy hh:mm a';
   static const String descExpense = 'Describe the expense...';
 
   static const String reset = 'Reset';
@@ -127,6 +132,12 @@ class AppConstants {
                                      'An invitation will be sent to this email.\nThe staff member will need to create \na new StockPulse account using the same email address.';
   static const String requiredAsterisk = '*';
   static const String required = 'Required';
+  static const String inviteExpired = 'Invitation Expired';
+  static const String invalidInvitation = 'Invalid Invitation';
+  static const String unableToLoad = 'Unable to load staff invitation.';
+  static const String accInActive = 'Account Inactive';
+  static const String accInValidSubTitle = 'Your staff account is inactive. Please contact the shop owner.';
+
   static const String categoryNameHint =
       'Enter a unique and descriptive category name for your catalog.';
   static const String categoryStatus = 'Category Status';
@@ -172,11 +183,13 @@ class AppConstants {
   static const String barcodeCopied = 'Barcode copied to clipboard!';
   static const String defaultTitle = '1.5 Litre (Family Bottle)';
   static const String loginForgotPassword = 'Forgot password';
+  static const String forgotType = 'forgot_password';
   static const String rememberMe = 'Remember me';
   static const String rememberPassword = 'Remember your password?';
   static const String loginButton = 'Sign In';
   static const String loginContinueWith = 'or continue with';
   static const String loginGoogle = 'Google';
+  static const String loginApple = 'Apple';
   static const String loginPhone = 'Phone';
   static const String loginNoAccount = "Don't have an account?";
   static const String signupSignIn = 'Already have an account?';
@@ -185,6 +198,7 @@ class AppConstants {
   static const String encryptedTitle =
       '256-BIT ENCRYPTED RECOVERY • INSTANT DELIVERY';
   static const String loginSignUp = 'Sign Up >';
+  static const String signUpText = 'Sign Up';
   static const String recoveryChannel = 'Email Address';
   static const String regEmailAddress = 'Registered Email';
   static const String sendVerificationCode = 'Send Reset Link';
@@ -289,6 +303,7 @@ class AppConstants {
       'Please enter all 6 digits of the verification code.';
   static const String createNewPassword = 'Create New Password';
   static const String newPasswordLabel = 'New Password';
+  static const String passHint = '••••••••••••';
   static const String confirmPasswordLabel = 'Confirm Password';
   static const String updateBusiness = 'Update Business';
   static const String updatePasswordBtn = 'Update Password';
@@ -312,6 +327,7 @@ class AppConstants {
   static const String signupDescForOwner =
       'Create your account to manage inventories';
   static const String passwordsDoNotMatch = 'Passwords do not match.';
+  static const String passLength = 'At least 8 characters';
   static const String passwordLengthError =
       'Password must be at least 8 characters.';
   static const String stockpulseWorkspace = 'STOCKPULSE WORKSPACE';
@@ -597,7 +613,58 @@ class AppConstants {
   static const String amount = 'Amount';
   static const String others = 'Others';
   static const String salesPerformanceSubtitle = 'Track your sales performance over time';
-  // Spacing
+
+
+  static const String printerSettingsTitle = 'Printer Settings';
+  static const String btnScanning = 'Scanning...';
+  static const String btnScanPrinters = 'Scan Printers';
+  static const String txtNoPrintersFound = 'No printers found';
+
+  // Printer Labels & Defaults
+  static const String defaultPrinterName = 'Thermal Printer';
+  static const String defaultDeviceAddress = 'Unknown device';
+  static const String msgPrinterConnected = 'Printer connected';
+  static const String snackbarTitleConnected = 'Connected';
+
+ // Receipt Labels & Text
+  static const String receiptStoreName = 'STOCKPULSE';
+  static const String receiptTitle = 'PURCHASE RECEIPT';
+  static const String receiptSaleTitle = 'SALE RECEIPT';
+  static const String receiptDefaultTerminal = 'POS-TERMINAL-01';
+  static const String receiptDefaultOperator = 'Auth-User';
+  static const String receiptLabelPurchase = 'PURCHASE:';
+  static const String receiptLabelSale = 'INVOICES:';
+  static const String receiptLabelDate = 'DATE:';
+  static const String receiptLabelTerminal = 'TERMINAL:';
+  static const String receiptLabelOperator = 'OPERATOR:';
+  static const String receiptHeaderItem = 'ITEM';
+  static const String receiptHeaderQty = 'QTY';
+  static const String receiptHeaderTotal = 'TOTAL';
+  static const String receiptLabelTotalItems = 'TOTAL ITEMS:';
+  static const String receiptLabelSubtotal = 'SUBTOTAL:';
+  static const String receiptLabelDiscount = 'DISCOUNT:';
+  static const String receiptLabelNetTotal = 'NET TOTAL:';
+  static const String receiptThanks = 'Thank you for your business!';
+  static const String receiptFooterTitle = 'Purchase Receipt';
+  static const String receiptFooterGeneratedBy = 'Generated by StockPulse';
+  static const String unitSku = 'SKU';
+  static const String unitUnits = 'Units';
+
+  // Expense
+  static const String searchExpenseHint = 'Search expense...';
+  static const String totalExpenses = 'Total Expenses';
+  static const String recordsUnit = 'Records';
+  static const String noExpensesFound = 'No expenses found';
+  static const String expenseNoteHeader = 'EXPENSE NOTE';
+  static const String expenseDeleteTitle = 'Delete Expense';
+  static const String expenseDeleteSubtitle = 'Are you sure you want to delete this expense?';
+  static const String btnDelete = 'Delete';
+  static const String btnDeleteExpense = 'Delete Expense';
+
+  static const String labelStaffEmail = 'Staff Email';
+  static const String btnSending = 'Sending...';
+  static const String btnSendInvitation = 'Send Invitation';
+
   // Extra spacing
   static const double spaceXXS = 4.0;
   static const double spaceXXXL = 32.0;
@@ -649,4 +716,109 @@ class AppConstants {
   static const String shopOwnerRole = 'Shop Owner';
   static const String defaultUserTitle = 'User';
   static const String printingSettingTitle = 'Printing Setting';
+
+  // Staff Screen Constants
+  static const String invitationPending = 'Invitation Pending';
+  static const String staffDetailsHeader = 'STAFF DETAILS';
+  static const String invitation = 'Invitation';
+  static const String account = 'Account';
+  static const String joined = 'Joined';
+  static const String invitationExpires = 'Invitation Expires';
+  static const String notAvailable = 'Not available';
+  static const String resendInvitation = 'Resend Invitation';
+  static const String cancelInvitation = 'Cancel Invitation';
+  static const String ownerRole = 'Owner';
+
+  // Product Detail Constants
+  static const String unitLabel = 'Unit';
+  static const String netProfit = 'Net Profit';
+  static const String marginSuffix = '% Margin';
+  static const String pcsUnit = 'pcs';
+  static const String ofCapacity = '% of capacity';
+  static String deleteProductConfirmMsg(String name) =>
+      'Are you sure you want to delete $name? This action cannot be undone.';
+
+  // Add Product Wizard Constants
+  static const String editProduct = 'Edit Product';
+  static const String addProductTitle = 'Add Product';
+  static const String stepDetails = 'Details';
+  static const String stepPricingStock = 'Pricing & Stock';
+  static const String stepReview = 'Review';
+  static const String quickInventoryWizard = 'Quick Inventory Wizard';
+  static const String addProductImage = 'Add Product Image';
+  static const String supportsImageFormats = 'Supports PNG, JPG, or snap photo';
+  static const String nameHeader = 'NAME';
+  static const String enterProductNameHint = 'Enter product name';
+  static const String categoryHeader = 'CATEGORY';
+  static const String newCategoryBtn = '+ New Category';
+  static const String noCategoriesAvailable = 'No categories available';
+  static const String skuBarcodeHeader = 'SKU / BARCODE';
+  static const String eanUpcSubHeader = 'EAN-13 / UPC';
+  static const String enterCodeHint = 'Enter code';
+  static const String measurementUnitHeader = 'MEASUREMENT UNIT';
+  static const String continueToPricingStock = 'Continue to Pricing & Stock';
+  static const String pricingDetailsHeader = 'PRICING DETAILS';
+  static const String step2Of3 = 'Step 2 of 3';
+  static const String purchasePriceLabel = 'Purchase Price';
+  static const String zeroPrice = 'Rs. 0';
+  static const String costPerUnit = 'Cost per unit';
+  static const String salePriceLabel = 'Sale Price';
+  static const String retailCustomerPrice = 'Retail customer price';
+  static const String estimatedProfit = 'Estimated Profit';
+  static const String perUnitSuffix = ' / unit';
+  static const String stockInventoryHeader = 'STOCK & INVENTORY';
+  static const String initialStockQty = 'Initial Stock Quantity';
+  static const String lowStockAlertLimit = 'Low Stock Alert Limit';
+  static const String trackStockQty = 'Track Stock Quantity';
+  static const String deductAutoSale = 'Deduct automatically with each sale';
+  static const String activeAvailableSale = 'Active & Available for Sale';
+  static const String visibleCatalogPos =
+      'Visible in catalog and POS checkout';
+  static const String backBtn = 'Back';
+  static const String updateAndReview = 'Update & Review →';
+  static const String saveAndReview = 'Save & Review →';
+  static const String productUpdatedSuccess = 'Product Updated Successfully';
+  static const String productAddedSuccess = 'Product Added Successfully';
+  static const String hasBeenUpdatedInventory =
+      ' has been updated in your store inventory.';
+  static const String hasBeenListedLive =
+      ' has been listed and is now live in store inventory.';
+  static const String liveStatus = 'Live';
+  static const String barcodeHeader = 'Barcode';
+  static const String currentStockHeader = 'Current Stock';
+  static const String viewInInventory = 'View in Inventory →';
+  static const String addAnotherProduct = '+ Add Another Product';
+
+  // Purchase Screen Constants
+  static const String newPurchaseTitle = 'New Purchase';
+  static const String savePurchaseBtn = 'Save Purchase';
+  static const String purchaseItemsHeader = 'Purchase Items';
+  static const String noItemsAddedYet = 'No items added yet';
+  static const String tapAddProductsPurchase =
+      'Tap "+ Add" to add products to purchase';
+  static const String costSummaryHeader = 'Cost Summary';
+  static const String purchasePriceRs = 'Purchase Price (Rs.)';
+  static const String lineTotalHeader = 'Line Total';
+  static const String addProductToPurchase = 'Add Product to Purchase';
+  static const String searchProductOrBarcode = 'Search product or barcode...';
+  static const String purchaseDetailsTitle = 'Purchase Details';
+  static const String createdByLabel = 'Created By';
+  static const String notesLabel = 'Notes';
+  static const String purchasedItemsHeader = 'Purchased Items';
+  static const String noItemsPurchase = 'No items found for this purchase.';
+
+  // Sale Screen Constants
+  static const String cartDetailsTitle = 'Cart Details';
+  static const String saleItemsHeader = 'Sale Items';
+  static const String tapAddProductsSale =
+      'Tap "+ Add" to add products to sale';
+  static const String cartItemsHeader = 'Cart Items';
+  static const String noItemsInCart = 'No items in cart';
+  static const String clearBtn = 'Clear';
+  static const String customerAndNotesHeader = 'Customer & Notes';
+  static const String addProductToSale = 'Add Product to Sale';
+  static const String salePriceRs = 'Sale Price (Rs.)';
+  static const String saleDetailsTitle = 'Sale Details';
+  static const String soldItemsHeader = 'Sold Items';
+  static const String noItemsSale = 'No items found for this sale.';
 }
