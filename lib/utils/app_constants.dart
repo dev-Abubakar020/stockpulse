@@ -755,6 +755,7 @@ class AppConstants {
   static const String newCategoryBtn = '+ New Category';
   static const String noCategoriesAvailable = 'No categories available';
   static const String skuBarcodeHeader = 'SKU / BARCODE';
+  static const String noBarCode = 'No Barcode Assigned';
   static const String eanUpcSubHeader = 'EAN-13 / UPC';
   static const String enterCodeHint = 'e.g. SHIRT001';
   static const String measurementUnitHeader = 'MEASUREMENT UNIT';

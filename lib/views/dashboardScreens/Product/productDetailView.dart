@@ -18,6 +18,11 @@ import '../../../models/productItemModel.dart';
 import 'package:barcode/barcode.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:flutter/rendering.dart';
+import 'package:gal/gal.dart';
 
 class ProductDetailView extends GetView<ProductController> {
   const ProductDetailView({super.key});
@@ -367,31 +372,57 @@ class ProductDetailView extends GetView<ProductController> {
             ),
 
             const SizedBox(height: 16),
-
             _buildSectionCard(
               theme,
               title: AppConstants.barCode,
               icon: CupertinoIcons.barcode,
+
               headerAction: product.barcode?.trim().isNotEmpty == true
                   ? const CustomStatusChip(
                 textTitle: AppConstants.barCodeSubCheck,
                 type: StatusType.success,
               )
                   : null,
+
               child: product.barcode?.trim().isNotEmpty == true
-                  ? _buildBarcode(
-                product.barcode,
-                theme,
+                  ? _BarcodePreview(
+                barcodeValue: product.barcode!,
+                theme: theme,
               )
                   : Center(
-                    child: Text('No barcode assigned',
-                      style: GoogleFonts.plusJakartaSans(
+                child: Text(
+                  AppConstants.noBarCode,
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     color: theme.textSecondary,
-                                    ),
-                                  ),
                   ),
+                ),
+              ),
             ),
+            // _buildSectionCard(
+            //   theme,
+            //   title: AppConstants.barCode,
+            //   icon: CupertinoIcons.barcode,
+            //   headerAction: product.barcode?.trim().isNotEmpty == true
+            //       ? const CustomStatusChip(
+            //     textTitle: AppConstants.barCodeSubCheck,
+            //     type: StatusType.success,
+            //   )
+            //       : null,
+            //   child: product.barcode?.trim().isNotEmpty == true
+            //       ? _buildBarcode(
+            //     product.barcode,
+            //     theme,
+            //   )
+            //       : Center(
+            //         child: Text(AppConstants.noBarCode,
+            //           style: GoogleFonts.plusJakartaSans(
+            //         fontSize: 13,
+            //         color: theme.textSecondary,
+            //                         ),
+            //                       ),
+            //       ),
+            // ),
 
             const SizedBox(height: 20),
 
@@ -557,58 +588,7 @@ class ProductDetailView extends GetView<ProductController> {
     );
   }
 
-  Widget _buildBarcode(
-      String? barcodeValue,
-      AppThemeHelper theme,
-      ) {
-    if (barcodeValue == null || barcodeValue.trim().isEmpty) {
-      return const SizedBox.shrink();
-    }
 
-    final value = barcodeValue.trim();
-
-    try {
-      final barcode = Barcode.code128();
-
-      final svg = barcode.toSvg(
-        value,
-        width: 280,
-        height: 90,
-        drawText: false,
-      );
-
-      return Column(
-        children: [
-          const SizedBox(height: 8),
-
-          Center(
-            child: SvgPicture.string(
-              svg,
-              width: 280,
-              height: 90,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          Text(
-            value,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: theme.textSecondary,
-              letterSpacing: 1.2,
-            ),
-          ),
-
-          const SizedBox(height: 4),
-        ],
-      );
-    } catch (_) {
-      return const SizedBox.shrink();
-    }
-  }
 
   void _confirmDelete(BuildContext context, ProductItemModel product) {
     Get.dialog(
@@ -622,6 +602,138 @@ class ProductDetailView extends GetView<ProductController> {
           Get.back();
         },
       ),
+    );
+  }
+}
+
+
+class _BarcodePreview extends StatefulWidget {
+  final String barcodeValue;
+  final AppThemeHelper theme;
+
+  const _BarcodePreview({
+    required this.barcodeValue,
+    required this.theme,
+  });
+
+  @override
+  State<_BarcodePreview> createState() => _BarcodePreviewState();
+}
+
+class _BarcodePreviewState extends State<_BarcodePreview> {
+  final GlobalKey _barcodeKey = GlobalKey();
+
+  Future<void> _saveBarcodeImage() async {
+    try {
+      final boundary = _barcodeKey.currentContext
+          ?.findRenderObject() as RenderRepaintBoundary?;
+
+      if (boundary == null) return;
+
+      final ui.Image image = await boundary.toImage(
+        pixelRatio: 3.0,
+      );
+
+      final ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
+      if (byteData == null) return;
+
+      final Uint8List pngBytes =
+      byteData.buffer.asUint8List();
+
+      await Gal.putImageBytes(
+        pngBytes,
+        name: 'StockPulse_${widget.barcodeValue}',
+      );
+
+      Get.snackbar(
+        'Saved',
+        'Barcode saved to gallery',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      debugPrint('Barcode save error: $e');
+
+      Get.snackbar(
+        'Error',
+        'Unable to save barcode',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final value = widget.barcodeValue.trim();
+
+    final barcode = Barcode.code128();
+
+    final svg = barcode.toSvg(
+      value,
+      width: 280,
+      height: 90,
+      drawText: false,
+    );
+
+    return Column(
+      children: [
+        // ONLY this area will be saved
+        RepaintBoundary(
+          key: _barcodeKey,
+          child: Container(
+            width: double.infinity,
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 18,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.string(
+                  svg,
+                  width: 280,
+                  height: 90,
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 14),
+
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _saveBarcodeImage,
+            icon: const Icon(
+              Icons.download_rounded,
+              size: 19,
+            ),
+            label: Text(
+              AppConstants.barCodeSubCheck,
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

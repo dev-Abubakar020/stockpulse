@@ -1,10 +1,37 @@
 import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/productItemModel.dart';
 import '../models/category_model.dart';
 
 class ProductRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
+
+  Future<ProductItemModel?> getProductByBarcode({
+    required String barcode,
+    required int shopId,
+  }) async
+  {
+    try {
+      final response = await _supabase
+          .from('products')
+          .select()
+          .eq('shop_id', shopId)
+          .eq('barcode', barcode.trim().toUpperCase())
+          .eq('is_active', true)
+          .maybeSingle();
+
+      if (response == null) {
+        return null;
+      }
+
+      return ProductItemModel.fromJson(response);
+    } catch (e) {
+      debugPrint('getProductByBarcode error: $e');
+      rethrow;
+    }
+  }
+
 
   // =========================
   // GET ALL PRODUCTS

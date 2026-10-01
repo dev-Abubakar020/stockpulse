@@ -46,6 +46,31 @@ class ProductController extends GetxController {
   // FETCH PRODUCTS
   // =========================
 
+  Future<ProductItemModel?> findProductByBarcode(
+      String barcode,
+      ) async
+  {
+    try {
+      final roleService = Get.find<RoleService>();
+
+      if (roleService.shopId.value.isEmpty) {
+        return null;
+      }
+
+      final shopId = int.parse(
+        roleService.shopId.value,
+      );
+
+      return await repository.getProductByBarcode(
+        barcode: barcode,
+        shopId: shopId,
+      );
+    } catch (e) {
+      debugPrint('findProductByBarcode error: $e');
+      return null;
+    }
+  }
+
   Future<void> fetchProducts() async {
     if (!await NetworkManager.instance.checkInternet()) {
       return;
