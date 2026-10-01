@@ -48,8 +48,21 @@ class ProductController extends GetxController {
 
   Future<ProductItemModel?> findProductByBarcode(
       String barcode,
-      ) async
-  {
+      ) async {
+    final code = barcode.trim().toUpperCase();
+
+    // First check already loaded products
+    final localProduct = products.firstWhereOrNull(
+          (product) =>
+      product.barcode?.trim().toUpperCase() == code &&
+          product.isActive,
+    );
+
+    if (localProduct != null) {
+      return localProduct;
+    }
+
+    // Otherwise fetch from DB
     try {
       final roleService = Get.find<RoleService>();
 
@@ -57,16 +70,27 @@ class ProductController extends GetxController {
         return null;
       }
 
-      final shopId = int.parse(
-        roleService.shopId.value,
+      final product = await repository.getProductByBarcode(
+        barcode: code,
+        shopId: int.parse(roleService.shopId.value),
       );
 
-      return await repository.getProductByBarcode(
-        barcode: barcode,
-        shopId: shopId,
-      );
+      if (product != null) {
+        // Important because SaleController uses this list.
+        final existingIndex = products.indexWhere(
+              (p) => p.id == product.id,
+        );
+
+        if (existingIndex == -1) {
+          products.add(product);
+        }
+      }
+
+      return product;
     } catch (e) {
-      debugPrint('findProductByBarcode error: $e');
+      debugPrint(
+        'findProductByBarcode error: $e',
+      );
       return null;
     }
   }

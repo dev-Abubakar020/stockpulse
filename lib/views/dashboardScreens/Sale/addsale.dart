@@ -10,14 +10,21 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_snackbar.dart';
 import '../../../controllers/sale_controller.dart';
 import '../../../models/productItemModel.dart';
+import 'barcodescanner.dart';
 
 class AddSale extends StatefulWidget {
-  const AddSale({super.key});
+  final ProductItemModel? initialProduct;
+
+  const AddSale({
+    super.key,
+    this.initialProduct,
+  });
+
 
   @override
   State<AddSale> createState() => _AddSaleState();
@@ -40,6 +47,10 @@ class _AddSaleState extends State<AddSale> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       saleController.clearCart();
+      final product = widget.initialProduct;
+      if (product != null) {
+        saleController.addProduct(product);
+      }
     });
   }
 
@@ -161,7 +172,32 @@ class _AddSaleState extends State<AddSale> {
         return const SizedBox();
     }
   }
+  Future<void> _scanProduct() async {
+    final String? barcode = await Get.to<String>(
+          () => const BarcodeScannerView(),
+    );
 
+    if (!mounted) return;
+
+    if (barcode == null || barcode.trim().isEmpty) {
+      return;
+    }
+
+    final product = await saleController.productController
+        .findProductByBarcode(barcode);
+
+    if (!mounted) return;
+
+    if (product == null) {
+      CustomSnackBar.warningSnackBar(
+        title: 'Product Not Found',
+        message: 'No product found with barcode $barcode.',
+      );
+      return;
+    }
+
+    saleController.addProduct(product);
+  }
   void _showProductPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -202,30 +238,64 @@ class _AddSaleState extends State<AddSale> {
           icon: Icons.shopping_cart_rounded,
           iconColor: primaryGreen,
           title: AppConstants.saleItemsHeader,
-          trailing: GestureDetector(
-            onTap: () => _showProductPicker(context),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(
-                color: primaryGreen,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.add, color: Colors.white, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    AppConstants.add,
-                    style: GoogleFonts.sora(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: _scanProduct,
+                child: Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: primaryGreen.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: primaryGreen.withValues(alpha: 0.20),
                     ),
                   ),
-                ],
+                  child: const Icon(
+                    Icons.qr_code_scanner_rounded,
+                    color: primaryGreen,
+                    size: 18,
+                  ),
+                ),
               ),
-            ),
+
+              const SizedBox(width: 8),
+
+              GestureDetector(
+                onTap: () => _showProductPicker(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: primaryGreen,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        AppConstants.add,
+                        style: GoogleFonts.sora(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           child: selectedProducts.isEmpty
               ? const _EmptyItems(
@@ -292,12 +362,28 @@ class _AddSaleState extends State<AddSale> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (selectedProducts.isNotEmpty)
-                    CustomTextButton(
-                      text: AppConstants.clearBtn,
-                      onPressed: saleController.clearCart,
+                  GestureDetector(
+                    onTap: _scanProduct,
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: primaryGreen.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: primaryGreen.withValues(alpha: 0.20),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.qr_code_scanner_rounded,
+                        color: primaryGreen,
+                        size: 18,
+                      ),
                     ),
-                  const SizedBox(width: 6),
+                  ),
+
+                  const SizedBox(width: 8),
+
                   GestureDetector(
                     onTap: () => _showProductPicker(context),
                     child: Container(
@@ -312,7 +398,11 @@ class _AddSaleState extends State<AddSale> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.add, color: Colors.white, size: 16),
+                          const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             AppConstants.add,

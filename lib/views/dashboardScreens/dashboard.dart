@@ -8,8 +8,11 @@ import 'package:stockpulse/views/dashboardScreens/Product/allProducts.dart';
 import 'package:stockpulse/views/dashboardScreens/homeView.dart';
 import 'package:stockpulse/views/dashboardScreens/Sale/saleView.dart';
 import 'package:stockpulse/views/dashboardScreens/More/morescreen.dart';
+import '../../common/widgets/custom_snackbar.dart';
 import '../../controllers/allProductsController.dart';
 import '../../controllers/dashboardController.dart';
+import '../../controllers/sale_controller.dart';
+import 'Sale/addsale.dart';
 import 'Sale/barcodescanner.dart';
 
 class DashboardTabConfig {
@@ -70,20 +73,21 @@ class DashboardScreen extends StatelessWidget {
     );
 
     if (product == null) {
-      Get.snackbar(
-        'Product Not Found',
-        'No product found with barcode $barcode',
-        snackPosition: SnackPosition.BOTTOM,
+      CustomSnackBar.warningSnackBar(
+        title: 'Product Not Found',
+        message: 'No product found with barcode $barcode.',
       );
-
       return;
     }
 
     debugPrint('SCANNED PRODUCT: ${product.article}');
     debugPrint('BARCODE: ${product.barcode}');
 
-    // NEXT:
-    // Send product to SaleController
+    Get.to(
+          () => AddSale(
+        initialProduct: product,
+      ),
+    );
   }
 
 
