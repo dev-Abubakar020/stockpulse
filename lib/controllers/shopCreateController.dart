@@ -31,7 +31,7 @@ class ShopCreateController extends GetxController {
   final shopImageUrl = ''.obs;
   final userProfileImageUrl = ''.obs;
   final userName = ''.obs;
-
+  final isFormChanged = false.obs;
   final selectedCountry = countries
       .firstWhere((country) => country.isoCode == 'PK')
       .obs;
@@ -46,7 +46,9 @@ class ShopCreateController extends GetxController {
     super.onInit();
     fetchShopDetails();
   }
-
+  void resetEditable(){
+    isEditable.value = false;
+  }
   void toggleEditable() {
     isEditable.toggle();
   }

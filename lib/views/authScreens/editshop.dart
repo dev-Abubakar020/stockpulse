@@ -21,90 +21,89 @@ class EditShopDetails extends GetView<ShopCreateController> {
   @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
-    return CustomScreen(
-      appBar: CustomAppBar(
-        title: const Text(AppConstants.businessInfo),
-        showBackArrow: true,
-        actions: [
-          Obx(() {
-            final isEditing = controller.isEditable.value;
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          controller.resetEditable();
+        }
+      },
+      child: CustomScreen(
+        appBar: CustomAppBar(
+          title: const Text(AppConstants.businessInfo),
+          showBackArrow: true,
+          actions: [
+            Obx(() {
+              final isEditing = controller.isEditable.value;
+              final color = isEditing ? theme.error : const Color(0xFF0F766E);
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: controller.toggleEditable,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: isEditing ? 90 : 82,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: color.withValues(alpha: 0.20)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          isEditing ? Icons.close_rounded : Icons.edit_outlined,
+                          size: 18,
+                          color: color.withValues(alpha: 0.8),
+                        ),
 
-            final color = isEditing
-                ? theme.error
-                : const Color(0xFF0F766E);
+                        const SizedBox(width: 6),
 
-            return Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: controller.toggleEditable,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: isEditing? 90:82,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: color.withValues(alpha: 0.20),
+                        Text(
+                          isEditing
+                              ? AppConstants.cancelTitle
+                              : AppConstants.edit,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: color,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        isEditing
-                            ? Icons.close_rounded
-                            : Icons.edit_outlined,
-                        size: 18,
-                        color: color.withValues(alpha: 0.8),
-                      ),
-
-                      const SizedBox(width: 6),
-
-                      Text(
-                        isEditing
-                            ? AppConstants.cancelTitle
-                            : AppConstants.edit,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: color,
+                ),
+              );
+            }),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    AppConstants.workspaceSubtitle,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: theme.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _FormCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _SectionTitle(
+                          icon: Icons.storefront_outlined,
+                          title: AppConstants.shopDetails,
+                          theme: theme,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  AppConstants.workspaceSubtitle,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: theme.textSecondary,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _FormCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _SectionTitle(
-                        icon: Icons.storefront_outlined,
-                        title: AppConstants.shopDetails,
-                        theme: theme,
-                      ),
-                      const SizedBox(height: 16),
-                      Obx(() => CustomTextField(
+                        const SizedBox(height: 16),
+                        Obx(
+                          () => CustomTextField(
                             controller: controller.ownerController,
                             labelText: AppConstants.ownerName,
                             hintText: AppConstants.nameHint,
@@ -113,9 +112,11 @@ class EditShopDetails extends GetView<ShopCreateController> {
                               color: theme.primary,
                             ),
                             readOnly: !controller.isEditable.value,
-                          )),
-                      const SizedBox(height: 14),
-                      Obx(() => CustomTextField(
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Obx(
+                          () => CustomTextField(
                             controller: controller.shopController,
                             labelText: AppConstants.shopName,
                             hintText: AppConstants.enterShopName,
@@ -124,9 +125,11 @@ class EditShopDetails extends GetView<ShopCreateController> {
                               color: theme.primary,
                             ),
                             readOnly: !controller.isEditable.value,
-                          )),
-                      const SizedBox(height: 14),
-                      Obx(() => CustomTextField(
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Obx(
+                          () => CustomTextField(
                             controller: controller.addressController,
                             labelText: AppConstants.completeAddress,
                             hintText: AppConstants.addressHint,
@@ -136,66 +139,68 @@ class EditShopDetails extends GetView<ShopCreateController> {
                             ),
                             keyboardType: TextInputType.streetAddress,
                             readOnly: !controller.isEditable.value,
-                          )),
-                      const SizedBox(height: 18),
-                      _SectionTitle(
-                        icon: Icons.payments_outlined,
-                        title: AppConstants.currency,
-                        theme: theme,
-                      ),
-                      const SizedBox(height: 12),
-                      Obx(
-                            () => DropdownButtonFormField<CountryModel>(
-                          value: controller.selectedCountry.value,
-                          isExpanded: true,
-
-                          decoration: InputDecoration(
-                            labelText: AppConstants.country,
-                            prefixIcon: const Icon(Icons.public),
-                            filled: true,
-                            fillColor: theme.surfaceMuted,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(color: theme.border),
-                            ),
                           ),
+                        ),
+                        const SizedBox(height: 18),
+                        _SectionTitle(
+                          icon: Icons.payments_outlined,
+                          title: AppConstants.currency,
+                          theme: theme,
+                        ),
+                        const SizedBox(height: 12),
+                        Obx(
+                          () => DropdownButtonFormField<CountryModel>(
+                            value: controller.selectedCountry.value,
+                            isExpanded: true,
 
-                          items: countries.map((country) {
-                            return DropdownMenuItem<CountryModel>(
-                              value: country,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    country.flagEmoji,
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
+                            decoration: InputDecoration(
+                              labelText: AppConstants.country,
+                              prefixIcon: const Icon(Icons.public),
+                              filled: true,
+                              fillColor: theme.surfaceMuted,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide(color: theme.border),
+                              ),
+                            ),
 
-                                  const SizedBox(width: 8),
+                            items: countries.map((country) {
+                              return DropdownMenuItem<CountryModel>(
+                                value: country,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      country.flagEmoji,
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
 
-                                  Expanded(
-                                    child: Text(
-                                      country.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: theme.textPrimary,
+                                    const SizedBox(width: 8),
+
+                                    Expanded(
+                                      child: Text(
+                                        country.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: theme.textPrimary,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
 
-                          onChanged: (country) {
-                            if (country != null) {
-                              controller.selectedCountry.value = country;
-                            }
-                          },
+                            onChanged: (country) {
+                              if (country != null) {
+                                controller.selectedCountry.value = country;
+                              }
+                            },
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Obx(() => Row(
+                        const SizedBox(height: 12),
+                        Obx(
+                          () => Row(
                             children: [
                               Expanded(
                                 child: _ReadOnlyValue(
@@ -213,55 +218,64 @@ class EditShopDetails extends GetView<ShopCreateController> {
                                 ),
                               ),
                             ],
-                          )),
-                      const SizedBox(height: 18),
-                      Obx(() {
-                        if (!controller.isEditable.value &&
-                            controller.shopImageUrl.value.isEmpty &&
-                            controller.imageBytes.value == null) {
-                          return const SizedBox.shrink();
-                        }
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (controller.isEditable.value)
-                              _ImagePickerTile(
-                                imageBytes: controller.imageBytes.value,
-                                onPressed: controller.pickImage,
-                                theme: theme,
-                              )
-                            else if (controller.shopImageUrl.value.isNotEmpty)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  controller.shopImageUrl.value,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            const SizedBox(height: 22),
-                          ],
-                        );
-                      }),
-                      Obx(() {
-                        if (!controller.isEditable.value) {
-                          return const SizedBox.shrink();
-                        }
-                        return AppButton(
-                          text: AppConstants.updateBusiness,
-                          onPressed: controller.updateShop,
-                          isLoading: controller.isUpdating.value,
-                          suffixIcon: const Icon(
-                            Icons.check_rounded,
-                            color: Colors.white,
-                            size: 18,
                           ),
-                        );
-                      }),
-                    ],
+                        ),
+                        const SizedBox(height: 18),
+                        Obx(() {
+                          if (!controller.isEditable.value &&
+                              controller.shopImageUrl.value.isEmpty &&
+                              controller.imageBytes.value == null) {
+                            return const SizedBox.shrink();
+                          }
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (controller.isEditable.value)
+                                _ImagePickerTile(
+                                  imageBytes: controller.imageBytes.value,
+                                  onPressed: controller.pickImage,
+                                  theme: theme,
+                                )
+                              else if (controller.shopImageUrl.value.isNotEmpty)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    controller.shopImageUrl.value,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              const SizedBox(height: 22),
+                            ],
+                          );
+                        }),
+                        Obx(() {
+                          if (!controller.isEditable.value) {
+                            return const SizedBox.shrink();
+                          }
+
+                          final canSubmit =
+                          !controller.isUpdating.value;
+
+                          return AppButton(
+                            text: AppConstants.updateBusiness,
+                            backgroundColor:
+                            canSubmit ? null : Colors.grey.shade400,
+                            onPressed:
+                            canSubmit ? controller.updateShop : null,
+                            isLoading: controller.isUpdating.value,
+                            suffixIcon: const Icon(
+                              Icons.check_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -376,16 +390,18 @@ class _ImagePickerTile extends StatelessWidget {
       icon: imageBytes == null
           ? const Icon(Icons.add_photo_alternate_outlined)
           : ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Image.memory(
-          imageBytes!,
-          width: 30,
-          height: 30,
-          fit: BoxFit.cover,
-        ),
-      ),
+              borderRadius: BorderRadius.circular(6),
+              child: Image.memory(
+                imageBytes!,
+                width: 30,
+                height: 30,
+                fit: BoxFit.cover,
+              ),
+            ),
       label: Text(
-        imageBytes == null ? AppConstants.addShopImage : AppConstants.changeShopImage,
+        imageBytes == null
+            ? AppConstants.addShopImage
+            : AppConstants.changeShopImage,
       ),
       style: OutlinedButton.styleFrom(
         foregroundColor: theme.primary,
