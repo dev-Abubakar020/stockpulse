@@ -1,0 +1,1390 @@
+function_name,complete_function_query
+cancel_staff_invitation,"CREATE OR REPLACE FUNCTION public.cancel_staff_invitation(p_invitation_id uuid)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+begin
+
+  delete from staff_invitations
+  where id = p_invitation_id;
+
+  if not found then
+    raise exception 'Invitation not found';
+  end if;
+
+end;
+$function$
+"
+claim_staff_invitation,"CREATE OR REPLACE FUNCTION public.claim_staff_invitation(p_token uuid)
+ RETURNS TABLE(shop_id bigint, shop_name text, role text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  v_user_id uuid;
+  v_user_email text;
+
+  v_invitation_id uuid;
+  v_shop_id bigint;
+  v_invited_email text;
+  v_shop_name text;
+begin
+
+  -- Logged-in newly created user
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'You must be logged in.';
+  end if;
+
+
+  -- Get authenticated user's actual email
+  select lower(trim(u.email))
+  into v_user_email
+  from auth.users u
+  where u.id = v_user_id;
+
+
+  if v_user_email is null then
+    raise exception 'Unable to verify your account email.';
+  end if;
+
+
+  -- Safety:
+  -- user must not already belong to a shop
+  if exists (
+    select 1
+    from public.shop_members sm
+    where sm.user_id = v_user_id
+  ) then
+    raise exception
+      'This account is already associated with a shop.';
+  end if;
+
+
+  -- Find valid invitation
+  select
+    si.id,
+    si.shop_id,
+    lower(trim(si.email)),
+    s.shopename
+  into
+    v_invitation_id,
+    v_shop_id,
+    v_invited_email,
+    v_shop_name
+  from public.staff_invitations si
+  join public.shops s
+    on s.id = si.shop_id
+  where si.token = p_token
+    and si.status = 'pending'
+    and si.expires_at > now()
+  limit 1;
+
+
+  if v_invitation_id is null then
+    raise exception
+      'This staff invitation is invalid or has expired.';
+  end if;
+
+
+  -- Critical security check
+  if v_user_email <> v_invited_email then
+    raise exception
+      'This invitation belongs to a different email address.';
+  end if;
+
+
+  -- Create staff membership
+  insert into public.shop_members (
+    shop_id,
+    user_id,
+    role,
+    is_active,
+    created_by
+  )
+  select
+    si.shop_id,
+    v_user_id,
+    'staff',
+    true,
+    si.invited_by
+  from public.staff_invitations si
+  where si.id = v_invitation_id;
+
+
+  -- Mark invitation accepted
+  update public.staff_invitations
+  set
+    status = 'accepted',
+    accepted_by = v_user_id,
+    accepted_at = now()
+  where id = v_invitation_id;
+
+
+  return query
+  select
+    v_shop_id,
+    v_shop_name,
+    'staff'::text;
+
+end;
+$function$
+"
+create_purchase,"CREATE OR REPLACE FUNCTION public.create_purchase(p_items jsonb, p_discount numeric DEFAULT 0, p_notes text DEFAULT NULL::text)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$declare
+  v_user_id uuid;
+  v_shop_id bigint;
+  v_role text;
+
+  v_purchase_id uuid;
+  v_purchase_no text;
+
+  v_item jsonb;
+
+  v_product_id uuid;
+  v_quantity numeric(12,3);
+  v_purchase_price numeric(12,2);
+
+  v_old_stock numeric(12,3);
+  v_new_stock numeric(12,3);
+
+  v_subtotal numeric(12,2) := 0;
+  v_total numeric(12,2);
+
+begin
+
+  -- ==========================================================
+  -- AUTH
+  -- ==========================================================
+
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'User is not authenticated';
+  end if;
+
+
+  -- ==========================================================
+  -- GET SHOP + ROLE
+  -- ==========================================================
+
+  select
+    sm.shop_id,
+    sm.role
+  into
+    v_shop_id,
+    v_role
+  from public.shop_members sm
+  where sm.user_id = v_user_id
+    and sm.is_active = true
+  limit 1;
+
+
+  if v_shop_id is null then
+    raise exception 'No active shop membership found';
+  end if;
+
+
+  -- ==========================================================
+  -- OWNER ONLY
+  -- ==========================================================
+
+  if v_role <> 'owner' then
+    raise exception
+      'Only shop owners can create purchases';
+  end if;
+
+
+  -- ==========================================================
+  -- VALIDATE ITEMS
+  -- ==========================================================
+
+  if p_items is null
+     or jsonb_typeof(p_items) <> 'array'
+     or jsonb_array_length(p_items) = 0 then
+
+    raise exception
+      'Purchase must contain at least one item';
+
+  end if;
+
+
+  -- ==========================================================
+  -- FIRST PASS
+  -- VALIDATE PRODUCTS + CALCULATE SUBTOTAL
+  -- ==========================================================
+
+  for v_item in
+    select * from jsonb_array_elements(p_items)
+  loop
+
+    v_product_id :=
+      (v_item ->> 'product_id')::uuid;
+
+    v_quantity :=
+      (v_item ->> 'quantity')::numeric;
+
+    v_purchase_price :=
+      (v_item ->> 'purchase_price')::numeric;
+
+
+    if v_quantity is null or v_quantity <= 0 then
+      raise exception
+        'Quantity must be greater than zero';
+    end if;
+
+
+    if v_purchase_price is null or v_purchase_price < 0 then
+      raise exception
+        'Purchase price cannot be negative';
+    end if;
+
+
+    -- Product MUST belong to owner's current shop
+    if not exists (
+      select 1
+      from public.products p
+      where p.id = v_product_id
+        and p.shop_id = v_shop_id
+        and p.is_active = true
+    ) then
+
+      raise exception
+        'Product not found or inactive: %',
+        v_product_id;
+
+    end if;
+
+
+    v_subtotal :=
+      v_subtotal +
+      (v_quantity * v_purchase_price);
+
+  end loop;
+
+
+  -- ==========================================================
+  -- TOTAL
+  -- No discount anymore
+  -- ==========================================================
+
+  v_total := v_subtotal;
+
+
+  -- ==========================================================
+  -- CREATE PURCHASE ID / NUMBER
+  -- ==========================================================
+
+  v_purchase_id := gen_random_uuid();
+
+  v_purchase_no :=
+    'PUR-' ||
+    upper(
+      substr(
+        replace(v_purchase_id::text, '-', ''),
+        1,
+        8
+      )
+    );
+
+
+  -- ==========================================================
+  -- CREATE PURCHASE
+  -- ==========================================================
+
+  insert into public.purchases (
+    id,
+    shop_id,
+    purchase_no,
+    purchase_date,
+    subtotal,
+    total_amount,
+    notes,
+    status,
+    created_by
+  )
+  values (
+    v_purchase_id,
+    v_shop_id,
+    v_purchase_no,
+    now(),
+    v_subtotal,
+    v_total,
+    p_notes,
+    'completed',
+    v_user_id
+  );
+
+
+  -- ==========================================================
+  -- PROCESS ITEMS
+  -- ==========================================================
+
+  for v_item in
+    select * from jsonb_array_elements(p_items)
+  loop
+
+    v_product_id :=
+      (v_item ->> 'product_id')::uuid;
+
+    v_quantity :=
+      (v_item ->> 'quantity')::numeric;
+
+    v_purchase_price :=
+      (v_item ->> 'purchase_price')::numeric;
+
+
+    -- ========================================================
+    -- LOCK SAME-SHOP PRODUCT
+    -- ========================================================
+
+    select p.current_stock
+    into v_old_stock
+    from public.products p
+    where p.id = v_product_id
+      and p.shop_id = v_shop_id
+      and p.is_active = true
+    for update;
+
+
+    if not found then
+      raise exception
+        'Product not found or inactive: %',
+        v_product_id;
+    end if;
+
+
+    v_old_stock :=
+      coalesce(v_old_stock, 0);
+
+    v_new_stock :=
+      v_old_stock + v_quantity;
+
+
+    -- ========================================================
+    -- PURCHASE ITEM
+    -- ========================================================
+
+    insert into public.purchase_items (
+      purchase_id,
+      product_id,
+      quantity,
+      purchase_price
+    )
+    values (
+      v_purchase_id,
+      v_product_id,
+      v_quantity,
+      v_purchase_price
+    );
+
+
+    -- ========================================================
+    -- UPDATE PRODUCT STOCK + PURCHASE PRICE
+    -- ========================================================
+
+    update public.products
+    set
+      current_stock = v_new_stock,
+      purchase_price = v_purchase_price,
+      updated_at = now(),
+      updated_by = v_user_id
+    where id = v_product_id
+      and shop_id = v_shop_id;
+
+
+    -- ========================================================
+    -- STOCK MOVEMENT
+    -- ========================================================
+
+    insert into public.stock_movements (
+      product_id,
+      movement_type,
+      quantity,
+      stock_before,
+      stock_after,
+      reference_type,
+      reference_id,
+      created_by
+    )
+    values (
+      v_product_id,
+      'purchase',
+      v_quantity,
+      v_old_stock,
+      v_new_stock,
+      'purchase',
+      v_purchase_id,
+      v_user_id
+    );
+
+  end loop;
+
+
+  -- ==========================================================
+  -- RETURN
+  -- ==========================================================
+
+  return v_purchase_id;
+
+end;$function$
+"
+create_sale,"CREATE OR REPLACE FUNCTION public.create_sale(p_items jsonb, p_discount numeric DEFAULT 0, p_payment_method text DEFAULT 'cash'::text, p_notes text DEFAULT NULL::text)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+
+declare
+  v_user_id uuid;
+  v_shop_id bigint;
+  v_role text;
+
+  v_sale_id uuid;
+  v_sale_no text;
+
+  v_item jsonb;
+  v_product_id uuid;
+
+  v_quantity numeric(12,3);
+  v_sale_price numeric(12,2);
+  v_requested_price numeric(12,2);
+
+  v_cost_price numeric(12,2);
+  v_old_stock numeric(12,3);
+  v_new_stock numeric(12,3);
+
+  v_subtotal numeric(12,2) := 0;
+  v_total numeric(12,2);
+
+begin
+
+  -- ==========================================================
+  -- AUTH
+  -- ==========================================================
+
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'User is not authenticated';
+  end if;
+
+
+  -- ==========================================================
+  -- GET SHOP + ROLE
+  -- ==========================================================
+
+  select
+    sm.shop_id,
+    sm.role
+  into
+    v_shop_id,
+    v_role
+  from public.shop_members sm
+  where sm.user_id = v_user_id
+    and sm.is_active = true
+  limit 1;
+
+
+  if v_shop_id is null then
+    raise exception 'No active shop membership found';
+  end if;
+
+
+  if v_role not in ('owner', 'staff') then
+    raise exception 'You are not allowed to create sales';
+  end if;
+
+
+  -- ==========================================================
+  -- VALIDATE ITEMS
+  -- ==========================================================
+
+  if p_items is null
+     or jsonb_typeof(p_items) <> 'array'
+     or jsonb_array_length(p_items) = 0 then
+
+    raise exception 'Sale must contain at least one item';
+
+  end if;
+
+
+  -- ==========================================================
+  -- DISCOUNT
+  -- ==========================================================
+
+  if coalesce(p_discount, 0) < 0 then
+    raise exception 'Discount cannot be negative';
+  end if;
+
+
+  -- STAFF CANNOT APPLY DISCOUNT
+  if v_role = 'staff'
+     and coalesce(p_discount, 0) <> 0 then
+
+    raise exception
+      'Staff members are not allowed to apply discounts.';
+
+  end if;
+
+
+  -- ==========================================================
+  -- PAYMENT METHOD
+  -- ==========================================================
+
+  p_payment_method := lower(trim(p_payment_method));
+
+  if p_payment_method not in ('cash', 'card') then
+    raise exception 'Invalid payment method';
+  end if;
+
+
+  -- ==========================================================
+  -- FIRST PASS
+  -- VALIDATE + CALCULATE SUBTOTAL
+  -- ==========================================================
+
+  for v_item in
+    select * from jsonb_array_elements(p_items)
+  loop
+
+    v_product_id :=
+      (v_item ->> 'product_id')::uuid;
+
+    v_quantity :=
+      (v_item ->> 'quantity')::numeric;
+
+
+    if v_quantity is null or v_quantity <= 0 then
+      raise exception
+        'Quantity must be greater than zero';
+    end if;
+
+
+    -- --------------------------------------------------------
+    -- STAFF:
+    -- ALWAYS use DB product sale price.
+    --
+    -- OWNER:
+    -- Can use requested/custom sale price.
+    -- --------------------------------------------------------
+
+    if v_role = 'staff' then
+
+      select p.sale_price
+      into v_sale_price
+      from public.products p
+      where p.id = v_product_id
+        and p.shop_id = v_shop_id
+        and p.is_active = true;
+
+
+      if not found then
+        raise exception
+          'Product not found or inactive: %',
+          v_product_id;
+      end if;
+
+
+      if v_sale_price is null or v_sale_price < 0 then
+        raise exception
+          'Invalid product sale price';
+      end if;
+
+    else
+
+      -- OWNER
+      if not exists (
+        select 1
+        from public.products p
+        where p.id = v_product_id
+          and p.shop_id = v_shop_id
+          and p.is_active = true
+      ) then
+
+        raise exception
+          'Product not found or inactive: %',
+          v_product_id;
+
+      end if;
+
+
+      v_requested_price :=
+        (v_item ->> 'sale_price')::numeric;
+
+
+      if v_requested_price is null
+         or v_requested_price < 0 then
+
+        raise exception
+          'Sale price cannot be negative';
+
+      end if;
+
+
+      v_sale_price := v_requested_price;
+
+    end if;
+
+
+    v_subtotal :=
+      v_subtotal +
+      (v_quantity * v_sale_price);
+
+  end loop;
+
+
+  -- ==========================================================
+  -- FINAL TOTAL
+  -- ==========================================================
+
+  if coalesce(p_discount, 0) > v_subtotal then
+    raise exception
+      'Discount cannot exceed subtotal';
+  end if;
+
+
+  v_total :=
+    v_subtotal - coalesce(p_discount, 0);
+
+
+  -- ==========================================================
+  -- CREATE SALE
+  -- ==========================================================
+
+  v_sale_id := gen_random_uuid();
+
+  v_sale_no :=
+    'SAL-' ||
+    upper(
+      substr(
+        replace(v_sale_id::text, '-', ''),
+        1,
+        8
+      )
+    );
+
+
+  insert into public.sales (
+    id,
+    shop_id,
+    sale_no,
+    sale_date,
+    subtotal,
+    discount,
+    total_amount,
+    payment_method,
+    notes,
+    status,
+    created_by
+  )
+  values (
+    v_sale_id,
+    v_shop_id,
+    v_sale_no,
+    now(),
+    v_subtotal,
+    coalesce(p_discount, 0),
+    v_total,
+    p_payment_method,
+    p_notes,
+    'completed',
+    v_user_id
+  );
+
+
+  -- ==========================================================
+  -- SECOND PASS
+  -- CREATE ITEMS + UPDATE STOCK
+  -- ==========================================================
+
+  for v_item in
+    select * from jsonb_array_elements(p_items)
+  loop
+
+    v_product_id :=
+      (v_item ->> 'product_id')::uuid;
+
+    v_quantity :=
+      (v_item ->> 'quantity')::numeric;
+
+
+    -- --------------------------------------------------------
+    -- LOCK PRODUCT
+    -- --------------------------------------------------------
+
+    select
+      p.current_stock,
+      p.purchase_price,
+      p.sale_price
+    into
+      v_old_stock,
+      v_cost_price,
+      v_sale_price
+    from public.products p
+    where p.id = v_product_id
+      and p.shop_id = v_shop_id
+      and p.is_active = true
+    for update;
+
+
+    if not found then
+      raise exception
+        'Product not found or inactive: %',
+        v_product_id;
+    end if;
+
+
+    v_old_stock :=
+      coalesce(v_old_stock, 0);
+
+    v_cost_price :=
+      coalesce(v_cost_price, 0);
+
+
+    -- --------------------------------------------------------
+    -- OWNER CUSTOM PRICE
+    -- Staff keeps DB sale_price loaded above.
+    -- --------------------------------------------------------
+
+    if v_role = 'owner' then
+
+      v_requested_price :=
+        (v_item ->> 'sale_price')::numeric;
+
+      if v_requested_price is null
+         or v_requested_price < 0 then
+
+        raise exception
+          'Sale price cannot be negative';
+
+      end if;
+
+      v_sale_price := v_requested_price;
+
+    end if;
+
+
+    -- ========================================================
+    -- STOCK CHECK
+    -- ========================================================
+
+    if v_quantity > v_old_stock then
+
+      raise exception
+        'Insufficient stock for product %. Available: %, Requested: %',
+        v_product_id,
+        v_old_stock,
+        v_quantity;
+
+    end if;
+
+
+    v_new_stock :=
+      v_old_stock - v_quantity;
+
+
+    -- ========================================================
+    -- SALE ITEM
+    -- ========================================================
+
+    insert into public.sale_items (
+      sale_id,
+      product_id,
+      quantity,
+      sale_price,
+      cost_price
+    )
+    values (
+      v_sale_id,
+      v_product_id,
+      v_quantity,
+      v_sale_price,
+      v_cost_price
+    );
+
+
+    -- ========================================================
+    -- UPDATE STOCK
+    -- ========================================================
+
+    update public.products
+    set
+      current_stock = v_new_stock,
+      updated_at = now(),
+      updated_by = v_user_id
+    where id = v_product_id
+      and shop_id = v_shop_id;
+
+
+    -- ========================================================
+    -- STOCK MOVEMENT
+    -- ========================================================
+
+    insert into public.stock_movements (
+      product_id,
+      movement_type,
+      quantity,
+      stock_before,
+      stock_after,
+      reference_type,
+      reference_id,
+      created_by
+    )
+    values (
+      v_product_id,
+      'sale',
+      -v_quantity,
+      v_old_stock,
+      v_new_stock,
+      'sale',
+      v_sale_id,
+      v_user_id
+    );
+
+  end loop;
+
+
+  return v_sale_id;
+
+end;
+
+$function$
+"
+create_staff_invitation,"CREATE OR REPLACE FUNCTION public.create_staff_invitation(p_email text)
+ RETURNS TABLE(invitation_id uuid, invitation_token uuid, invited_email text, shop_id bigint, shop_name text, expires_at timestamp with time zone)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  v_user_id uuid;
+  v_shop_id bigint;
+  v_shop_name text;
+  v_email text;
+begin
+  -- Current authenticated owner
+  v_user_id := auth.uid();
+
+  if v_user_id is null then
+    raise exception 'You must be logged in.';
+  end if;
+
+  -- Clean email
+  v_email := lower(trim(p_email));
+
+  if v_email is null or v_email = '' then
+    raise exception 'Please enter a valid email address.';
+  end if;
+
+  -- Find caller's OWNER membership
+  select
+    sm.shop_id,
+    s.shopename
+  into
+    v_shop_id,
+    v_shop_name
+  from public.shop_members sm
+  join public.shops s
+    on s.id = sm.shop_id
+  where sm.user_id = v_user_id
+    and sm.role = 'owner'
+    and sm.is_active = true
+  limit 1;
+
+  if v_shop_id is null then
+    raise exception 'Only a shop owner can invite staff.';
+  end if;
+
+  -- Our finalized rule:
+  -- Existing StockPulse account cannot be invited.
+  if exists (
+    select 1
+    from auth.users u
+    where lower(u.email) = v_email
+  ) then
+    raise exception
+      'This email is already registered with StockPulse. Please use another email.';
+  end if;
+
+  -- Prevent another active pending invite
+  if exists (
+    select 1
+    from public.staff_invitations si
+    where si.shop_id = v_shop_id
+      and lower(si.email) = v_email
+      and si.status = 'pending'
+      and si.expires_at > now()
+  ) then
+    raise exception
+      'A staff invitation has already been sent to this email.';
+  end if;
+
+  -- Expire old pending invitation if necessary
+  update public.staff_invitations si
+  set status = 'expired'
+  where si.shop_id = v_shop_id
+    and lower(si.email) = v_email
+    and si.status = 'pending'
+    and si.expires_at <= now();
+
+  -- Create new invitation
+  return query
+  insert into public.staff_invitations (
+    shop_id,
+    email,
+    invited_by
+  )
+  values (
+    v_shop_id,
+    v_email,
+    v_user_id
+  )
+  returning
+    staff_invitations.id,
+    staff_invitations.token,
+    staff_invitations.email,
+    staff_invitations.shop_id,
+    v_shop_name,
+    staff_invitations.expires_at;
+end;
+$function$
+"
+get_my_membership,"CREATE OR REPLACE FUNCTION public.get_my_membership()
+ RETURNS TABLE(shop_id bigint, shop_name text, role text, is_active boolean)
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+  select
+    sm.shop_id,
+    s.shopename,
+    sm.role,
+    sm.is_active
+  from public.shop_members sm
+  join public.shops s
+    on s.id = sm.shop_id
+  where sm.user_id = auth.uid()
+  limit 1;
+$function$
+"
+get_sale_creator_name,"CREATE OR REPLACE FUNCTION public.get_sale_creator_name(p_sale_id uuid)
+ RETURNS text
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  v_name text;
+begin
+  select p.full_name
+  into v_name
+  from public.sales s
+  left join public.profiles p
+    on p.id = s.created_by
+  where s.id = p_sale_id
+    and s.shop_id = public.my_shop_id()
+    and (
+      public.my_shop_role() = 'owner'
+      or s.created_by = auth.uid()
+    );
+
+  return coalesce(v_name, 'Unknown User');
+end;
+$function$
+"
+get_shop_staff,"CREATE OR REPLACE FUNCTION public.get_shop_staff()
+ RETURNS TABLE(user_id uuid, full_name text, email text, phone text, profile_img text, role text, status text, joined_at timestamp with time zone, invitation_id uuid)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_shop_id bigint;
+  v_role text;
+BEGIN
+
+  -- Get current user's active shop and role
+  SELECT
+    sm.shop_id,
+    sm.role
+  INTO
+    v_shop_id,
+    v_role
+  FROM public.shop_members sm
+  WHERE sm.user_id = auth.uid()
+    AND sm.is_active = true
+  LIMIT 1;
+
+  -- No active shop
+  IF v_shop_id IS NULL THEN
+    RAISE EXCEPTION 'No active shop membership found';
+  END IF;
+
+  -- Only owner can view staff
+  IF v_role <> 'owner' THEN
+    RAISE EXCEPTION 'Only shop owners can view staff members';
+  END IF;
+
+  RETURN QUERY
+
+  -- =========================================================
+  -- REGISTERED STAFF
+  -- =========================================================
+  SELECT
+    sm.user_id,
+
+    COALESCE(
+      NULLIF(TRIM(p.full_name), ''),
+      'Staff Member'
+    )::text AS full_name,
+
+    au.email::text AS email,
+
+    p.phone::text AS phone,
+
+    p.profile_img::text AS profile_img,
+
+    sm.role::text AS role,
+
+    CASE
+      WHEN sm.is_active THEN 'active'
+      ELSE 'inactive'
+    END::text AS status,
+
+    sm.created_at AS joined_at,
+
+    NULL::uuid AS invitation_id
+
+  FROM public.shop_members sm
+
+  LEFT JOIN public.profiles p
+    ON p.id = sm.user_id
+
+  LEFT JOIN auth.users au
+    ON au.id = sm.user_id
+
+  WHERE sm.shop_id = v_shop_id
+    AND sm.role = 'staff'
+
+
+  UNION ALL
+
+
+  -- =========================================================
+  -- PENDING STAFF INVITATIONS
+  -- =========================================================
+  SELECT
+    NULL::uuid AS user_id,
+
+    'Staff Member'::text AS full_name,
+
+    si.email::text AS email,
+
+    NULL::text AS phone,
+
+    NULL::text AS profile_img,
+
+    'staff'::text AS role,
+
+    'pending'::text AS status,
+
+    si.created_at AS joined_at,
+
+    si.id::uuid AS invitation_id
+
+  FROM public.staff_invitations si
+
+  WHERE si.shop_id = v_shop_id
+    AND si.status = 'pending'
+
+  -- joined_at is now column #8
+  ORDER BY 8 DESC;
+
+END;
+$function$
+"
+get_staff_invitation_email,"CREATE OR REPLACE FUNCTION public.get_staff_invitation_email(p_token uuid)
+ RETURNS text
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$DECLARE
+  v_email text;
+  v_status text;
+  v_expires_at timestamptz;
+
+BEGIN
+  -- Token ko pehle WITHOUT status/expiry filtering find karo
+  SELECT
+    si.email,
+    si.status,
+    si.expires_at
+  INTO
+    v_email,
+    v_status,
+    v_expires_at
+  FROM public.staff_invitations si
+  WHERE si.token = p_token
+  LIMIT 1;
+
+  -- Token doesn't exist
+  IF v_email IS NULL THEN
+    RAISE EXCEPTION 'Invitation is invalid or has been cancelled.';
+  END IF;
+
+  -- Invitation expired
+  IF v_expires_at <= now() THEN
+    RAISE EXCEPTION 'Invitation has expired.';
+  END IF;
+
+  -- Invitation is no longer pending
+  IF v_status <> 'pending' THEN
+    RAISE EXCEPTION 'Invitation is no longer valid.';
+  END IF;
+
+  RETURN v_email;
+END;$function$
+"
+get_staff_products,"CREATE OR REPLACE FUNCTION public.get_staff_products()
+ RETURNS TABLE(id uuid, article text, category_id uuid, color text, size text, barcode text, unit text, sale_price numeric, current_stock numeric, min_stock_threshold numeric, image_url text, is_active boolean)
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  v_shop_id bigint;
+  v_role text;
+begin
+
+  select
+    sm.shop_id,
+    sm.role
+  into
+    v_shop_id,
+    v_role
+  from public.shop_members sm
+  where sm.user_id = auth.uid()
+    and sm.is_active = true
+  limit 1;
+
+  if v_shop_id is null then
+    raise exception 'No active shop membership found';
+  end if;
+
+  if v_role <> 'staff' then
+    raise exception 'This function is only available to staff members';
+  end if;
+
+  return query
+  select
+    p.id,
+    p.article,
+    p.category_id,
+    p.color,
+    p.size,
+    p.barcode,
+    p.unit,
+    p.sale_price,
+    p.current_stock,
+    p.min_stock_threshold,
+    p.image_url,
+    p.is_active
+  from public.products p
+  where p.shop_id = v_shop_id
+    and p.is_active = true
+  order by p.article;
+end;
+$function$
+"
+handle_new_user,"CREATE OR REPLACE FUNCTION public.handle_new_user()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+BEGIN
+  INSERT INTO public.profiles (
+    id,
+    full_name,
+    phone
+  )
+  VALUES (
+    NEW.id,
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NEW.raw_user_meta_data->>'name'
+    ),
+    NEW.raw_user_meta_data->>'phone'
+  );
+
+  RETURN NEW;
+END;
+$function$
+"
+my_shop_id,"CREATE OR REPLACE FUNCTION public.my_shop_id()
+ RETURNS bigint
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+  select sm.shop_id
+  from public.shop_members sm
+  where sm.user_id = auth.uid()
+    and sm.is_active = true
+  limit 1;
+$function$
+"
+my_shop_role,"CREATE OR REPLACE FUNCTION public.my_shop_role()
+ RETURNS text
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+  select sm.role
+  from public.shop_members sm
+  where sm.user_id = auth.uid()
+    and sm.is_active = true
+  limit 1;
+$function$
+"
+resend_staff_invitation,"CREATE OR REPLACE FUNCTION public.resend_staff_invitation(p_invitation_id uuid)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+begin
+
+  update staff_invitations
+  set
+    expires_at = now() + interval '24 hours'
+  where id = p_invitation_id;
+
+  if not found then
+    raise exception 'Invitation not found';
+  end if;
+
+end;
+$function$
+"
+set_product_number_and_barcode,"CREATE OR REPLACE FUNCTION public.set_product_number_and_barcode()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+    v_product_no bigint;
+BEGIN
+
+    -- Generate next product number for this shop
+    IF NEW.product_no IS NULL THEN
+
+        INSERT INTO public.product_counters (
+            shop_id,
+            last_number
+        )
+        VALUES (
+            NEW.shop_id,
+            1
+        )
+        ON CONFLICT (shop_id)
+        DO UPDATE SET
+            last_number = product_counters.last_number + 1
+        RETURNING last_number
+        INTO v_product_no;
+
+        NEW.product_no := v_product_no;
+
+    END IF;
+
+
+    -- Generate barcode automatically when empty
+    IF NEW.barcode IS NULL
+       OR TRIM(NEW.barcode) = '' THEN
+
+        NEW.barcode :=
+            'S' ||
+            NEW.shop_id::text ||
+            '-P' ||
+            NEW.product_no::text;
+
+    ELSE
+
+        -- Normalize manually entered barcode
+        NEW.barcode := UPPER(
+            TRIM(NEW.barcode)
+        );
+
+    END IF;
+
+    RETURN NEW;
+END;
+$function$
+"
+set_staff_status,"CREATE OR REPLACE FUNCTION public.set_staff_status(p_user_id uuid, p_is_active boolean)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare
+  v_owner_id uuid;
+  v_shop_id bigint;
+  v_role text;
+begin
+  v_owner_id := auth.uid();
+
+  if v_owner_id is null then
+    raise exception 'Authentication required';
+  end if;
+
+  -- Current user must be active owner
+  select
+    sm.shop_id,
+    sm.role
+  into
+    v_shop_id,
+    v_role
+  from public.shop_members sm
+  where sm.user_id = v_owner_id
+    and sm.is_active = true
+  limit 1;
+
+  if v_shop_id is null or v_role <> 'owner' then
+    raise exception 'Only shop owners can manage staff';
+  end if;
+
+  -- Target must be staff of same shop
+  if not exists (
+    select 1
+    from public.shop_members sm
+    where sm.user_id = p_user_id
+      and sm.shop_id = v_shop_id
+      and sm.role = 'staff'
+  ) then
+    raise exception 'Staff member not found';
+  end if;
+
+  update public.shop_members
+  set
+    is_active = p_is_active,
+    updated_at = now()
+  where user_id = p_user_id
+    and shop_id = v_shop_id
+    and role = 'staff';
+
+  return true;
+end;
+$function$
+"
