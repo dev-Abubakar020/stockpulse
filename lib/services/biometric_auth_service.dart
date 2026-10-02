@@ -7,204 +7,126 @@ import 'local_auth_service.dart';
 class BiometricAuthService {
   BiometricAuthService._();
 
-  static final BiometricAuthService instance =
-  BiometricAuthService._();
+  static final BiometricAuthService instance = BiometricAuthService._();
 
   final GetStorage _box = GetStorage();
-
-  final FlutterSecureStorage _secureStorage =
-  const FlutterSecureStorage();
-
-  final LocalAuthService _localAuth =
-      LocalAuthService.instance;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final LocalAuthService _localAuth = LocalAuthService.instance;
 
   // GetStorage keys
-  static const String _biometricEnabledKey =
-      'biometric_enabled';
+  static const String _biometricEnabledKey = 'biometric_enabled';
+  static const String _biometricUserIdKey = 'biometric_user_id';
+  static const String _biometricEmailKey = 'biometric_email';
 
-  static const String _biometricUserIdKey =
-      'biometric_user_id';
+  // Secure Storage keys
+  static const String _securePasswordKey = 'secure_login_password';
 
-  static const String _biometricEmailKey =
-      'biometric_email';
+  bool get isBiometricEnabled => _box.read<bool>(_biometricEnabledKey) ?? false;
+  String? get biometricUserId => _box.read<String>(_biometricUserIdKey);
+  String? get biometricEmail => _box.read<String>(_biometricEmailKey);
 
-  // Secure Storage key
-  static const String _biometricPasswordKey =
-      'biometric_password';
-
-  bool get isBiometricEnabled =>
-      _box.read<bool>(_biometricEnabledKey) ?? false;
-
-  String? get biometricUserId =>
-      _box.read<String>(_biometricUserIdKey);
-
-  String? get biometricEmail =>
-      _box.read<String>(_biometricEmailKey);
-
-  /// Should fingerprint button be shown on login screen?
+  /// Check whether biometric login can be shown on login screen
   Future<bool> canUseBiometricLogin() async {
-    if (!isBiometricEnabled) {
-      return false;
-    }
+    if (!isBiometricEnabled) return false;
+    if (biometricUserId == null || biometricEmail == null) return false;
 
-    if (biometricUserId == null ||
-        biometricEmail == null) {
-      return false;
-    }
-
-    final password = await _secureStorage.read(
-      key: _biometricPasswordKey,
-    );
-
-    if (password == null || password.isEmpty) {
-      return false;
-    }
+    final password = await _secureStorage.read(key: _securePasswordKey);
+    if (password == null || password.isEmpty) return false;
 
     return await _localAuth.isBiometricAvailable();
   }
 
-  /// Called AFTER normal Supabase login.
-  ///
-  /// User must already be authenticated before this method
-  /// is called.
-  Future<bool> enableBiometric({
+  /// Enable biometric login AFTER successful login
+  Future<bool> enableBiometricForCurrentUser({
     required String userId,
     required String email,
     required String password,
   }) async {
     try {
-      final available =
-      await _localAuth.isBiometricAvailable();
+      final available = await _localAuth.isBiometricAvailable();
+      if (!available) return false;
 
-      if (!available) {
-        return false;
-      }
-
-      final authenticated =
-      await _localAuth.authenticate(
-        reason:
-        'Verify your identity to enable biometric login',
+      final authenticated = await _localAuth.authenticate(
+        reason: 'Use your fingerprint to verify your identity.',
       );
+      if (!authenticated) return false;
 
-      if (!authenticated) {
-        return false;
-      }
-
-      await _secureStorage.write(
-        key: _biometricPasswordKey,
-        value: password,
-      );
-
-      await _box.write(
-        _biometricUserIdKey,
-        userId,
-      );
-
-      await _box.write(
-        _biometricEmailKey,
-        email.trim().toLowerCase(),
-      );
-
-      // Write this last so incomplete setup cannot appear enabled.
-      await _box.write(
-        _biometricEnabledKey,
-        true,
-      );
+      await _secureStorage.write(key: _securePasswordKey, value: password);
+      await _box.write(_biometricUserIdKey, userId);
+      await _box.write(_biometricEmailKey, email.trim().toLowerCase());
+      await _box.write(_biometricEnabledKey, true);
 
       return true;
     } catch (e) {
       debugPrint('Enable biometric error: $e');
-
-      // Avoid partially configured biometric login.
       await clearBiometricData();
-
       return false;
     }
   }
 
-  /// Authenticate fingerprint and return credentials.
-  ///
-  /// Supabase login will be performed by LoginController /
-  /// AuthRepository, not this storage service.
-  Future<BiometricCredentials?>
-  getCredentialsAfterAuthentication() async {
+  /// Authenticate using biometric and return credentials
+  Future<BiometricCredentials?> loginWithBiometric() async {
     try {
-      if (!await canUseBiometricLogin()) {
-        return null;
-      }
+      if (!await canUseBiometricLogin()) return null;
 
-      final authenticated =
-      await _localAuth.authenticate(
-        reason: 'Login to StockPulse',
+      final authenticated = await _localAuth.authenticate(
+        reason: 'Login to StockPulse using biometrics',
       );
-
-      if (!authenticated) {
-        return null;
-      }
+      if (!authenticated) return null;
 
       final email = biometricEmail;
+      final password = await _secureStorage.read(key: _securePasswordKey);
 
-      final password = await _secureStorage.read(
-        key: _biometricPasswordKey,
-      );
-
-      if (email == null ||
-          password == null ||
-          password.isEmpty) {
+      if (email == null || password == null || password.isEmpty) {
         return null;
       }
 
-      return BiometricCredentials(
-        email: email,
-        password: password,
-      );
+      return BiometricCredentials(email: email, password: password);
     } catch (e) {
-      debugPrint('Biometric credential error: $e');
+      debugPrint('Biometric login error: $e');
       return null;
     }
   }
 
-  /// Call AFTER another user successfully logs in.
-  ///
-  /// This prevents User B from inheriting User A's
-  /// biometric configuration.
-  Future<void> handleAuthenticatedUserChange(
-      String authenticatedUserId,
-      ) async {
+  /// CRITICAL MULTI-USER SCENARIO:
+  /// Called AFTER User B successfully logs in.
+  /// Compares saved biometric user ID vs new Supabase authenticated user ID.
+  /// If different, clears previous user's security data.
+  Future<void> handleAuthenticatedUserChange(String newUserId) async {
     try {
       final savedUserId = biometricUserId;
-
-      if (savedUserId == null) {
-        return;
-      }
-
-      if (savedUserId != authenticatedUserId) {
-        await clearBiometricData();
-
-        // Next step:
-        // clear Remember Me data here as well through
-        // the existing Remember Me implementation.
+      if (savedUserId != null && savedUserId != newUserId) {
+        debugPrint('Different user detected ($newUserId vs saved $savedUserId). Clearing previous user security data.');
+        await clearAllSavedLoginData();
       }
     } catch (e) {
-      debugPrint('Account change handling error: $e');
+      debugPrint('Handle authenticated user change error: $e');
     }
   }
 
   Future<void> disableBiometric() async {
-    await clearBiometricData();
-  }
-
-  Future<void> clearBiometricData() async {
     try {
-      await _secureStorage.delete(
-        key: _biometricPasswordKey,
-      );
-
+      await _secureStorage.delete(key: _securePasswordKey);
       await _box.remove(_biometricEnabledKey);
       await _box.remove(_biometricUserIdKey);
       await _box.remove(_biometricEmailKey);
     } catch (e) {
-      debugPrint('Clear biometric data error: $e');
+      debugPrint('Disable biometric error: $e');
+    }
+  }
+
+  Future<void> clearBiometricData() async {
+    await disableBiometric();
+  }
+
+  Future<void> clearAllSavedLoginData() async {
+    try {
+      await _secureStorage.delete(key: _securePasswordKey);
+      await _box.remove(_biometricEnabledKey);
+      await _box.remove(_biometricUserIdKey);
+      await _box.remove(_biometricEmailKey);
+    } catch (e) {
+      debugPrint('Clear all saved login data error: $e');
     }
   }
 }

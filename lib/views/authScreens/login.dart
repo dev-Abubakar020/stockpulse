@@ -9,6 +9,7 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
+import 'package:stockpulse/services/biometric_auth_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
@@ -22,7 +23,35 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool rememberMe = true;
+  bool _canBiometric = false;
+  bool _hasAttemptedAutoBiometric = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAndTriggerBiometric();
+  }
+
+  Future<void> _checkAndTriggerBiometric() async {
+    try {
+      final available = await BiometricAuthService.instance.canUseBiometricLogin();
+      if (mounted) {
+        setState(() {
+          _canBiometric = available;
+        });
+
+        if (available && !_hasAttemptedAutoBiometric) {
+          _hasAttemptedAutoBiometric = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final controller = Get.find<LoginController>();
+            controller.showBiometricOrManualPrompt();
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Check biometric login error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 12),
                       _LoginCard(
                         controller: controller,
-                        rememberMe: rememberMe,
-                        onRememberChanged: (val) {
-                          setState(() => rememberMe = val ?? false);
-                        },
+                        canBiometric: _canBiometric,
                       ),
                       const SizedBox(height: AppConstants.spaceSM),
                       Row(
@@ -157,7 +183,6 @@ class _BrandHeader extends StatelessWidget {
             letterSpacing: -0.5,
           ),
         ),
-        // const SizedBox(height: 6),
         Text(
           AppConstants.loginSlug,
           textAlign: TextAlign.center,
@@ -175,13 +200,11 @@ class _BrandHeader extends StatelessWidget {
 class _LoginCard extends StatelessWidget {
   const _LoginCard({
     required this.controller,
-    required this.rememberMe,
-    required this.onRememberChanged,
+    required this.canBiometric,
   });
 
   final LoginController controller;
-  final bool rememberMe;
-  final ValueChanged<bool?> onRememberChanged;
+  final bool canBiometric;
 
   @override
   Widget build(BuildContext context) {
@@ -245,36 +268,8 @@ class _LoginCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: Checkbox(
-                      value: rememberMe,
-                      onChanged: onRememberChanged,
-                      activeColor: theme.primary,
-                      checkColor: Colors.white,
-                      side: BorderSide(color: theme.border, width: 1.5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    AppConstants.rememberMe,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: theme.textSecondary,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
               GestureDetector(
                 onTap: () => Get.toNamed(Routes.forgotPassword),
                 child: Text(
@@ -301,7 +296,7 @@ class _LoginCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 18),
           const _OrDivider(),
           const SizedBox(height: 18),
           Row(
@@ -345,33 +340,6 @@ class _LoginCard extends StatelessWidget {
                 ),
               ],
               const SizedBox(width: 10),
-
-              ///Will be used in future for mobile OTP login
-              // Expanded(
-              //   child: _SocialTile(
-              //     tooltip: 'Mobile OTP',
-              //     onTap: () => Get.toNamed(Routes.phoneDetails),
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         Icon(
-              //           Icons.phone_iphone_rounded,
-              //           color: theme.primary,
-              //           size: 20,
-              //         ),
-              //         const SizedBox(width: 6),
-              //         Text(
-              //           'OTP',
-              //           style: TextStyle(
-              //             color: theme.textPrimary,
-              //             fontSize: 13,
-              //             fontWeight: FontWeight.w700,
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ],

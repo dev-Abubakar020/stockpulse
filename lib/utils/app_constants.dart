@@ -824,4 +824,17 @@ class AppConstants {
   static const String saleDetailsTitle = 'Sale Details';
   static const String soldItemsHeader = 'Sold Items';
   static const String noItemsSale = 'No items found for this sale.';
+
+  //Enable Biometric consts
+  static const String notNow = 'Not Now';
+  static const String enabled = 'Enable';
+  static const String contLogin = 'Continue';
+  static const String manualLogin = 'Manual Login';
+  static const String enableBiometric = 'Biometric Enabled' ;
+  static const String biometricEnabled = 'Enable Biometric Login?' ;
+  static const String biometricAvailable = 'Biometric Login Available';
+  static const String biometricDetail = 'You can now use your fingerprint to log in.';
+  static const String enableBiometricSlug = 'Log in faster and securely with your fingerprint or face ID.';
+  static const String manualLoginDetail = 'Would you like to continue logging in with biometrics or use manual login?';
+
 }
