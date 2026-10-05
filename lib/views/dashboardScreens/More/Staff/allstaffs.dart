@@ -11,12 +11,11 @@ import '../../../../controllers/staff_controller.dart';
 import '../../../../models/staff_model.dart';
 import '../../../../utils/app_constants.dart';
 
-class AllStaffView extends StatelessWidget {
+class AllStaffView extends GetView<StaffController> {
   const AllStaffView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final StaffController controller = Get.find<StaffController>();
 
     return CustomScreen(
       appBar: const CustomAppBar(

@@ -2,107 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class BarcodeScannerView extends StatefulWidget {
-  const BarcodeScannerView({super.key});
-
-  @override
-  State<BarcodeScannerView> createState() =>
-      _BarcodeScannerViewState();
-}
-
-class _BarcodeScannerViewState
-    extends State<BarcodeScannerView> {
-
-  final MobileScannerController scannerController =
-  MobileScannerController(
-    detectionSpeed: DetectionSpeed.noDuplicates,
-    formats: [
-      BarcodeFormat.code128,
-      BarcodeFormat.ean13,
-      BarcodeFormat.ean8,
-      BarcodeFormat.upcA,
-      BarcodeFormat.upcE,
-    ],
-  );
-
+class BarcodeScannerController extends GetxController {
+  late final MobileScannerController scannerController;
   bool _isProcessing = false;
 
-  // =========================================================
-  // BARCODE DETECTED
-  // =========================================================
+  @override
+  void onInit() {
+    super.onInit();
+    scannerController = MobileScannerController(
+      detectionSpeed: DetectionSpeed.noDuplicates,
+      formats: [
+        BarcodeFormat.code128,
+        BarcodeFormat.ean13,
+        BarcodeFormat.ean8,
+        BarcodeFormat.upcA,
+        BarcodeFormat.upcE,
+      ],
+    );
+  }
 
-  void _onDetect(BarcodeCapture capture) {
+  void onDetect(BarcodeCapture capture) {
     if (_isProcessing) return;
-
     if (capture.barcodes.isEmpty) return;
 
-    final String? rawValue =
-        capture.barcodes.first.rawValue;
-
-    if (rawValue == null ||
-        rawValue.trim().isEmpty) {
-      return;
-    }
+    final String? rawValue = capture.barcodes.first.rawValue;
+    if (rawValue == null || rawValue.trim().isEmpty) return;
 
     _isProcessing = true;
-
     final code = rawValue.trim().toUpperCase();
-
     debugPrint('SCANNED BARCODE: $code');
 
-    // Stop camera before closing screen.
     scannerController.stop();
-
-    // Return scanned barcode to Dashboard.
     Get.back(result: code);
   }
 
-  // =========================================================
-  // DISPOSE
-  // =========================================================
-
   @override
-  void dispose() {
+  void onClose() {
     scannerController.dispose();
-    super.dispose();
+    super.onClose();
   }
+}
 
-  // =========================================================
-  // BUILD
-  // =========================================================
+class BarcodeScannerView extends GetView<BarcodeScannerController> {
+  const BarcodeScannerView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Get.put(BarcodeScannerController());
     return Scaffold(
       backgroundColor: Colors.black,
-
       body: Stack(
         children: [
-          // ---------------------------------------------------
-          // CAMERA
-          // ---------------------------------------------------
-
           Positioned.fill(
             child: MobileScanner(
-              controller: scannerController,
-              onDetect: _onDetect,
+              controller: controller.scannerController,
+              onDetect: controller.onDetect,
             ),
           ),
-
-          // ---------------------------------------------------
-          // DARK OVERLAY + SCAN WINDOW
-          // ---------------------------------------------------
-
           Positioned.fill(
             child: CustomPaint(
               painter: _ScannerOverlayPainter(),
             ),
           ),
-
-          // ---------------------------------------------------
-          // TOP BAR
-          // ---------------------------------------------------
-
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -110,14 +71,12 @@ class _BarcodeScannerViewState
                 vertical: 10,
               ),
               child: Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _ScannerButton(
                     icon: Icons.close_rounded,
                     onTap: () => Get.back(),
                   ),
-
                   const Text(
                     'Scan Barcode',
                     style: TextStyle(
@@ -126,28 +85,20 @@ class _BarcodeScannerViewState
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-
                   _ScannerButton(
                     icon: Icons.flash_on_rounded,
                     onTap: () {
-                      scannerController.toggleTorch();
+                      controller.scannerController.toggleTorch();
                     },
                   ),
                 ],
               ),
             ),
           ),
-
-          // ---------------------------------------------------
-          // CENTER TEXT
-          // ---------------------------------------------------
-
           const Align(
             alignment: Alignment(0, 0.38),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 30,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 30),
               child: Text(
                 'Place the product barcode inside the frame',
                 textAlign: TextAlign.center,
@@ -164,10 +115,6 @@ class _BarcodeScannerViewState
     );
   }
 }
-
-// ===========================================================
-// TOP BUTTON
-// ===========================================================
 
 class _ScannerButton extends StatelessWidget {
   final IconData icon;
@@ -200,10 +147,6 @@ class _ScannerButton extends StatelessWidget {
   }
 }
 
-// ===========================================================
-// SCANNER OVERLAY
-// ===========================================================
-
 class _ScannerOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -217,48 +160,27 @@ class _ScannerOverlayPainter extends CustomPainter {
     final top = (size.height - scanHeight) / 2;
 
     final scanRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        left,
-        top,
-        scanWidth,
-        scanHeight,
-      ),
+      Rect.fromLTWH(left, top, scanWidth, scanHeight),
       const Radius.circular(18),
     );
 
     final path = Path()
-      ..addRect(
-        Rect.fromLTWH(
-          0,
-          0,
-          size.width,
-          size.height,
-        ),
-      )
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
       ..addRRect(scanRect)
       ..fillType = PathFillType.evenOdd;
 
-    canvas.drawPath(
-      path,
-      overlayPaint,
-    );
+    canvas.drawPath(path, overlayPaint);
 
-    // Scanner frame
     final borderPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5;
 
-    canvas.drawRRect(
-      scanRect,
-      borderPaint,
-    );
+    canvas.drawRRect(scanRect, borderPaint);
   }
 
   @override
-  bool shouldRepaint(
-      covariant CustomPainter oldDelegate,
-      ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }

@@ -7,6 +7,8 @@ class AppColors {
   // ==================== BRAND COLORS ====================
   static const Color primary = Color(0xFF0F766E); // Deep Teal (Light)
   static const Color primaryDark = Color(0xFF115E59);
+  static const Color primaryGreen = Color(0xFF1B5E3A);
+  static const Color unselectedColor = Color(0xFF757575);
   static const Color secondary = Color(0xFF14263D); // Midnight Navy
   static const Color accent = Color(0xFFD5A84B); // Muted Gold
 

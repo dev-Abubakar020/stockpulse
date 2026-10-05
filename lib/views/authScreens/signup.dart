@@ -16,19 +16,11 @@ import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
 
-class SignupView extends StatefulWidget {
+class SignupView extends GetView<SignupController> {
   const SignupView({super.key});
 
   @override
-  State<SignupView> createState() => _SignupViewState();
-}
-
-class _SignupViewState extends State<SignupView> {
-  bool agreeToTerms = true;
-
-  @override
   Widget build(BuildContext context) {
-    final controller = Get.find<SignupController>();
     final theme = context.appTheme;
 
     return CustomScreen(
@@ -52,10 +44,6 @@ class _SignupViewState extends State<SignupView> {
                 const SizedBox(height: 24),
                 _SignupCard(
                   controller: controller,
-                  agreeToTerms: agreeToTerms,
-                  onTermsChanged: (val) {
-                    setState(() => agreeToTerms = val ?? false);
-                  },
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -176,13 +164,9 @@ class _BrandHeader extends StatelessWidget {
 class _SignupCard extends StatelessWidget {
   const _SignupCard({
     required this.controller,
-    required this.agreeToTerms,
-    required this.onTermsChanged,
   });
 
   final SignupController controller;
-  final bool agreeToTerms;
-  final ValueChanged<bool?> onTermsChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -297,14 +281,19 @@ class _SignupCard extends StatelessWidget {
               SizedBox(
                 width: 22,
                 height: 22,
-                child: Checkbox(
-                  value: agreeToTerms,
-                  onChanged: onTermsChanged,
-                  activeColor: theme.primary,
-                  checkColor: Colors.white,
-                  side: BorderSide(color: theme.border, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
+                child: Obx(
+                      () => Checkbox(
+                    value: controller.agreeToTerms,
+                    onChanged: controller.toggleTerms,
+                    activeColor: theme.primary,
+                    checkColor: Colors.white,
+                    side: BorderSide(
+                      color: theme.border,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
                 ),
               ),
@@ -352,7 +341,9 @@ class _SignupCard extends StatelessWidget {
           Obx(
             () => AppButton(
               text: AppConstants.createAccountBtn,
-              onPressed: agreeToTerms ? controller.signup : null,
+              onPressed: controller.agreeToTerms
+                  ? controller.signup
+                  : null,
               isLoading: controller.isLoading.value,
               suffixIcon: const Icon(
                 Icons.arrow_forward_rounded,

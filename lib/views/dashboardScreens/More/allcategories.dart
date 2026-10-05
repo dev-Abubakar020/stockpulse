@@ -11,13 +11,11 @@ import '../../../common/widgets/Custom_filter.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/product_shimmer.dart';
 
-class AllCategories extends StatelessWidget {
+class AllCategories extends GetView<CategoryController> {
   const AllCategories({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Find the injected CategoryController
-    final CategoryController controller = Get.find<CategoryController>();
 
     return CustomScreen(
       appBar: const CustomAppBar(

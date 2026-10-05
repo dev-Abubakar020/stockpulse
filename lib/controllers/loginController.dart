@@ -11,9 +11,12 @@ import 'package:stockpulse/services/session_cleanup_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../common/data/countries_data.dart';
+import '../common/data/phone_hint.dart';
 import '../common/exceptional/platform_exceptions.dart';
 import '../common/exceptional/validator.dart';
 import '../common/widgets/custom_snackbar.dart';
+import '../models/country_model.dart';
 import '../services/deep_link_service.dart';
 import '../services/role_service.dart';
 
@@ -32,9 +35,38 @@ class LoginController extends GetxController {
   final isPhoneLoading = false.obs;
   final isOtpSent = false.obs;
   final obscurePassword = true.obs;
+  final canBiometric = false.obs;
+  final Rx<CountryModel> selectedCountry = countries
+      .firstWhere((country) => country.isoCode == 'PK')
+      .obs;
 
-  String? _verificationId;
+  String get phoneHint =>
+      getPhoneHint(selectedCountry.value.isoCode);
   String phoneNumberForOtp = '';
+  bool _hasAttemptedAutoBiometric = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkAndTriggerBiometric();
+  }
+
+  Future<void> checkAndTriggerBiometric() async {
+    try {
+      final available =
+      await BiometricAuthService.instance.canUseBiometricLogin();
+
+      if (available && !_hasAttemptedAutoBiometric) {
+        _hasAttemptedAutoBiometric = true;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showBiometricOrManualPrompt();
+        });
+      }
+    } catch (e) {
+      debugPrint('Check biometric login error: $e');
+    }
+  }
 
   Future<void> _handlePostLoginNavigation() async {
     Get.find<LocalStorageService>().setLoggedIn(true);
@@ -400,6 +432,17 @@ class LoginController extends GetxController {
     }
   }
 
+
+  void changeCountry(CountryModel country) {
+    selectedCountry.value = country;
+  }
+
+  Future<void> sendPhoneOtp() {
+    return sendOtp(
+      dialCode: selectedCountry.value.dialCode,
+    );
+  }
+
   Future<void> sendOtp({required String dialCode}) async {
     if (isPhoneLoading.value) return;
     final localPhone = phoneController.text.replaceAll(RegExp(r'\D'), '');
@@ -418,13 +461,11 @@ class LoginController extends GetxController {
     final normalizedPhone = localPhone.replaceFirst(RegExp(r'^0+'), '');
     final phone = '$dialCode$normalizedPhone';
     phoneNumberForOtp = phone;
-
     try {
       isPhoneLoading.value = true;
       await authRepository.sendPhoneOtp(
         phoneNumber: phone,
         onCodeSent: (verificationId) {
-          _verificationId = verificationId;
           isOtpSent.value = true;
           isPhoneLoading.value = false;
           Get.toNamed(Routes.otpVerification);

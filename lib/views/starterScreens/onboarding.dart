@@ -7,40 +7,32 @@ import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
-class OnboardingScreen extends StatefulWidget {
+import '../../controllers/onboardingController.dart';
+
+
+class OnboardingScreen extends GetView<OnboardingController> {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
-}
-
-class _OnboardingScreenState extends State<OnboardingScreen> {
-  late PageController _controller;
-
-  @override
-  void initState() {
-    _controller = PageController();
-    super.initState();
-  }
-
-  int _currentPage = 0;
-
-  AnimatedContainer _buildDots({int? index}) {
+  Widget build(BuildContext context) {
+  Widget _buildDot({
+    required bool isActive,
+  }) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(50)),
+        borderRadius: BorderRadius.all(
+          Radius.circular(50),
+        ),
         color: Color(0xFF000000),
       ),
       margin: const EdgeInsets.only(right: 5),
       height: 10,
       curve: Curves.easeIn,
-      width: _currentPage == index ? 20 : 10,
+      width: isActive ? 20 : 10,
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
     SizeConfig().init(context);
     double width = SizeConfig.screenW!;
     double height = SizeConfig.screenH!;
@@ -57,8 +49,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               flex: 3,
               child: PageView.builder(
                 physics: const BouncingScrollPhysics(),
-                controller: _controller,
-                onPageChanged: (value) => setState(() => _currentPage = value),
+                controller: controller.pageController,
+                onPageChanged: controller.onPageChanged,
                 itemCount: contents.length,
                 itemBuilder: (context, i) {
                   return Padding(
@@ -107,59 +99,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       contents.length,
-                      (int index) => _buildDots(index: index),
+                      (index) => _buildDot(isActive:
+                      controller.currentPage.value == index,
+                      ),
                     ),
                   ),
-                  _currentPage + 1 == contents.length
-                      ? Padding(
-                          padding: const EdgeInsets.all(30),
-                          child: AppButton(
-                            text: AppConstants.start,
+                  Obx(
+                        () => controller.currentPage.value + 1 == contents.length
+                        ? Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: AppButton(
+                        text: AppConstants.start,
+                        onPressed: () {
+                          Get.find<LocalStorageService>()
+                              .setNotFirstTime();
+
+                          Get.offAllNamed(Routes.login);
+                        },
+                      ),
+                    )
+                        : Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
                             onPressed: () {
-                              Get.find<LocalStorageService>().setNotFirstTime();
+                              Get.find<LocalStorageService>()
+                                  .setNotFirstTime();
+
                               Get.offAllNamed(Routes.login);
                             },
+                            child: Text(AppConstants.skip),
                           ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Get.find<LocalStorageService>().setNotFirstTime();
-                                  Get.offAllNamed(Routes.login);
-                                },
-                                style: TextButton.styleFrom(
-                                  elevation: 0,
-                                  textStyle: GoogleFonts.manrope(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: (width <= 550) ? 13 : 17,
-                                  ),
-                                ),
-                                child: Text(
-                                  AppConstants.skip,
-                                  style: GoogleFonts.manrope(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface,
-                                  ),
-                                ),
-                              ),
-                              AppButton(
-                                text: AppConstants.next,
-                                fullWidth: false,
-                                onPressed: () {
-                                  _controller.nextPage(
-                                    duration: const Duration(milliseconds: 200),
-                                    curve: Curves.easeIn,
-                                  );
-                                },
-                              ),
-                            ],
+                          AppButton(
+                            text: AppConstants.next,
+                            fullWidth: false,
+                            onPressed: controller.nextPage,
                           ),
-                        ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

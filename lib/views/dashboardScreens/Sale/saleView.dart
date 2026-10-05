@@ -4,29 +4,24 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_statuschip.dart';
 import 'package:stockpulse/controllers/sale_controller.dart';
-import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-
 import '../../../common/widgets/CustomSearchField.dart';
 import '../../../common/widgets/Custom_filter.dart';
 import '../../../common/widgets/StandardScreen.dart';
-import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/cutom_TransactionTile.dart';
 import '../../../common/widgets/emptyfilter.dart';
 import '../../../common/widgets/product_shimmer.dart';
 
-class SaleView extends StatelessWidget {
+class SaleView extends GetView<SaleController> {
   const SaleView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     if (!Get.isRegistered<SaleController>()) {
       return const SizedBox.shrink();
     }
-    final SaleController controller = Get.find<SaleController>();
-    final theme = context.appTheme;
-
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(

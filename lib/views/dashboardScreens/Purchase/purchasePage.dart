@@ -1,34 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-
 import '../../../common/widgets/CustomSearchField.dart';
 import '../../../common/widgets/Custom_filter.dart';
-import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_statuschip.dart';
 import '../../../common/widgets/cutom_TransactionTile.dart';
-
 import '../../../common/widgets/emptyfilter.dart';
 import '../../../common/widgets/product_shimmer.dart';
 import '../../../controllers/purchase_controller.dart';
-import '../../../controllers/loginController.dart';
 
-class PurchasePage extends StatelessWidget {
+class PurchasePage extends GetView<PurchaseController> {
   const PurchasePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.appTheme;
     if (!Get.isRegistered<PurchaseController>()) {
       return const SizedBox.shrink();
     }
-    final PurchaseController controller = Get.find<PurchaseController>();
-    final theme = context.appTheme;
-
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(

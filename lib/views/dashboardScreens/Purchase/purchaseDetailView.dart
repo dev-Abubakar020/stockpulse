@@ -14,27 +14,16 @@ import '../../../services/initialpdfview.dart';
 import '../../../services/purchase_pdf_service.dart';
 import '../../thermal_purchase_receipt.dart';
 
-class PurchaseDetailView extends StatefulWidget {
-  const PurchaseDetailView({super.key});
-
-  @override
-  State<PurchaseDetailView> createState() => _PurchaseDetailViewState();
-}
-
-class _PurchaseDetailViewState extends State<PurchaseDetailView> {
-  late final PurchaseModel purchase;
-  final PurchaseController controller = Get.find<PurchaseController>();
-
-  @override
-  void initState() {
-    super.initState();
-    purchase = Get.arguments as PurchaseModel;
+class PurchaseDetailView extends GetView<PurchaseController> {
+  PurchaseDetailView({super.key}) {
+    final PurchaseModel purchase = Get.arguments as PurchaseModel;
     controller.fetchPurchaseItems(purchase.id);
     controller.fetchCreatorName(purchase.createdBy);
   }
 
   @override
   Widget build(BuildContext context) {
+    final PurchaseModel purchase = Get.arguments as PurchaseModel;
     final theme = context.appTheme;
 
     StatusType statusType = StatusType.neutral;
@@ -148,7 +137,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, i) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return Container(
@@ -265,7 +254,7 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
               ),
             ),
 
-            SizedBox(height:10 ,),
+            const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: Material(
@@ -274,24 +263,20 @@ class _PurchaseDetailViewState extends State<PurchaseDetailView> {
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
                     Get.to(
-                          () => PrintPreviewScreen(
+                      () => PrintPreviewScreen(
                         documentName: purchase.purchaseNo,
-
                         buildPdf: (format) {
                           return PurchasePdfService.generatePurchase(
                             format: format,
                             purchase: purchase,
                             items: controller.currentPurchaseItems,
-                            creatorName:
-                            controller.creatorName.value,
+                            creatorName: controller.creatorName.value,
                           );
                         },
-
                         thermalWidget: ThermalPurchaseReceipt(
                           purchase: purchase,
                           items: controller.currentPurchaseItems,
-                          creatorName:
-                          controller.creatorName.value,
+                          creatorName: controller.creatorName.value,
                         ),
                       ),
                     );

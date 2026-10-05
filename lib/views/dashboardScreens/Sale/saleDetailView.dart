@@ -13,27 +13,16 @@ import '../../../services/initialpdfview.dart';
 import '../../../services/sale_pdf_service.dart';
 import '../../thermal_sale_receipt.dart';
 
-class SaleDetailView extends StatefulWidget {
-  const SaleDetailView({super.key});
-
-  @override
-  State<SaleDetailView> createState() => _SaleDetailViewState();
-}
-
-class _SaleDetailViewState extends State<SaleDetailView> {
-  late final SaleModel sale;
-  final SaleController controller = Get.find<SaleController>();
-
-  @override
-  void initState() {
-    super.initState();
-    sale = Get.arguments as SaleModel;
+class SaleDetailView extends GetView<SaleController> {
+  SaleDetailView({super.key}) {
+    final SaleModel sale = Get.arguments as SaleModel;
     controller.fetchSaleItems(sale.id);
     controller.fetchCreatorName(sale.id, createdByUserId: sale.createdBy);
   }
 
   @override
   Widget build(BuildContext context) {
+    final SaleModel sale = Get.arguments as SaleModel;
     final theme = context.appTheme;
 
     StatusType statusType = StatusType.neutral;
@@ -151,7 +140,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, i) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return Container(
@@ -267,7 +256,7 @@ class _SaleDetailViewState extends State<SaleDetailView> {
               ),
             ),
 
-            SizedBox(height:10 ,),
+            const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: Material(
@@ -276,34 +265,23 @@ class _SaleDetailViewState extends State<SaleDetailView> {
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
                     Get.to(
-                          () => PrintPreviewScreen(
+                      () => PrintPreviewScreen(
                         documentName: sale.saleNo,
-
                         buildPdf: (format) {
                           return SalePdfService.generateSale(
                             format: format,
                             sale: sale,
                             items: controller.currentSaleItems,
-                            creatorName:
-                            controller.creatorName.value,
+                            creatorName: controller.creatorName.value,
                           );
                         },
-
                         thermalWidget: ThermalSaleReceipt(
                           sale: sale,
                           items: controller.currentSaleItems,
-                          creatorName:
-                          controller.creatorName.value,
+                          creatorName: controller.creatorName.value,
                         ),
                       ),
                     );
-                    // Get.to(
-                    //       () => SalePrintPreviewScreen(
-                    //     sale: sale,
-                    //     items: controller.currentSaleItems,
-                    //     creatorName: controller.creatorName.value,
-                    //   ),
-                    // );
                   },
                   child: Container(
                     height: 52,

@@ -7,13 +7,11 @@ import 'package:stockpulse/utils/app_constants.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custome_textbutton.dart';
 
-class AddCategories extends StatelessWidget {
+class AddCategories extends GetView<CategoryController> {
   const AddCategories({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Find the injected CategoryController
-    final CategoryController controller = Get.find<CategoryController>();
 
     return CustomScreen(
       appBar: CustomAppBar(

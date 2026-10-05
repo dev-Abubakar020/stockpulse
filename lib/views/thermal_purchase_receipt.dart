@@ -3,8 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../models/purchasemodel.dart';
 
-class ThermalPurchaseReceipt
-    extends StatelessWidget {
+class ThermalPurchaseReceipt extends StatelessWidget {
   final PurchaseModel purchase;
   final List<PurchaseItemModel> items;
   final String creatorName;

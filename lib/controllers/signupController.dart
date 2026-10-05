@@ -20,7 +20,7 @@ import '../common/widgets/custom_snackbar.dart';
 class SignupController extends GetxController {
   final AuthRepository authRepository;
   SignupController(this.authRepository);
-
+  bool agreeToTerms = true;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -36,7 +36,9 @@ class SignupController extends GetxController {
   final isInviteLoading = false.obs;
   final isStaffInviteValid = false.obs;
   final isStaffInviteExpired = false.obs;
-
+  void toggleTerms(bool? value) {
+    agreeToTerms = value ?? false;
+  }
   String? _resolveInvitationToken() {
     if (!Get.isRegistered<DeepLinkService>()) return null;
     final deepLinkService = Get.find<DeepLinkService>();

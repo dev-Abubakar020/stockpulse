@@ -8,12 +8,11 @@ import 'package:stockpulse/utils/app_constants.dart';
 import '../../../../common/widgets/appbar.dart';
 import '../../../../common/widgets/custome_textbutton.dart';
 
-class AddStaff extends StatelessWidget {
+class AddStaff extends GetView<StaffController> {
   const AddStaff({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final StaffController controller = Get.find<StaffController>();
 
     return CustomScreen(
       appBar: CustomAppBar(

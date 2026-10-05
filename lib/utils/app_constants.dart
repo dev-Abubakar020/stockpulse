@@ -825,6 +825,8 @@ class AppConstants {
   static const String soldItemsHeader = 'Sold Items';
   static const String noItemsSale = 'No items found for this sale.';
 
+  static const String productNotFound = 'Product Not Found';
+
   //Enable Biometric consts
   static const String notNow = 'Not Now';
   static const String enabled = 'Enable';

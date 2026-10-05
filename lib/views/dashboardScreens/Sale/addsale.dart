@@ -10,183 +10,119 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_snackbar.dart';
 import '../../../controllers/sale_controller.dart';
 import '../../../models/productItemModel.dart';
 import 'barcodescanner.dart';
 
-class AddSale extends StatefulWidget {
+class AddSale extends GetView<SaleController> {
   final ProductItemModel? initialProduct;
 
-  const AddSale({
+  AddSale({
     super.key,
     this.initialProduct,
-  });
-
-
-  @override
-  State<AddSale> createState() => _AddSaleState();
-}
-
-class _AddSaleState extends State<AddSale> {
-  final SaleController saleController = Get.find<SaleController>();
-
-  int _currentStep = 0;
-  String? _createdSaleId;
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.clearCart();
+      if (initialProduct != null) {
+        controller.addProduct(initialProduct!);
+      }
+    });
+  }
 
   static const Color primaryGreen = AppColors.primary;
-  static const Color lightGreenBg = Color(0xFFE8F5E9);
   static const Color borderColor = Color(0xFFE5E7EB);
   static const Color textDark = Color(0xFF111827);
   static const Color textMuted = Color(0xFF6B7280);
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      saleController.clearCart();
-      final product = widget.initialProduct;
-      if (product != null) {
-        saleController.addProduct(product);
-      }
-    });
-  }
-
-  void _handleBack() {
-    if (_currentStep > 0 && _currentStep < 2) {
-      setState(() {
-        _currentStep--;
-      });
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
-
-  void _resetSale() {
-    saleController.clearCart();
-    setState(() {
-      _currentStep = 0;
-      _createdSaleId = null;
-    });
-  }
-
-  Future<void> _completeSale() async {
-    debugPrint('========== COMPLETE SALE CLICKED ==========');
-
-    final saleId = await saleController.createSale();
-
-    debugPrint('Returned Sale ID: $saleId');
-
-    if (saleId == null) {
-      debugPrint('SALE FAILED: saleId is null');
-      return;
-    }
-
-    debugPrint('SALE SUCCESS: $saleId');
-
-    if (!mounted) return;
-
-    setState(() {
-      _createdSaleId = saleId;
-      _currentStep = 2;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = context.appTheme;
 
-    return PopScope(
-      canPop: _currentStep == 0,
-      onPopInvoked: (didPop) {
-        if (didPop) return;
-        _handleBack();
-      },
-      child: CustomScreen(
-        backgroundColor: theme.background,
-        appBar: _buildTopBar(),
+    return Obx(() {
+      final step = controller.currentStep.value;
 
-        body: _buildCurrentStepContent(),
-
-        bottomNavigationBar: _currentStep != 2
-            ? Obx(() {
-          final _ = saleController.quantities.length;
-          final _discount = saleController.discount.value;
-
-          return _buildBottomBar();
-        })
-            : null,
-      ),
-    );
+      return PopScope(
+        canPop: step == 0,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          controller.handleBack(context);
+        },
+        child: CustomScreen(
+          backgroundColor: theme.background,
+          appBar: _buildTopBar(context, step),
+          body: _buildCurrentStepContent(context, step),
+          bottomNavigationBar: step != 2
+              ? Obx(() {
+                  final _ = controller.quantities.length;
+                  return _buildBottomBar(context, step);
+                })
+              : null,
+        ),
+      );
+    });
   }
 
-  PreferredSizeWidget _buildTopBar() {
-    // Step 2 (Success)
-    if (_currentStep == 2) {
+  PreferredSizeWidget _buildTopBar(BuildContext context, int step) {
+    if (step == 2) {
       return CustomAppBar(
         leadingIcon: Icons.close_rounded,
         leadingOnPressed: () => Navigator.of(context).pop(),
       );
     }
 
-    // Step 1
-    if (_currentStep == 1) {
+    if (step == 1) {
       return CustomAppBar(
         title: Text(AppConstants.cartDetailsTitle),
         showBackArrow: true,
-        leadingOnPressed: _handleBack,
+        leadingOnPressed: () => controller.handleBack(context),
         actions: [
           CustomTextButton(
             text: AppConstants.reset,
-            onPressed: _resetSale,
+            onPressed: controller.resetSale,
           ),
         ],
       );
     }
 
-    // Default / Step 0
     return CustomAppBar(
       title: Text('New ${AppConstants.saleTitle}'),
       showBackArrow: true,
-      leadingOnPressed: _handleBack,
+      leadingOnPressed: () => controller.handleBack(context),
       actions: [
         CustomTextButton(
           text: AppConstants.reset,
-          onPressed: _resetSale,
+          onPressed: controller.resetSale,
         ),
       ],
     );
   }
 
-  Widget _buildCurrentStepContent() {
-    switch (_currentStep) {
+  Widget _buildCurrentStepContent(BuildContext context, int step) {
+    switch (step) {
       case 0:
-        return _buildStep1SelectProducts();
+        return _buildStep1SelectProducts(context);
       case 1:
-        return _buildStep2ReviewCart();
+        return _buildStep2ReviewCart(context);
       case 2:
-        return _buildStep4Success();
+        return _buildStep4Success(context);
       default:
         return const SizedBox();
     }
   }
-  Future<void> _scanProduct() async {
-    final String? barcode = await Get.to<String>(
-          () => const BarcodeScannerView(),
-    );
 
-    if (!mounted) return;
+  Future<void> _scanProduct(BuildContext context) async {
+    final String? barcode = await Get.to<String>(
+      () => const BarcodeScannerView(),
+    );
 
     if (barcode == null || barcode.trim().isEmpty) {
       return;
     }
 
-    final product = await saleController.productController
+    final product = await controller.productController
         .findProductByBarcode(barcode);
-
-    if (!mounted) return;
 
     if (product == null) {
       CustomSnackBar.warningSnackBar(
@@ -196,8 +132,9 @@ class _AddSaleState extends State<AddSale> {
       return;
     }
 
-    saleController.addProduct(product);
+    controller.addProduct(product);
   }
+
   void _showProductPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -207,31 +144,27 @@ class _AddSaleState extends State<AddSale> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) {
-        final products = saleController.products
+        final products = controller.products
             .where((product) => product.isActive)
             .toList();
 
         return _SaleProductPickerSheet(
           products: products,
           onSelected: (product) {
-            saleController.addProduct(product);
+            controller.addProduct(product);
           },
         );
       },
     );
   }
 
-  // ============================================================
-  // STEP 1: SELECT PRODUCTS
-  // ============================================================
-
-  Widget _buildStep1SelectProducts() {
+  Widget _buildStep1SelectProducts(BuildContext context) {
     final isDark = context.isDark;
 
     return SingleChildScrollView(
       child: Obx(() {
-        final selectedProducts = saleController.products.where((product) {
-          return saleController.isSelected(product.id);
+        final selectedProducts = controller.products.where((product) {
+          return controller.isSelected(product.id);
         }).toList();
 
         return _SectionCard(
@@ -242,7 +175,7 @@ class _AddSaleState extends State<AddSale> {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: _scanProduct,
+                onTap: () => _scanProduct(context),
                 child: Container(
                   width: 34,
                   height: 34,
@@ -260,9 +193,7 @@ class _AddSaleState extends State<AddSale> {
                   ),
                 ),
               ),
-
               const SizedBox(width: 8),
-
               GestureDetector(
                 onTap: () => _showProductPicker(context),
                 child: Container(
@@ -305,8 +236,8 @@ class _AddSaleState extends State<AddSale> {
               : Column(
                   children: List.generate(selectedProducts.length, (index) {
                     final product = selectedProducts[index];
-                    final quantity = saleController.quantityOf(product.id);
-                    final lineTotal = saleController.lineTotal(product);
+                    final quantity = controller.quantityOf(product.id);
+                    final lineTotal = controller.lineTotal(product);
 
                     return _SaleItemTile(
                       product: product,
@@ -315,19 +246,19 @@ class _AddSaleState extends State<AddSale> {
                       quantity: quantity,
                       lineTotal: lineTotal,
                       onIncrement: () {
-                        saleController.addProduct(product);
+                        controller.addProduct(product);
                       },
                       onDecrement: () {
-                        saleController.decrementProduct(product);
+                        controller.decrementProduct(product);
                       },
                       onRemove: () {
-                        saleController.removeProduct(product.id);
+                        controller.removeProduct(product.id);
                       },
                       onQuantityChanged: (value) {
-                        saleController.updateQuantity(product, value);
+                        controller.updateQuantity(product, value);
                       },
                       onLineTotalChanged: (value) {
-                        saleController.updateLineTotal(product.id, value);
+                        controller.updateLineTotal(product.id, value);
                       },
                     );
                   }),
@@ -337,24 +268,18 @@ class _AddSaleState extends State<AddSale> {
     );
   }
 
-  // ============================================================
-  // STEP 2: REVIEW CART / CART DETAIL (MATCHING ADDPURCHASE UI)
-  // ============================================================
-
-  Widget _buildStep2ReviewCart() {
+  Widget _buildStep2ReviewCart(BuildContext context) {
     final isDark = context.isDark;
 
     return SingleChildScrollView(
       child: Obx(() {
-        final _ = saleController.quantities.length;
-        final _discount = saleController.discount.value;
-        final selectedProducts = saleController.products.where((product) {
-          return saleController.isSelected(product.id);
+        final _ = controller.quantities.length;
+        final selectedProducts = controller.products.where((product) {
+          return controller.isSelected(product.id);
         }).toList();
 
         return Column(
           children: [
-            // 1. Cart Items Section
             _SectionCard(
               icon: Icons.inventory_2_rounded,
               iconColor: primaryGreen,
@@ -363,7 +288,7 @@ class _AddSaleState extends State<AddSale> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   GestureDetector(
-                    onTap: _scanProduct,
+                    onTap: () => _scanProduct(context),
                     child: Container(
                       width: 34,
                       height: 34,
@@ -381,9 +306,7 @@ class _AddSaleState extends State<AddSale> {
                       ),
                     ),
                   ),
-
                   const SizedBox(width: 8),
-
                   GestureDetector(
                     onTap: () => _showProductPicker(context),
                     child: Container(
@@ -426,8 +349,8 @@ class _AddSaleState extends State<AddSale> {
                   : Column(
                       children: List.generate(selectedProducts.length, (index) {
                         final product = selectedProducts[index];
-                        final quantity = saleController.quantityOf(product.id);
-                        final lineTotal = saleController.lineTotal(product);
+                        final quantity = controller.quantityOf(product.id);
+                        final lineTotal = controller.lineTotal(product);
 
                         return _SaleItemTile(
                           product: product,
@@ -436,28 +359,25 @@ class _AddSaleState extends State<AddSale> {
                           quantity: quantity,
                           lineTotal: lineTotal,
                           onIncrement: () {
-                            saleController.addProduct(product);
+                            controller.addProduct(product);
                           },
                           onDecrement: () {
-                            saleController.decrementProduct(product);
+                            controller.decrementProduct(product);
                           },
                           onRemove: () {
-                            saleController.removeProduct(product.id);
+                            controller.removeProduct(product.id);
                           },
                           onQuantityChanged: (value) {
-                            saleController.updateQuantity(product, value);
+                            controller.updateQuantity(product, value);
                           },
                           onLineTotalChanged: (value) {
-                            saleController.updateLineTotal(product.id, value);
+                            controller.updateLineTotal(product.id, value);
                           },
                         );
                       }),
                     ),
             ),
-
             const SizedBox(height: 14),
-
-            // 2. Cost Summary Section
             _SectionCard(
               icon: Icons.calculate_rounded,
               iconColor: const Color(0xFF059669),
@@ -466,7 +386,7 @@ class _AddSaleState extends State<AddSale> {
                 children: [
                   if (Get.find<RoleService>().canApplyDiscount) ...[
                     CustomTextField(
-                      controller: saleController.discountController,
+                      controller: controller.discountController,
                       hintText: '0',
                       labelText: AppConstants.disTitle,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -478,36 +398,34 @@ class _AddSaleState extends State<AddSale> {
                           RegExp(r'^\d*\.?\d{0,2}'),
                         ),
                       ],
-                      onChanged: saleController.updateDiscount,
+                      onChanged: controller.updateDiscount,
                     ),
                     const SizedBox(height: 18),
                   ],
                   _OrderSummaryRow(
                     label: AppConstants.subtotal,
-                    value: '${AppConstants.defaultCurrency}${saleController.subtotal.toStringAsFixed(2)}',
+                    value:
+                        '${AppConstants.defaultCurrency}${controller.subtotal.toStringAsFixed(2)}',
                   ),
                   const SizedBox(height: 4),
                   _OrderSummaryRow(
                     label: AppConstants.discountLabel,
                     value:
-                        '- ${AppConstants.defaultCurrency}${saleController.discount.value.toStringAsFixed(2)}',
+                        '- ${AppConstants.defaultCurrency}${controller.discount.value.toStringAsFixed(2)}',
                     valueColor: Colors.red,
                   ),
                   const Divider(height: 24),
                   _OrderSummaryRow(
                     label: AppConstants.total,
                     value:
-                        '${AppConstants.defaultCurrency}${saleController.totalAmount.toStringAsFixed(2)}',
+                        '${AppConstants.defaultCurrency}${controller.totalAmount.toStringAsFixed(2)}',
                     isBold: true,
                     valueColor: primaryGreen,
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 14),
-
-            // 3. Customer & Notes Section
             _SectionCard(
               icon: Icons.person_rounded,
               iconColor: primaryGreen,
@@ -561,7 +479,7 @@ class _AddSaleState extends State<AddSale> {
                   ),
                   const SizedBox(height: 14),
                   CustomTextField(
-                    controller: saleController.noteController,
+                    controller: controller.noteController,
                     hintText: AppConstants.noteHint,
                     labelText: AppConstants.notesLabel,
                     prefixIcon: const Icon(Icons.edit_note_rounded, size: 20),
@@ -569,7 +487,6 @@ class _AddSaleState extends State<AddSale> {
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
           ],
         );
@@ -577,12 +494,9 @@ class _AddSaleState extends State<AddSale> {
     );
   }
 
-  // ============================================================
-  // STEP 3: SUCCESS
-  // ============================================================
-
-  Widget _buildStep4Success() {
+  Widget _buildStep4Success(BuildContext context) {
     final isDark = context.isDark;
+    final createdId = controller.createdSaleId.value;
 
     return Center(
       child: SingleChildScrollView(
@@ -619,8 +533,6 @@ class _AddSaleState extends State<AddSale> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // RECEIPT SUMMARY
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -644,29 +556,27 @@ class _AddSaleState extends State<AddSale> {
                   const SizedBox(height: 10),
                   _buildReceiptRow(
                     AppConstants.paymentMethodLabel,
-                    saleController.paymentMethod.value == 'cash'
+                    controller.paymentMethod.value == 'cash'
                         ? AppConstants.cashLabel
                         : AppConstants.cardLabel,
                   ),
-                  if (_createdSaleId != null) ...[
+                  if (createdId != null) ...[
                     const SizedBox(height: 10),
                     _buildReceiptRow(
                       AppConstants.saleIdLabel,
-                      _shortId(_createdSaleId!),
+                      _shortId(createdId),
                     ),
                   ],
                   const Divider(height: 20),
                   _buildReceiptRow(
                     AppConstants.totalAmountLabel,
-                    'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
+                    'Rs. ${controller.totalAmount.toStringAsFixed(2)}',
                     isBold: true,
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 32),
-
             AppButton(
               text: AppConstants.viewSales,
               onPressed: () {
@@ -677,11 +587,11 @@ class _AddSaleState extends State<AddSale> {
             const SizedBox(height: 12),
             AppButton(
               text: AppConstants.addAnotherSale,
-              onPressed: _resetSale,
+              onPressed: controller.resetSale,
               backgroundColor: isDark
                   ? const Color(0xFF1E2D44)
                   : const Color(0xFFF3F4F6),
-              foregroundColor : isDark ? Colors.white : textDark,
+              foregroundColor: isDark ? Colors.white : textDark,
             ),
           ],
         ),
@@ -689,61 +599,50 @@ class _AddSaleState extends State<AddSale> {
     );
   }
 
-  // ============================================================
-  // BOTTOM BAR
-  // ============================================================
-
-  Widget _buildBottomBar() {
-    if (_currentStep == 0) {
-      if (saleController.quantities.isEmpty) {
+  Widget _buildBottomBar(BuildContext context, int step) {
+    if (step == 0) {
+      if (controller.quantities.isEmpty) {
         return const SizedBox();
       }
 
       return _BottomSaveBar(
-        label: 'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
+        label: 'Rs. ${controller.totalAmount.toStringAsFixed(2)}',
         buttonText: AppConstants.viewCart,
         buttonColor: primaryGreen,
         isLoading: false,
         onSave: () {
-          setState(() {
-            _currentStep = 1;
-          });
+          controller.currentStep.value = 1;
         },
       );
     }
 
-    if (_currentStep == 1) {
+    if (step == 1) {
       return _BottomSaveBar(
-        label: 'Rs. ${saleController.totalAmount.toStringAsFixed(2)}',
+        label: 'Rs. ${controller.totalAmount.toStringAsFixed(2)}',
         buttonText: AppConstants.completeSaleLabel,
         buttonColor: primaryGreen,
-        isLoading: saleController.isLoading.value,
-        onSave: saleController.isLoading.value
+        isLoading: controller.isLoading.value,
+        onSave: controller.isLoading.value
             ? null
             : () async {
-          if (saleController.discount.value >
-              saleController.subtotal) {
-            CustomSnackBar.warningSnackBar(
-              title: AppConstants.invalidDiscount,
-              message: AppConstants.discountExceedSubtotal,
-            );
-            return;
-          }
+                if (controller.discount.value > controller.subtotal) {
+                  CustomSnackBar.warningSnackBar(
+                    title: AppConstants.invalidDiscount,
+                    message: AppConstants.discountExceedSubtotal,
+                  );
+                  return;
+                }
 
-          saleController.receivedAmountController.text =
-              saleController.totalAmount.toStringAsFixed(2);
+                controller.receivedAmountController.text =
+                    controller.totalAmount.toStringAsFixed(2);
 
-          await _completeSale();
-        },
+                await controller.completeSale(context);
+              },
       );
     }
 
     return const SizedBox();
   }
-
-  // ============================================================
-  // RECEIPT ROW
-  // ============================================================
 
   Widget _buildReceiptRow(String label, String value, {bool isBold = false}) {
     return Row(
@@ -779,10 +678,6 @@ class _AddSaleState extends State<AddSale> {
     return id.substring(0, 8).toUpperCase();
   }
 }
-
-// ================================================================
-// SECTION CARD
-// ================================================================
 
 class _SectionCard extends StatelessWidget {
   final IconData icon;
@@ -837,7 +732,7 @@ class _SectionCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (trailing != null) trailing!,
+                trailing ?? const SizedBox.shrink(),
               ],
             ),
           ),
@@ -851,10 +746,6 @@ class _SectionCard extends StatelessWidget {
     );
   }
 }
-
-// ================================================================
-// SUMMARY ROW
-// ================================================================
 
 class _OrderSummaryRow extends StatelessWidget {
   final String label;
@@ -898,10 +789,6 @@ class _OrderSummaryRow extends StatelessWidget {
   }
 }
 
-// ================================================================
-// EMPTY ITEMS
-// ================================================================
-
 class _EmptyItems extends StatelessWidget {
   final String label;
   final String hint;
@@ -944,10 +831,6 @@ class _EmptyItems extends StatelessWidget {
   }
 }
 
-// ================================================================
-// QUANTITY BUTTON
-// ================================================================
-
 class _QtyBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
@@ -981,10 +864,6 @@ class _QtyBtn extends StatelessWidget {
     );
   }
 }
-
-// ================================================================
-// BOTTOM SAVE BAR
-// ================================================================
 
 class _BottomSaveBar extends StatelessWidget {
   final String label;
@@ -1052,7 +931,7 @@ class _BottomSaveBar extends StatelessWidget {
               isLoading: isLoading,
               onPressed: onSave,
               height: 48,
-              backgroundColor: buttonColor ?? AppColors.primary,
+              backgroundColor: buttonColor,
             ),
           ),
         ],
@@ -1060,10 +939,6 @@ class _BottomSaveBar extends StatelessWidget {
     );
   }
 }
-
-// ================================================================
-// SALE ITEM TILE
-// ================================================================
 
 class _SaleItemTile extends StatelessWidget {
   final ProductItemModel product;
@@ -1109,7 +984,6 @@ class _SaleItemTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Row: Index, Article, Details, Remove button
           Row(
             children: [
               Container(
@@ -1165,14 +1039,10 @@ class _SaleItemTile extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 14),
-
-          // Quantity and Price
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Quantity
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1191,37 +1061,34 @@ class _SaleItemTile extends StatelessWidget {
                             value: quantity,
                             isDecimal: true,
                             onChanged: onQuantityChanged,
-                          ):
-                    Row(
-                      children: [
-                        _QtyBtn(
-                          icon: Icons.remove,
-                          onTap: onDecrement,
-                          accentColor: green,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: _QuantityField(
-                            value: quantity,
-                            isDecimal: false,
-                            onChanged: onQuantityChanged,
+                          )
+                        : Row(
+                            children: [
+                              _QtyBtn(
+                                icon: Icons.remove,
+                                onTap: onDecrement,
+                                accentColor: green,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: _QuantityField(
+                                  value: quantity,
+                                  isDecimal: false,
+                                  onChanged: onQuantityChanged,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              _QtyBtn(
+                                icon: Icons.add,
+                                onTap: onIncrement,
+                                accentColor: green,
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        _QtyBtn(
-                          icon: Icons.add,
-                          onTap: onIncrement,
-                          accentColor: green,
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
-
               const SizedBox(width: 12),
-
-              // Sale Price
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1235,7 +1102,6 @@ class _SaleItemTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-
                     Container(
                       height: 38,
                       alignment: Alignment.centerLeft,
@@ -1262,12 +1128,9 @@ class _SaleItemTile extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
           const Divider(height: 1),
           const SizedBox(height: 10),
-
-          // Line Total
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1316,10 +1179,6 @@ class _SaleItemTile extends StatelessWidget {
   }
 }
 
-// ================================================================
-// SALE PRICE FIELD
-// ================================================================
-
 class _LineTotalField extends StatefulWidget {
   final double value;
   final ValueChanged<String> onChanged;
@@ -1336,14 +1195,12 @@ class _LineTotalField extends StatefulWidget {
 class _LineTotalFieldState extends State<_LineTotalField> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
-
   bool _hasFocus = false;
 
   String _formatAmount(double value) {
     if (value == value.roundToDouble()) {
       return value.toInt().toString();
     }
-
     return value
         .toStringAsFixed(2)
         .replaceFirst(RegExp(r'0+$'), '')
@@ -1353,24 +1210,14 @@ class _LineTotalFieldState extends State<_LineTotalField> {
   @override
   void initState() {
     super.initState();
-
-    _controller = TextEditingController(
-      text: _formatAmount(widget.value),
-    );
-
+    _controller = TextEditingController(text: _formatAmount(widget.value));
     _focusNode = FocusNode();
-
     _focusNode.addListener(() {
-      final hasFocus = _focusNode.hasFocus;
-
       setState(() {
-        _hasFocus = hasFocus;
+        _hasFocus = _focusNode.hasFocus;
       });
-
-      // User finished editing → show clean formatted value
-      if (!hasFocus) {
+      if (!_hasFocus) {
         final value = _formatAmount(widget.value);
-
         if (_controller.text != value) {
           _controller.text = value;
         }
@@ -1381,11 +1228,8 @@ class _LineTotalFieldState extends State<_LineTotalField> {
   @override
   void didUpdateWidget(covariant _LineTotalField oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // Don't overwrite text while user is typing
     if (!_hasFocus && oldWidget.value != widget.value) {
       final value = _formatAmount(widget.value);
-
       if (_controller.text != value) {
         _controller.text = value;
       }
@@ -1407,29 +1251,18 @@ class _LineTotalFieldState extends State<_LineTotalField> {
     return TextFormField(
       controller: _controller,
       focusNode: _focusNode,
-
       readOnly: !canEdit,
-
-      keyboardType: const TextInputType.numberWithOptions(
-        decimal: true,
-      ),
-
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
-        FilteringTextInputFormatter.allow(
-          RegExp(r'^\d*\.?\d{0,2}$'),
-        ),
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
       ],
-
       onChanged: canEdit ? widget.onChanged : null,
-
       textAlign: TextAlign.center,
-
       style: GoogleFonts.sora(
         fontSize: 14,
         fontWeight: FontWeight.w700,
         color: AppColors.primary,
       ),
-
       decoration: InputDecoration(
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(
@@ -1443,10 +1276,6 @@ class _LineTotalFieldState extends State<_LineTotalField> {
     );
   }
 }
-
-// ================================================================
-// QUANTITY FIELD
-// ================================================================
 
 class _QuantityField extends StatefulWidget {
   final double value;
@@ -1472,13 +1301,9 @@ class _QuantityFieldState extends State<_QuantityField> {
     if (!widget.isDecimal) {
       return value.toInt().toString();
     }
-
-    // Whole number → no decimal
     if (value == value.roundToDouble()) {
       return value.toInt().toString();
     }
-
-    // Max 3 decimals, remove trailing zeros
     return value
         .toStringAsFixed(3)
         .replaceFirst(RegExp(r'0+$'), '')
@@ -1569,46 +1394,24 @@ class _QuantityFieldState extends State<_QuantityField> {
       ),
     );
   }
-
-  String formatAmount(double value) {
-    if (value == value.roundToDouble()) {
-      return value.toInt().toString();
-    }
-
-    return value
-        .toStringAsFixed(2)
-        .replaceFirst(RegExp(r'0+$'), '')
-        .replaceFirst(RegExp(r'\.$'), '');
-  }
 }
 
-// ================================================================
-// PRODUCT PICKER SHEET
-// ================================================================
-
-class _SaleProductPickerSheet extends StatefulWidget {
+class _SaleProductPickerSheet extends StatelessWidget {
   final List<ProductItemModel> products;
   final ValueChanged<ProductItemModel> onSelected;
+  final RxString _query = ''.obs;
 
-  const _SaleProductPickerSheet({
+  _SaleProductPickerSheet({
     required this.products,
     required this.onSelected,
   });
 
-  @override
-  State<_SaleProductPickerSheet> createState() =>
-      _SaleProductPickerSheetState();
-}
-
-class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
-  String _query = '';
-
   List<ProductItemModel> get _filteredProducts {
-    final query = _query.trim().toLowerCase();
+    final query = _query.value.trim().toLowerCase();
     if (query.isEmpty) {
-      return widget.products;
+      return products;
     }
-    return widget.products.where((product) {
+    return products.where((product) {
       final article = product.article.toLowerCase();
       final barcode = (product.barcode ?? '').toLowerCase();
       final color = (product.color ?? '').toLowerCase();
@@ -1623,7 +1426,6 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
   @override
   Widget build(BuildContext context) {
     const green = AppColors.primary;
-    final products = _filteredProducts;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.72,
@@ -1668,18 +1470,12 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
                 autofocus: false,
-                onChanged: (value) {
-                  setState(() {
-                    _query = value;
-                  });
-                },
+                onChanged: (value) => _query.value = value,
                 decoration: InputDecoration(
                   hintText: AppConstants.searchProductOrBarcode,
                   prefixIcon: const Icon(Icons.search_rounded),
                   filled: true,
-                  fillColor: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -1689,100 +1485,104 @@ class _SaleProductPickerSheetState extends State<_SaleProductPickerSheet> {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: products.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.inventory_2_outlined,
-                            size: 50,
-                            color: Colors.grey.shade400,
+              child: Obx(() {
+                final filtered = _filteredProducts;
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.inventory_2_outlined,
+                          size: 50,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          _query.value.isEmpty
+                              ? AppConstants.noInverntriesAvailable
+                              : AppConstants.noProductsFound,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: const Color(0xFF6B7280),
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            _query.isEmpty
-                                ? AppConstants.noInverntriesAvailable
-                                : AppConstants.noProductsFound,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(0xFF6B7280),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.separated(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                      itemCount: products.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (_, index) {
-                        final product = products[index];
-                        final outOfStock = product.currentStock <= 0;
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.separated(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  itemCount: filtered.length,
+                  separatorBuilder: (_, i) => const SizedBox(height: 8),
+                  itemBuilder: (_, index) {
+                    final product = filtered[index];
+                    final outOfStock = product.currentStock <= 0;
 
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      leading: Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: green.withValues(alpha: .08),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.inventory_2_rounded,
+                          color: green,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        product.article,
+                        style: GoogleFonts.sora(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _productSubtitle(product),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            color: outOfStock
+                                ? Colors.red
+                                : const Color(0xFF6B7280),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          leading: Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: green.withValues(alpha: .08),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(
-                              Icons.inventory_2_rounded,
-                              color: green,
-                              size: 20,
-                            ),
-                          ),
-                          title: Text(
-                            product.article,
-                            style: GoogleFonts.sora(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              _productSubtitle(product),
+                        ),
+                      ),
+                      trailing: outOfStock
+                          ? Text(
+                              AppConstants.statusOutOfStock,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11,
-                                color: outOfStock
-                                    ? Colors.red
-                                    : const Color(0xFF6B7280),
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
                               ),
+                            )
+                          : const Icon(
+                              Icons.add_circle_rounded,
+                              color: green,
                             ),
-                          ),
-                          trailing: outOfStock
-                              ? Text(
-                                  AppConstants.statusOutOfStock,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.red,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.add_circle_rounded,
-                                  color: green,
-                                ),
-                          onTap: outOfStock
-                              ? null
-                              : () {
-                                  widget.onSelected(product);
-                                  Navigator.pop(context);
-                                },
-                        );
-                      },
-                    ),
+                      onTap: outOfStock
+                          ? null
+                          : () {
+                              onSelected(product);
+                              Navigator.pop(context);
+                            },
+                    );
+                  },
+                );
+              }),
             ),
           ],
         );

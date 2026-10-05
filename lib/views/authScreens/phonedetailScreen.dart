@@ -11,34 +11,12 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
-class PhoneDetailScreen extends StatefulWidget {
+class PhoneDetailScreen extends GetView<LoginController> {
   const PhoneDetailScreen({super.key});
-
-  @override
-  State<PhoneDetailScreen> createState() => _PhoneDetailScreenState();
-}
-
-class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
-  CountryModel selectedCountry = countries.firstWhere(
-    (country) => country.isoCode == 'PK',
-  );
-  String get phoneHint => getPhoneHint(selectedCountry.isoCode);
-
-  LoginController get controller => Get.find<LoginController>();
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  Future<void> handleContinue() {
-    return controller.sendOtp(dialCode: selectedCountry.dialCode);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +118,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                     const SizedBox(height: 8),
 
                     // Phone input with country code picker
-                    Row(
+                    Obx(()=>Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
@@ -154,21 +132,19 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                               width: 1,
                             ),
                           ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<CountryModel>(
-                              value: selectedCountry,
+                          child: Obx(
+                                () => DropdownButton<CountryModel>(
+                              value: controller.selectedCountry.value,
                               dropdownColor: theme.card,
                               isExpanded: true,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
                               ),
-
                               icon: Icon(
                                 Icons.keyboard_arrow_down_rounded,
                                 color: theme.textSecondary,
                                 size: 18,
                               ),
-
                               items: countries.map((country) {
                                 return DropdownMenuItem<CountryModel>(
                                   value: country,
@@ -177,30 +153,24 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                                     children: [
                                       Text(
                                         country.flagEmoji,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                        ),
+                                        style: const TextStyle(fontSize: 20),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         country.dialCode,
-                                        style:
-                                            GoogleFonts.plusJakartaSans(
-                                              color: theme.textPrimary,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: theme.textPrimary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 );
                               }).toList(),
-
-                              onChanged: (CountryModel? country) {
+                              onChanged: (country) {
                                 if (country != null) {
-                                  setState(() {
-                                    selectedCountry = country;
-                                  });
+                                  controller.changeCountry(country);
                                 }
                               },
                             ),
@@ -210,7 +180,7 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                         Expanded(
                           child: CustomTextField(
                             controller: controller.phoneController,
-                            hintText: phoneHint,
+                            hintText: controller.phoneHint,
                             keyboardType: TextInputType.phone,
                             textInputAction: TextInputAction.done,
                             inputFormatters: [
@@ -220,13 +190,13 @@ class _PhoneDetailScreenState extends State<PhoneDetailScreen> {
                           ),
                         ),
                       ],
-                    ),
+                    ),),
                     const SizedBox(height: 22),
 
                     Obx(
-                      () => AppButton(
+                          () => AppButton(
                         text: AppConstants.sendVerificationCode,
-                        onPressed: handleContinue,
+                        onPressed: controller.sendPhoneOtp,
                         isLoading: controller.isPhoneLoading.value,
                         suffixIcon: const Icon(
                           Icons.arrow_forward_rounded,

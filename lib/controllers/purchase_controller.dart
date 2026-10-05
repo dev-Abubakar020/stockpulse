@@ -87,6 +87,17 @@ class PurchaseController extends GetxController {
   //   return purchasePrices[product.id] ?? product.purchasePrice;
   // }
 
+  PurchaseModel? selectedPurchase;
+
+  Future<void> loadPurchaseDetails(PurchaseModel purchase) async {
+    selectedPurchase = purchase;
+
+    await Future.wait([
+      fetchPurchaseItems(purchase.id),
+      fetchCreatorName(purchase.createdBy),
+    ]);
+  }
+
   void addProduct(ProductItemModel product) {
     // final currentQty = quantities[product.id];
     final currentQty = quantityOf(product.id);

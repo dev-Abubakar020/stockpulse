@@ -25,6 +25,38 @@ class SaleController extends GetxController {
   final RxList<SaleItemModel> currentSaleItems = <SaleItemModel>[].obs;
   final RxString creatorName = ''.obs;
 
+  final RxInt currentStep = 0.obs;
+  final RxnString createdSaleId = RxnString();
+
+  void handleBack(BuildContext context) {
+    if (currentStep.value > 0 && currentStep.value < 2) {
+      currentStep.value--;
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  void resetSale() {
+    clearCart();
+    currentStep.value = 0;
+    createdSaleId.value = null;
+  }
+
+  Future<void> completeSale(BuildContext context) async {
+    debugPrint('========== COMPLETE SALE CLICKED ==========');
+    final saleId = await createSale();
+    debugPrint('Returned Sale ID: $saleId');
+
+    if (saleId == null) {
+      debugPrint('SALE FAILED: saleId is null');
+      return;
+    }
+
+    debugPrint('SALE SUCCESS: $saleId');
+    createdSaleId.value = saleId;
+    currentStep.value = 2;
+  }
+
   Future<void> fetchCreatorName(String saleId, {String? createdByUserId}) async {
     creatorName.value = await repository.getSaleCreatorName(
       saleId,

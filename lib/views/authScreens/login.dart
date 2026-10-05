@@ -15,47 +15,11 @@ import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  bool _canBiometric = false;
-  bool _hasAttemptedAutoBiometric = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkAndTriggerBiometric();
-  }
-
-  Future<void> _checkAndTriggerBiometric() async {
-    try {
-      final available = await BiometricAuthService.instance.canUseBiometricLogin();
-      if (mounted) {
-        setState(() {
-          _canBiometric = available;
-        });
-
-        if (available && !_hasAttemptedAutoBiometric) {
-          _hasAttemptedAutoBiometric = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final controller = Get.find<LoginController>();
-            controller.showBiometricOrManualPrompt();
-          });
-        }
-      }
-    } catch (e) {
-      debugPrint('Check biometric login error: $e');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final controller = Get.find<LoginController>();
     final theme = context.appTheme;
     return CustomScreen(
       body: Stack(
@@ -80,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 12),
                       _LoginCard(
                         controller: controller,
-                        canBiometric: _canBiometric,
                       ),
                       const SizedBox(height: AppConstants.spaceSM),
                       Row(
@@ -200,11 +163,9 @@ class _BrandHeader extends StatelessWidget {
 class _LoginCard extends StatelessWidget {
   const _LoginCard({
     required this.controller,
-    required this.canBiometric,
   });
 
   final LoginController controller;
-  final bool canBiometric;
 
   @override
   Widget build(BuildContext context) {

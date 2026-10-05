@@ -12,28 +12,22 @@ import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:fl_chart/fl_chart.dart';
-
 import '../../common/widgets/StandardScreen.dart';
-import '../../common/widgets/alertDialog.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/premiumdial.dart';
 import '../../controllers/dashboardController.dart';
-import '../../controllers/loginController.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    final theme = context.appTheme;
+    final double nameFontSize = controller.userName.length > AppConstants.spaceLG ? AppConstants.spaceMLG : AppConstants.spaceLXL;
     if (!Get.isRegistered<HomeController>()) {
       return const SizedBox.shrink();
     }
-    final controller = Get.find<HomeController>();
-    final theme = context.appTheme;
-    final double nameFontSize =
-        controller.userName.length > AppConstants.spaceLG
-        ? AppConstants.spaceMLG
-        : AppConstants.spaceLXL;
 
     return CustomScreen(
       backgroundColor: theme.background,

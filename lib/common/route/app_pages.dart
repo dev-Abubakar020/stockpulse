@@ -42,6 +42,7 @@ import '../bindings/categoryBinding.dart';
 import '../bindings/dashboardBinding.dart';
 import '../bindings/expenseBinding.dart';
 import '../bindings/addProductWizardBinding.dart';
+import '../bindings/onboardingBinding.dart';
 import '../bindings/saleBinding.dart';
 import '../bindings/staff_binding.dart';
 import 'app_routes.dart';
@@ -53,7 +54,11 @@ class AppPages {
     ///Links
 
     ///Starting screens
-    GetPage(name: Routes.onboarding, page: () => const OnboardingScreen()),
+    GetPage(
+        name: Routes.onboarding,
+        page: () => const OnboardingScreen(),
+        binding: OnboardingBinding(),
+    ),
     GetPage(
       name: Routes.login,
       page: () => const LoginScreen(),
@@ -136,12 +141,12 @@ class AppPages {
 
     GetPage(
       name: Routes.addSale,
-      page: () => const AddSale(),
+      page: () =>  AddSale(),
       binding: SaleBinding(),
     ),
     GetPage(
       name: Routes.addPurchase,
-      page: () => const AddPurchase(),
+      page: () =>  AddPurchase(),
       binding: PurchaseBinding(),
     ),
     GetPage(
@@ -175,12 +180,12 @@ class AppPages {
     ),
     GetPage(
       name: Routes.saleDetail,
-      page: () => const SaleDetailView(),
+      page: () => SaleDetailView(),
       binding: SaleBinding(),
     ),
     GetPage(
       name: Routes.purchaseDetail,
-      page: () => const PurchaseDetailView(),
+      page: () => PurchaseDetailView(),
       binding: PurchaseBinding(),
     ),
 
