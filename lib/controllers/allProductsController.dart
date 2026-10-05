@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/controllers/home_controller.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

@@ -4,7 +4,7 @@ import 'package:stockpulse/controllers/category_controller.dart';
 import 'package:stockpulse/controllers/dashboardController.dart';
 import 'package:stockpulse/controllers/edit_profile_controller.dart';
 import 'package:stockpulse/controllers/expense_controller.dart';
-import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/controllers/home_controller.dart';
 import 'package:stockpulse/controllers/purchase_controller.dart';
 import 'package:stockpulse/controllers/sale_controller.dart';
 import 'package:stockpulse/controllers/shopCreateController.dart';

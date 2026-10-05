@@ -1,4 +1,4 @@
-import '../common/widgets/custom_statuschip.dart';
+import '../common/widgets/custom_status_chip.dart';
 
 class TransactionItem {
   final String reference;

@@ -9,7 +9,6 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
 import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
-import 'package:stockpulse/services/biometric_auth_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
@@ -29,7 +28,9 @@ class LoginScreen extends GetView<LoginController> {
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: AppConstants.maxWidth),
+                  constraints: const BoxConstraints(
+                    maxWidth: AppConstants.maxWidth,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,9 +43,7 @@ class LoginScreen extends GetView<LoginController> {
                       const SizedBox(height: 8),
                       const _BrandHeader(),
                       const SizedBox(height: 12),
-                      _LoginCard(
-                        controller: controller,
-                      ),
+                      _LoginCard(controller: controller),
                       const SizedBox(height: AppConstants.spaceSM),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -161,9 +160,7 @@ class _BrandHeader extends StatelessWidget {
 }
 
 class _LoginCard extends StatelessWidget {
-  const _LoginCard({
-    required this.controller,
-  });
+  const _LoginCard({required this.controller});
 
   final LoginController controller;
 
@@ -172,7 +169,10 @@ class _LoginCard extends StatelessWidget {
     final theme = context.appTheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.spaceXL, vertical: AppConstants.spaceXXL),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppConstants.spaceXL,
+        vertical: AppConstants.spaceXXL,
+      ),
       decoration: BoxDecoration(
         color: theme.card,
         borderRadius: BorderRadius.circular(22),

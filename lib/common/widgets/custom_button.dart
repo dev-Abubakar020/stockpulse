@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
@@ -49,40 +48,38 @@ class AppButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor,
-          disabledBackgroundColor:
-          backgroundColor?.withValues(alpha: 0.6),
-          disabledForegroundColor:
-          foregroundColor?.withValues(alpha: 0.8),
+          disabledBackgroundColor: backgroundColor?.withValues(alpha: 0.6),
+          disabledForegroundColor: foregroundColor?.withValues(alpha: 0.8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
         child: isLoading
             ? SizedBox(
-          width: 22,
-          height: 22,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.2,
-            color: foregroundColor ?? Colors.white,
-          ),
-        )
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  color: foregroundColor ?? Colors.white,
+                ),
+              )
             : Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (prefixIcon != null) ...[
-              prefixIcon!,
-              const SizedBox(width: 8),
-            ],
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (prefixIcon != null) ...[
+                    prefixIcon!,
+                    const SizedBox(width: 8),
+                  ],
 
-            Text(text),
+                  Text(text),
 
-            if (suffixIcon != null) ...[
-              const SizedBox(width: 8),
-              suffixIcon!,
-            ],
-          ],
-        ),
+                  if (suffixIcon != null) ...[
+                    const SizedBox(width: 8),
+                    suffixIcon!,
+                  ],
+                ],
+              ),
       ),
     );
   }

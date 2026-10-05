@@ -5,7 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/appbar.dart';
-import 'package:stockpulse/common/widgets/custom_statuschip.dart';
+import 'package:stockpulse/common/widgets/custom_status_chip.dart';
 import 'package:stockpulse/controllers/purchase_controller.dart';
 import 'package:stockpulse/models/purchasemodel.dart';
 import 'package:stockpulse/utils/app_constants.dart';

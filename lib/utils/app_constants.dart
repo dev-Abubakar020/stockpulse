@@ -827,6 +827,9 @@ class AppConstants {
 
   static const String productNotFound = 'Product Not Found';
 
+  static String data(dynamic value) {
+    return '$value pcs' ;
+  }
   //Enable Biometric consts
   static const String notNow = 'Not Now';
   static const String enabled = 'Enable';

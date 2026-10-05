@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/app_constants.dart';
-import 'ambientglow.dart';
+import 'ambient_glow.dart';
 
 class CustomScreen extends StatelessWidget {
   const CustomScreen({

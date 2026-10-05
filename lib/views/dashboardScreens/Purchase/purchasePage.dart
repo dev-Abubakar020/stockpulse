@@ -4,10 +4,11 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../../../common/widgets/CustomSearchField.dart';
 import '../../../common/widgets/Custom_filter.dart';
 import '../../../common/widgets/appbar.dart';
-import '../../../common/widgets/custom_statuschip.dart';
+import '../../../common/widgets/custom_status_chip.dart';
 import '../../../common/widgets/cutom_TransactionTile.dart';
 import '../../../common/widgets/emptyfilter.dart';
 import '../../../common/widgets/product_shimmer.dart';
@@ -67,7 +68,7 @@ class PurchasePage extends GetView<PurchaseController> {
             child: Obx(() {
               if (controller.isPurchasesLoading.value) {
                 return Padding(
-                  padding: const EdgeInsets.only(top:12),
+                  padding: const EdgeInsets.only(top: 12),
                   child: const ProductListShimmer(),
                 );
               }
@@ -77,9 +78,7 @@ class PurchasePage extends GetView<PurchaseController> {
                     controller.searchQuery.value.isNotEmpty ||
                     controller.selectedFilter.value != 0;
                 return Padding(
-                  padding: const EdgeInsets.only(
-                  top:12
-                  ),
+                  padding: const EdgeInsets.only(top: 12),
                   child: EmptyStateWidget(
                     isSearching: isSearching,
                     title: isSearching
@@ -95,9 +94,9 @@ class PurchasePage extends GetView<PurchaseController> {
               return RefreshIndicator(
                 onRefresh: controller.fetchPurchases,
                 child: ListView.separated(
-                  padding: const EdgeInsets.only(top:12),
+                  padding: const EdgeInsets.only(top: 12),
                   itemCount: purchases.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final purchase = purchases[index];
 
@@ -127,7 +126,7 @@ class PurchasePage extends GetView<PurchaseController> {
 
       /// Floating Action Button
       floatingActionButton: Container(
-        margin: EdgeInsets.only(bottom: 12,right: AppConstants.spaceSM),
+        margin: EdgeInsets.only(bottom: 12, right: AppConstants.spaceSM),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],

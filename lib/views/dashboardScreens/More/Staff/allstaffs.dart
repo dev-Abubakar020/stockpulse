@@ -16,7 +16,6 @@ class AllStaffView extends GetView<StaffController> {
 
   @override
   Widget build(BuildContext context) {
-
     return CustomScreen(
       appBar: const CustomAppBar(
         title: Text(AppConstants.allStaff),
@@ -39,7 +38,7 @@ class AllStaffView extends GetView<StaffController> {
 
           // Filters
           Obx(
-                () => CustomFilterTabs(
+            () => CustomFilterTabs(
               items: const [
                 AppConstants.all,
                 AppConstants.pending,
@@ -69,10 +68,7 @@ class AllStaffView extends GetView<StaffController> {
                 return const Center(
                   child: Text(
                     AppConstants.noStaffFound,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 );
               }
@@ -85,9 +81,7 @@ class AllStaffView extends GetView<StaffController> {
                   itemBuilder: (context, index) {
                     final staff = staffList[index];
 
-                    return StaffCard(
-                      staff: staff,
-                    );
+                    return StaffCard(staff: staff);
                   },
                 ),
               );
@@ -105,15 +99,10 @@ class AllStaffView extends GetView<StaffController> {
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        icon: const Icon(
-          Icons.person_add_alt_1_rounded,
-        ),
+        icon: const Icon(Icons.person_add_alt_1_rounded),
         label: const Text(
           AppConstants.addStaff,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -123,10 +112,7 @@ class AllStaffView extends GetView<StaffController> {
 class StaffCard extends StatefulWidget {
   final StaffModel staff;
 
-  const StaffCard({
-    super.key,
-    required this.staff,
-  });
+  const StaffCard({super.key, required this.staff});
 
   @override
   State<StaffCard> createState() => _StaffCardState();
@@ -145,10 +131,7 @@ class _StaffCardState extends State<StaffCard> {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: Colors.grey.shade200,
-          width: 1,
-        ),
+        side: BorderSide(color: Colors.grey.shade200, width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -168,15 +151,16 @@ class _StaffCardState extends State<StaffCard> {
                     shape: BoxShape.circle,
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: staff.profileImg != null &&
-                      staff.profileImg!.trim().isNotEmpty
+                  child:
+                      staff.profileImg != null &&
+                          staff.profileImg!.trim().isNotEmpty
                       ? Image.network(
-                    staff.profileImg!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
-                      return _buildAvatarFallback();
-                    },
-                  )
+                          staff.profileImg!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) {
+                            return _buildAvatarFallback();
+                          },
+                        )
                       : _buildAvatarFallback(),
                 ),
 
@@ -191,8 +175,7 @@ class _StaffCardState extends State<StaffCard> {
                         children: [
                           Flexible(
                             child: Text(
-                              staff.isPending ||
-                                  staff.name.trim().isEmpty
+                              staff.isPending || staff.name.trim().isEmpty
                                   ? AppConstants.staffMemberRole
                                   : staff.name,
                               maxLines: 1,
@@ -258,9 +241,7 @@ class _StaffCardState extends State<StaffCard> {
                     padding: const EdgeInsets.all(5),
                     child: AnimatedRotation(
                       turns: isExpanded ? 0.5 : 0,
-                      duration: const Duration(
-                        milliseconds: 250,
-                      ),
+                      duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut,
                       child: Icon(
                         Icons.keyboard_arrow_down_rounded,
@@ -284,128 +265,113 @@ class _StaffCardState extends State<StaffCard> {
               curve: Curves.easeInOut,
               child: isExpanded
                   ? Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F766E)
-                        .withValues(alpha: 0.035),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: const Color(0xFF0F766E)
-                          .withValues(alpha: 0.15),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      Row(
-                        children: [
-                          Text(
-                            AppConstants.staffDetailsHeader,
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                              color: Colors.grey.shade600,
-                            ),
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F766E)
+                              .withValues(alpha: 0.035),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: const Color(0xFF0F766E)
+                                .withValues(alpha: 0.15),
                           ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header
+                            Row(
+                              children: [
+                                Text(
+                                  AppConstants.staffDetailsHeader,
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.5,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
 
-                          const Spacer(),
+                                const Spacer(),
 
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: const Color(0xFF0F766E)
+                                          .withValues(alpha: 0.20),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    staff.isPending
+                                        ? AppConstants.invitation
+                                        : AppConstants.account,
+                                    style: const TextStyle(
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF0F766E),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                              BorderRadius.circular(20),
-                              border: Border.all(
-                                color: const Color(0xFF0F766E)
-                                    .withValues(alpha: 0.20),
+
+                            const SizedBox(height: 12),
+
+                            // Email
+                            _buildDetailRow(
+                              icon: Icons.email_outlined,
+                              label: AppConstants.loginEmailLabel,
+                              value: staff.email?.trim().isNotEmpty == true
+                                  ? staff.email!
+                                  : AppConstants.notAvailable,
+                            ),
+
+                            // Phone
+                            if (!staff.isPending) ...[
+                              const SizedBox(height: 11),
+
+                              _buildDetailRow(
+                                icon: Icons.phone_outlined,
+                                label: AppConstants.phoneLabel,
+                                value: staff.phone?.trim().isNotEmpty == true
+                                    ? staff.phone!
+                                    : AppConstants.notAvailable,
                               ),
-                            ),
-                            child: Text(
-                              staff.isPending
-                                  ? AppConstants.invitation
-                                  : AppConstants.account,
-                              style: const TextStyle(
-                                fontSize: 8,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F766E),
+                            ],
+
+                            // Joined Date
+                            if (!staff.isPending && staff.joinedAt != null) ...[
+                              const SizedBox(height: 11),
+
+                              _buildDetailRow(
+                                icon: Icons.calendar_today_outlined,
+                                label: AppConstants.joined,
+                                value: _formatDate(staff.joinedAt!),
                               ),
-                            ),
-                          ),
-                        ],
+                            ],
+
+                            // Pending invitation expiry
+                            if (staff.isPending && staff.expiresAt != null) ...[
+                              const SizedBox(height: 11),
+
+                              _buildDetailRow(
+                                icon: Icons.timer_outlined,
+                                label: AppConstants.invitationExpires,
+                                value: _formatDate(staff.expiresAt!),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-
-                      const SizedBox(height: 12),
-
-                      // Email
-                      _buildDetailRow(
-                        icon: Icons.email_outlined,
-                        label: AppConstants.loginEmailLabel,
-                        value:
-                        staff.email?.trim().isNotEmpty ==
-                            true
-                            ? staff.email!
-                            : AppConstants.notAvailable,
-                      ),
-
-                      // Phone
-                      if (!staff.isPending) ...[
-                        const SizedBox(height: 11),
-
-                        _buildDetailRow(
-                          icon: Icons.phone_outlined,
-                          label: AppConstants.phoneLabel,
-                          value:
-                          staff.phone
-                              ?.trim()
-                              .isNotEmpty ==
-                              true
-                              ? staff.phone!
-                              : AppConstants.notAvailable,
-                        ),
-                      ],
-
-                      // Joined Date
-                      if (!staff.isPending &&
-                          staff.joinedAt != null) ...[
-                        const SizedBox(height: 11),
-
-                        _buildDetailRow(
-                          icon:
-                          Icons.calendar_today_outlined,
-                          label: AppConstants.joined,
-                          value: _formatDate(
-                            staff.joinedAt!,
-                          ),
-                        ),
-                      ],
-
-                      // Pending invitation expiry
-                      if (staff.isPending &&
-                          staff.expiresAt != null) ...[
-                        const SizedBox(height: 11),
-
-                        _buildDetailRow(
-                          icon: Icons.timer_outlined,
-                          label: AppConstants.invitationExpires,
-                          value: _formatDate(
-                            staff.expiresAt!,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              )
+                    )
                   : const SizedBox.shrink(),
             ),
           ],
@@ -430,15 +396,10 @@ class _StaffCardState extends State<StaffCard> {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color:
-            const Color(0xFF0F766E).withValues(alpha: 0.08),
+            color: const Color(0xFF0F766E).withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(9),
           ),
-          child: Icon(
-            icon,
-            size: 16,
-            color: const Color(0xFF0F766E),
-          ),
+          child: Icon(icon, size: 16, color: const Color(0xFF0F766E)),
         ),
 
         const SizedBox(width: 10),
@@ -506,10 +467,7 @@ class _StaffCardState extends State<StaffCard> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 3,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
@@ -547,9 +505,7 @@ class _StaffCardState extends State<StaffCard> {
   // =========================================================
 
   Widget _buildAvatarFallback() {
-    final value = staff.isPending
-        ? staff.email
-        : staff.name;
+    final value = staff.isPending ? staff.email : staff.name;
 
     final initial = value?.trim().isNotEmpty == true
         ? value!.trim()[0].toUpperCase()
@@ -604,13 +560,8 @@ class _StaffCardState extends State<StaffCard> {
     final controller = Get.find<StaffController>();
 
     return PopupMenuButton<String>(
-      icon: const Icon(
-        Icons.more_vert,
-        color: Colors.black54,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      icon: const Icon(Icons.more_vert, color: Colors.black54),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (value) {
         switch (value) {
           case 'resend':
@@ -622,17 +573,11 @@ class _StaffCardState extends State<StaffCard> {
             break;
 
           case 'activate':
-            controller.changeStaffStatus(
-              staff,
-              true,
-            );
+            controller.changeStaffStatus(staff, true);
             break;
 
           case 'deactivate':
-            controller.changeStaffStatus(
-              staff,
-              false,
-            );
+            controller.changeStaffStatus(staff, false);
             break;
         }
       },
@@ -660,11 +605,7 @@ class _StaffCardState extends State<StaffCard> {
               value: 'cancel',
               child: Row(
                 children: [
-                  Icon(
-                    Icons.close_rounded,
-                    color: Colors.red,
-                    size: 20,
-                  ),
+                  Icon(Icons.close_rounded, color: Colors.red, size: 20),
                   SizedBox(width: 10),
                   Text(AppConstants.cancelInvitation),
                 ],
@@ -680,11 +621,7 @@ class _StaffCardState extends State<StaffCard> {
               value: 'deactivate',
               child: Row(
                 children: [
-                  Icon(
-                    Icons.block_outlined,
-                    color: Colors.orange,
-                    size: 20,
-                  ),
+                  Icon(Icons.block_outlined, color: Colors.orange, size: 20),
                   SizedBox(width: 10),
                   Text(AppConstants.markInActive),
                 ],

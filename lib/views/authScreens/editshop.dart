@@ -150,6 +150,7 @@ class EditShopDetails extends GetView<ShopCreateController> {
                         const SizedBox(height: 12),
                         Obx(
                           () => DropdownButtonFormField<CountryModel>(
+                            //  ignore: deprecated_member_use
                             value: controller.selectedCountry.value,
                             isExpanded: true,
 
@@ -254,15 +255,14 @@ class EditShopDetails extends GetView<ShopCreateController> {
                             return const SizedBox.shrink();
                           }
 
-                          final canSubmit =
-                          !controller.isUpdating.value;
+                          final canSubmit = !controller.isUpdating.value;
 
                           return AppButton(
                             text: AppConstants.updateBusiness,
-                            backgroundColor:
-                            canSubmit ? null : Colors.grey.shade400,
-                            onPressed:
-                            canSubmit ? controller.updateShop : null,
+                            backgroundColor: canSubmit
+                                ? null
+                                : Colors.grey.shade400,
+                            onPressed: canSubmit ? controller.updateShop : null,
                             isLoading: controller.isUpdating.value,
                             suffixIcon: const Icon(
                               Icons.check_rounded,

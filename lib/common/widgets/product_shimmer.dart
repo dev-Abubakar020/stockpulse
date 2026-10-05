@@ -23,7 +23,7 @@ class ProductListShimmer extends StatelessWidget {
       physics: physics,
       // padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
       itemCount: itemCount,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
           baseColor: isDark

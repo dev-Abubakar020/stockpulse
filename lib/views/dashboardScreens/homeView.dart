@@ -7,7 +7,7 @@ import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/Custom_card.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
-import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/controllers/home_controller.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';

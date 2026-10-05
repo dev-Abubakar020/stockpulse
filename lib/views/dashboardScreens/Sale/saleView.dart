@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
-import 'package:stockpulse/common/widgets/custom_statuschip.dart';
+import 'package:stockpulse/common/widgets/custom_status_chip.dart';
 import 'package:stockpulse/controllers/sale_controller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import '../../../common/widgets/CustomSearchField.dart';

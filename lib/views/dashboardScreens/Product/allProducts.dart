@@ -9,18 +9,15 @@ import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../../../common/widgets/CustomSearchField.dart';
 import '../../../common/widgets/Custom_filter.dart';
-import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/emptyfilter.dart';
 import '../../../common/widgets/product_shimmer.dart';
 import '../../../controllers/allProductsController.dart';
-import '../../../controllers/loginController.dart';
 
-
-
-class AllProducts extends GetView<ProductController>  {
+class AllProducts extends GetView<ProductController> {
   const AllProducts({super.key});
 
   @override
@@ -64,14 +61,13 @@ class AllProducts extends GetView<ProductController>  {
 
               //filters
               Obx(
-                    () => CustomFilterTabs(
+                () => CustomFilterTabs(
                   items: const [
                     AppConstants.all,
                     AppConstants.lowStockTitle,
                     AppConstants.statusOutOfStock,
                   ],
-                  selectedIndex:
-                  controller.selectedFilterIndex.value,
+                  selectedIndex: controller.selectedFilterIndex.value,
                   onChanged: controller.changeFilter,
                 ),
               ),
@@ -82,7 +78,7 @@ class AllProducts extends GetView<ProductController>  {
             child: Obx(() {
               if (controller.isLoading.value) {
                 return Padding(
-                  padding: const EdgeInsets.only(top:12),
+                  padding: const EdgeInsets.only(top: 12),
                   child: const ProductListShimmer(),
                 );
               }
@@ -90,12 +86,15 @@ class AllProducts extends GetView<ProductController>  {
               final products = controller.filteredProducts;
 
               if (products.isEmpty) {
-                final bool isSearching = controller.searchQuery.value.isNotEmpty;
+                final bool isSearching =
+                    controller.searchQuery.value.isNotEmpty;
                 return Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: EmptyStateWidget(
                     isSearching: isSearching,
-                    title: isSearching ? AppConstants.queryNotFoundTitle : AppConstants.noProductsFoundTitle,
+                    title: isSearching
+                        ? AppConstants.queryNotFoundTitle
+                        : AppConstants.noProductsFoundTitle,
                     subtitle: isSearching
                         ? AppConstants.noProductsFoundSubtitle
                         : AppConstants.noProductsYetSubtitle,
@@ -105,12 +104,9 @@ class AllProducts extends GetView<ProductController>  {
               return RefreshIndicator(
                 onRefresh: controller.fetchProducts,
                 child: ListView.separated(
-                  padding: const EdgeInsets.only(
-                    top:12
-                  ),
+                  padding: const EdgeInsets.only(top: 12),
                   itemCount: products.length,
-                  separatorBuilder: (_, _) =>
-                  const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final product = products[index];
                     Color cardBorderColor = theme.border;
@@ -130,156 +126,170 @@ class AllProducts extends GetView<ProductController>  {
                       imgBgColor = AppColors.outOfStockImgBgColor;
                     }
                     return InkWell(
-                      onTap: () => Get.toNamed(Routes.productDetail, arguments: product),
+                      onTap: () =>
+                          Get.toNamed(Routes.productDetail, arguments: product),
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: theme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: cardBorderColor, width: 1.2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                        decoration: BoxDecoration(
+                          color: theme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: cardBorderColor,
+                            width: 1.2,
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          // Product Image Container box
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: product.imageUrl?.isNotEmpty == true
-                                  ? CachedNetworkImage(
-                                imageUrl: product.imageUrl!,
-                                fit: BoxFit.cover,
-                                fadeInDuration: const Duration(milliseconds: 300),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.02),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            // Product Image Container box
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: product.imageUrl?.isNotEmpty == true
+                                    ? CachedNetworkImage(
+                                        imageUrl: product.imageUrl!,
+                                        fit: BoxFit.cover,
+                                        fadeInDuration: const Duration(
+                                          milliseconds: 300,
+                                        ),
 
-                                placeholder: (_, __) => Shimmer.fromColors(
-                                  baseColor: theme.isDark
-                                      ? const Color(0xFF131D2E)
-                                      : const Color(0xFFE2E8F0),
-                                  highlightColor: theme.isDark
-                                      ? const Color(0xFF1E2D44)
-                                      : const Color(0xFFF8FAFC),
-                                  child: Container(
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                        placeholder: (_, _) =>
+                                            Shimmer.fromColors(
+                                              baseColor: theme.isDark
+                                                  ? const Color(0xFF131D2E)
+                                                  : const Color(0xFFE2E8F0),
+                                              highlightColor: theme.isDark
+                                                  ? const Color(0xFF1E2D44)
+                                                  : const Color(0xFFF8FAFC),
+                                              child: Container(
+                                                color: Colors.white,
+                                              ),
+                                            ),
 
-                                errorWidget: (_, __, ___) => Container(
-                                  color: imgBgColor,
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    '📦',
-                                    style: TextStyle(fontSize: 28),
-                                  ),
-                                ),
-                              )
-                                  : Container(
-                                color: imgBgColor,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  '📦',
-                                  style: TextStyle(fontSize: 28),
-                                ),
+                                        errorWidget: (_, _, _) => Container(
+                                          color: imgBgColor,
+                                          alignment: Alignment.center,
+                                          child: const Text(
+                                            '📦',
+                                            style: TextStyle(fontSize: 28),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        color: imgBgColor,
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          '📦',
+                                          style: TextStyle(fontSize: 28),
+                                        ),
+                                      ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          // Details central column
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(width: 14),
+                            // Details central column
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.article,
+                                    style: GoogleFonts.sora(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    product.categoryName ??
+                                        AppConstants.uncatProduct,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 13,
+                                      color: theme.textSecondary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: AppConstants.defaultCurrency,
+                                          style: GoogleFonts.sora(
+                                            fontSize: 13,
+                                            color: theme.textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '${product.salePrice.toInt()}',
+                                          style: GoogleFonts.sora(
+                                            fontSize: 15,
+                                            color: theme.textPrimary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: AppConstants.unit,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 12,
+                                            color: theme.textSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Status / actions column right side
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
-                                  product.article,
-                                  style: GoogleFonts.sora(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: theme.textPrimary,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: qtyBgColor,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    AppConstants.data(product.currentStock),
+                                    //'${product.currentStock} pcs',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: qtyTextColor,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                const SizedBox(height: 8),
                                 Text(
-                                  product.categoryName ?? AppConstants.uncatProduct,
+                                  product.stockStatus ??
+                                      AppConstants.statusInStock,
                                   style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13,
-                                    color: theme.textSecondary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: AppConstants.defaultCurrency,
-                                        style: GoogleFonts.sora(
-                                          fontSize: 13,
-                                          color: theme.textSecondary,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '${product.salePrice.toInt()}',
-                                        style: GoogleFonts.sora(
-                                          fontSize: 15,
-                                          color: theme.textPrimary,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: AppConstants.unit,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 12,
-                                          color: theme.textSecondary,
-                                        ),
-                                      ),
-                                    ],
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: qtyTextColor,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          // Status / actions column right side
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: qtyBgColor,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '${product.currentStock} pcs',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: qtyTextColor,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                product.stockStatus ?? AppConstants.statusInStock,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: qtyTextColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ));
+                    );
                   },
                 ),
               );
@@ -299,13 +309,13 @@ class AllProducts extends GetView<ProductController>  {
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12, right: AppConstants.spaceSM),
+          margin: const EdgeInsets.only(
+            bottom: 12,
+            right: AppConstants.spaceSM,
+          ),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF0F766E),
-                Color(0xFF14B8A6),
-              ],
+              colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -320,10 +330,7 @@ class AllProducts extends GetView<ProductController>  {
             icon: const Icon(Icons.add),
             label: const Text(
               AppConstants.addProducts,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
         );
@@ -331,5 +338,3 @@ class AllProducts extends GetView<ProductController>  {
     );
   }
 }
-
-

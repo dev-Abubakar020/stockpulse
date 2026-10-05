@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/controllers/home_controller.dart';
 
 import '../common/exceptional/platform_exceptions.dart';
 import '../common/widgets/custom_snackbar.dart';

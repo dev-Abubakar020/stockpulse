@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'custom_statuschip.dart';
+import 'custom_status_chip.dart';
 
 class CustomTransactionTile extends StatelessWidget {
   const CustomTransactionTile({

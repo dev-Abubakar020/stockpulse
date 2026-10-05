@@ -7,14 +7,16 @@ import 'package:shimmer/shimmer.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
-import 'package:stockpulse/common/widgets/custom_statuschip.dart';
+import 'package:stockpulse/common/widgets/custom_status_chip.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../../../common/route/app_routes.dart';
 import '../../../common/widgets/alertDialog.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../controllers/allProductsController.dart';
 import '../../../models/productItemModel.dart';
+
 import 'package:barcode/barcode.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -36,9 +38,14 @@ class ProductDetailView extends GetView<ProductController> {
         : Get.put(RoleService(), permanent: true);
 
     final double profit = product.salePrice - product.purchasePrice;
-    final double margin = product.salePrice > 0 ? (profit / product.salePrice) * 100 : 0;
-    final double stockProgress = product.minStockThreshold > 0 
-        ? (product.currentStock / (product.minStockThreshold * 2)).clamp(0.0, 1.0) 
+    final double margin = product.salePrice > 0
+        ? (profit / product.salePrice) * 100
+        : 0;
+    final double stockProgress = product.minStockThreshold > 0
+        ? (product.currentStock / (product.minStockThreshold * 2)).clamp(
+            0.0,
+            1.0,
+          )
         : 1.0;
 
     return CustomScreen(
@@ -51,7 +58,8 @@ class ProductDetailView extends GetView<ProductController> {
             Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => Get.toNamed(Routes.addProductWizard, arguments: product),
+                onTap: () =>
+                    Get.toNamed(Routes.addProductWizard, arguments: product),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   width: 77,
@@ -102,58 +110,69 @@ class ProductDetailView extends GetView<ProductController> {
                         SizedBox(
                           width: 100,
                           height: 100,
-                          child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                          child:
+                              product.imageUrl != null &&
+                                  product.imageUrl!.isNotEmpty
                               ? CachedNetworkImage(
-                            imageUrl: product.imageUrl!,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                            fadeInDuration: const Duration(milliseconds: 300),
-                            imageBuilder: (context, imageProvider) => Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                image: DecorationImage(
-                                  image: imageProvider,
+                                  imageUrl: product.imageUrl!,
+                                  width: 100,
+                                  height: 100,
                                   fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            placeholder: (context, url) => Shimmer.fromColors(
-                              baseColor: theme.isDark
-                                  ? const Color(0xFF131D2E)
-                                  : const Color(0xFFE2E8F0),
-                              highlightColor: theme.isDark
-                                  ? const Color(0xFF1E2D44)
-                                  : const Color(0xFFF8FAFC),
-                              child: Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: theme.surfaceMuted,
-                              alignment: Alignment.center,
-                              child: const Text(
-                                '📦',
-                                style: TextStyle(fontSize: 48),
-                              ),
-                            ),
-                          )
+                                  fadeInDuration: const Duration(
+                                    milliseconds: 300,
+                                  ),
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                        baseColor: theme.isDark
+                                            ? const Color(0xFF131D2E)
+                                            : const Color(0xFFE2E8F0),
+                                        highlightColor: theme.isDark
+                                            ? const Color(0xFF1E2D44)
+                                            : const Color(0xFFF8FAFC),
+                                        child: Container(
+                                          width: 100,
+                                          height: 100,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                        color: theme.surfaceMuted,
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          '📦',
+                                          style: TextStyle(fontSize: 48),
+                                        ),
+                                      ),
+                                )
                               : Container(
-                            color: theme.surfaceMuted,
-                            child: const Center(
-                              child: Text(
-                                '📦',
-                                style: TextStyle(fontSize: 48),
-                              ),
-                            ),
-                          ),
+                                  color: theme.surfaceMuted,
+                                  child: const Center(
+                                    child: Text(
+                                      '📦',
+                                      style: TextStyle(fontSize: 48),
+                                    ),
+                                  ),
+                                ),
                         ),
 
                         Positioned(
@@ -188,9 +207,15 @@ class ProductDetailView extends GetView<ProductController> {
                       children: [
                         Row(
                           children: [
-                            _buildSmallBadge(product.categoryName ?? AppConstants.defaultCat, theme),
+                            _buildSmallBadge(
+                              product.categoryName ?? AppConstants.defaultCat,
+                              theme,
+                            ),
                             const SizedBox(width: 8),
-                            const CustomStatusChip(textTitle: AppConstants.statusInStock, type: StatusType.success),
+                            const CustomStatusChip(
+                              textTitle: AppConstants.statusInStock,
+                              type: StatusType.success,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -270,7 +295,8 @@ class ProductDetailView extends GetView<ProductController> {
                                     AppConstants.calPerPiece,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 11,
-                                      color: const Color(0xFF166534).withValues(alpha: 0.7),
+                                      color: const Color(0xFF166534)
+                                          .withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ],
@@ -278,7 +304,10 @@ class ProductDetailView extends GetView<ProductController> {
                             ],
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(20),
@@ -306,7 +335,10 @@ class ProductDetailView extends GetView<ProductController> {
               theme,
               title: AppConstants.invHealth,
               icon: Icons.inventory_2_outlined,
-              headerAction: const CustomStatusChip(textTitle: AppConstants.healthyStock, type: StatusType.success),
+              headerAction: const CustomStatusChip(
+                textTitle: AppConstants.healthyStock,
+                type: StatusType.success,
+              ),
               child: Column(
                 children: [
                   Row(
@@ -317,7 +349,10 @@ class ProductDetailView extends GetView<ProductController> {
                           children: [
                             Text(
                               AppConstants.currAvailability,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: theme.textSecondary),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                color: theme.textSecondary,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             RichText(
@@ -354,13 +389,18 @@ class ProductDetailView extends GetView<ProductController> {
                                 value: stockProgress,
                                 minHeight: 8,
                                 backgroundColor: theme.surfaceMuted,
-                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0F766E)),
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Color(0xFF0F766E),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '${(stockProgress * 100).toInt()}${AppConstants.ofCapacity}',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                color: theme.textSecondary,
+                              ),
                             ),
                           ],
                         ),
@@ -379,25 +419,25 @@ class ProductDetailView extends GetView<ProductController> {
 
               headerAction: product.barcode?.trim().isNotEmpty == true
                   ? const CustomStatusChip(
-                textTitle: AppConstants.barCodeSubCheck,
-                type: StatusType.success,
-              )
+                      textTitle: AppConstants.barCodeSubCheck,
+                      type: StatusType.success,
+                    )
                   : null,
 
               child: product.barcode?.trim().isNotEmpty == true
                   ? _BarcodePreview(
-                barcodeValue: product.barcode!,
-                theme: theme,
-              )
+                      barcodeValue: product.barcode!,
+                      theme: theme,
+                    )
                   : Center(
-                child: Text(
-                  AppConstants.noBarCode,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    color: theme.textSecondary,
-                  ),
-                ),
-              ),
+                      child: Text(
+                        AppConstants.noBarCode,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          color: theme.textSecondary,
+                        ),
+                      ),
+                    ),
             ),
             // _buildSectionCard(
             //   theme,
@@ -439,7 +479,11 @@ class ProductDetailView extends GetView<ProductController> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.warning_amber_rounded, color: Color(0xFFE11D48), size: 20),
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Color(0xFFE11D48),
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           AppConstants.dangerZone,
@@ -466,7 +510,11 @@ class ProductDetailView extends GetView<ProductController> {
                       onPressed: () => _confirmDelete(context, product),
                       backgroundColor: Colors.white,
                       foregroundColor: const Color(0xFFE11D48),
-                      prefixIcon: const Icon(Icons.delete_outline, color: Color(0xFFE11D48), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.delete_outline,
+                        color: Color(0xFFE11D48),
+                        size: 20,
+                      ),
                       boxShadow: [],
                     ),
                   ],
@@ -530,7 +578,8 @@ class ProductDetailView extends GetView<ProductController> {
                     ),
                   ],
                 ),
-                if (headerAction != null) headerAction,
+                //(headerAction != null)
+                ? headerAction,
               ],
             ),
             const SizedBox(height: 16),
@@ -559,7 +608,12 @@ class ProductDetailView extends GetView<ProductController> {
     );
   }
 
-  Widget _buildPriceBox(String label, String price, String sub, AppThemeHelper theme) {
+  Widget _buildPriceBox(
+    String label,
+    String price,
+    String sub,
+    AppThemeHelper theme,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -572,23 +626,31 @@ class ProductDetailView extends GetView<ProductController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              color: theme.textSecondary,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             price,
-            style: GoogleFonts.sora(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textPrimary),
+            style: GoogleFonts.sora(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: theme.textPrimary,
+            ),
           ),
           Text(
             sub,
-            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              color: theme.textSecondary,
+            ),
           ),
         ],
       ),
     );
   }
-
-
 
   void _confirmDelete(BuildContext context, ProductItemModel product) {
     Get.dialog(
@@ -606,15 +668,11 @@ class ProductDetailView extends GetView<ProductController> {
   }
 }
 
-
 class _BarcodePreview extends StatefulWidget {
   final String barcodeValue;
   final AppThemeHelper theme;
 
-  const _BarcodePreview({
-    required this.barcodeValue,
-    required this.theme,
-  });
+  const _BarcodePreview({required this.barcodeValue, required this.theme});
 
   @override
   State<_BarcodePreview> createState() => _BarcodePreviewState();
@@ -625,14 +683,13 @@ class _BarcodePreviewState extends State<_BarcodePreview> {
 
   Future<void> _saveBarcodeImage() async {
     try {
-      final boundary = _barcodeKey.currentContext
-          ?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary =
+          _barcodeKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
 
       if (boundary == null) return;
 
-      final ui.Image image = await boundary.toImage(
-        pixelRatio: 3.0,
-      );
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
 
       final ByteData? byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
@@ -640,8 +697,7 @@ class _BarcodePreviewState extends State<_BarcodePreview> {
 
       if (byteData == null) return;
 
-      final Uint8List pngBytes =
-      byteData.buffer.asUint8List();
+      final Uint8List pngBytes = byteData.buffer.asUint8List();
 
       await Gal.putImageBytes(
         pngBytes,
@@ -670,12 +726,7 @@ class _BarcodePreviewState extends State<_BarcodePreview> {
 
     final barcode = Barcode.code128();
 
-    final svg = barcode.toSvg(
-      value,
-      width: 280,
-      height: 90,
-      drawText: false,
-    );
+    final svg = barcode.toSvg(value, width: 280, height: 90, drawText: false);
 
     return Column(
       children: [
@@ -685,18 +736,11 @@ class _BarcodePreviewState extends State<_BarcodePreview> {
           child: Container(
             width: double.infinity,
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 18,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SvgPicture.string(
-                  svg,
-                  width: 280,
-                  height: 90,
-                ),
+                SvgPicture.string(svg, width: 280, height: 90),
 
                 const SizedBox(height: 10),
 
@@ -721,15 +765,10 @@ class _BarcodePreviewState extends State<_BarcodePreview> {
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: _saveBarcodeImage,
-            icon: const Icon(
-              Icons.download_rounded,
-              size: 19,
-            ),
+            icon: const Icon(Icons.download_rounded, size: 19),
             label: Text(
               AppConstants.barCodeSubCheck,
-              style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
             ),
           ),
         ),

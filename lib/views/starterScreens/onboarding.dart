@@ -6,32 +6,26 @@ import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/services/local_storage_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-
 import '../../controllers/onboardingController.dart';
-
 
 class OnboardingScreen extends GetView<OnboardingController> {
   const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-  Widget _buildDot({
-    required bool isActive,
-  }) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(
-          Radius.circular(50),
+    Widget buildDot({required bool isActive}) {
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(50)),
+          color: Color(0xFF000000),
         ),
-        color: Color(0xFF000000),
-      ),
-      margin: const EdgeInsets.only(right: 5),
-      height: 10,
-      curve: Curves.easeIn,
-      width: isActive ? 20 : 10,
-    );
-  }
+        margin: const EdgeInsets.only(right: 5),
+        height: 10,
+        curve: Curves.easeIn,
+        width: isActive ? 20 : 10,
+      );
+    }
 
     SizeConfig().init(context);
     double width = SizeConfig.screenW!;
@@ -99,49 +93,48 @@ class OnboardingScreen extends GetView<OnboardingController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       contents.length,
-                      (index) => _buildDot(isActive:
-                      controller.currentPage.value == index,
+                      (index) => buildDot(
+                        isActive: controller.currentPage.value == index,
                       ),
                     ),
                   ),
                   Obx(
-                        () => controller.currentPage.value + 1 == contents.length
+                    () => controller.currentPage.value + 1 == contents.length
                         ? Padding(
-                      padding: const EdgeInsets.all(30),
-                      child: AppButton(
-                        text: AppConstants.start,
-                        onPressed: () {
-                          Get.find<LocalStorageService>()
-                              .setNotFirstTime();
+                            padding: const EdgeInsets.all(30),
+                            child: AppButton(
+                              text: AppConstants.start,
+                              onPressed: () {
+                                Get.find<LocalStorageService>()
+                                    .setNotFirstTime();
 
-                          Get.offAllNamed(Routes.login);
-                        },
-                      ),
-                    )
+                                Get.offAllNamed(Routes.login);
+                              },
+                            ),
+                          )
                         : Padding(
-                      padding: const EdgeInsets.all(30),
-                      child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Get.find<LocalStorageService>()
-                                  .setNotFirstTime();
+                            padding: const EdgeInsets.all(30),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Get.find<LocalStorageService>()
+                                        .setNotFirstTime();
 
-                              Get.offAllNamed(Routes.login);
-                            },
-                            child: Text(AppConstants.skip),
+                                    Get.offAllNamed(Routes.login);
+                                  },
+                                  child: Text(AppConstants.skip),
+                                ),
+                                AppButton(
+                                  text: AppConstants.next,
+                                  fullWidth: false,
+                                  onPressed: controller.nextPage,
+                                ),
+                              ],
+                            ),
                           ),
-                          AppButton(
-                            text: AppConstants.next,
-                            fullWidth: false,
-                            onPressed: controller.nextPage,
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
+                  ),
                 ],
               ),
             ),

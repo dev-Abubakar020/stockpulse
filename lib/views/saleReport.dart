@@ -12,6 +12,7 @@ import 'package:stockpulse/common/widgets/appbar.dart';
 import 'package:stockpulse/controllers/dashboardController.dart';
 import 'package:stockpulse/controllers/sale_report_Controller.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../common/widgets/Custom_card.dart';
 
 class SaleReport extends GetView<SaleReportController> {
@@ -26,24 +27,18 @@ class SaleReport extends GetView<SaleReportController> {
         showBackArrow: true,
         title: Text(
           AppConstants.salesReport,
-          style: GoogleFonts.sora(
-            fontWeight: FontWeight.w700,
-          ),
+          style: GoogleFonts.sora(fontWeight: FontWeight.w700),
         ),
         actions: [
           IconButton(
             onPressed: () => controller.fetchReport(),
-            icon: const Icon(
-              CupertinoIcons.refresh,
-            ),
+            icon: const Icon(CupertinoIcons.refresh),
           ),
         ],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         return SingleChildScrollView(
@@ -65,14 +60,14 @@ class SaleReport extends GetView<SaleReportController> {
                       selectedIndex: controller.selectedFilter.value == 'Daily'
                           ? 0
                           : controller.selectedFilter.value == 'Monthly'
-                              ? 1
-                              : 2,
+                          ? 1
+                          : 2,
                       onChanged: (index) {
                         final filter = index == 0
                             ? 'Daily'
                             : index == 1
-                                ? 'Monthly'
-                                : 'Custom';
+                            ? 'Monthly'
+                            : 'Custom';
                         controller.changeFilter(filter);
                       },
                     ),
@@ -88,8 +83,10 @@ class SaleReport extends GetView<SaleReportController> {
                         Expanded(
                           child: SummaryCard(
                             title: AppConstants.totalSales,
-                            value: 'Rs ${controller.totalSales.value.toStringAsFixed(0)}',
-                            percentage: '${controller.salesPercentage.value >= 0 ? '+' : ''}${controller.salesPercentage.value.toStringAsFixed(1)}%',
+                            value:
+                                'Rs ${controller.totalSales.value.toStringAsFixed(0)}',
+                            percentage:
+                                '${controller.salesPercentage.value >= 0 ? '+' : ''}${controller.salesPercentage.value.toStringAsFixed(1)}%',
                             positive: controller.salesPercentage.value >= 0,
                             icon: Icons.payments_outlined,
                             iconColor: theme.sales,
@@ -101,7 +98,8 @@ class SaleReport extends GetView<SaleReportController> {
                           child: SummaryCard(
                             title: AppConstants.totalInvoices,
                             value: '${controller.totalInvoices.value}',
-                            percentage: '${controller.invoicesPercentage.value >= 0 ? '+' : ''}${controller.invoicesPercentage.value.toStringAsFixed(1)}%',
+                            percentage:
+                                '${controller.invoicesPercentage.value >= 0 ? '+' : ''}${controller.invoicesPercentage.value.toStringAsFixed(1)}%',
                             positive: controller.invoicesPercentage.value >= 0,
                             icon: Icons.receipt_long_outlined,
                             iconColor: theme.primary,
@@ -118,9 +116,12 @@ class SaleReport extends GetView<SaleReportController> {
                         Expanded(
                           child: SummaryCard(
                             title: AppConstants.averageSale,
-                            value: 'Rs ${controller.averageSale.value.toStringAsFixed(2)}',
-                            percentage: '${controller.averageSalePercentage.value >= 0 ? '+' : ''}${controller.averageSalePercentage.value.toStringAsFixed(1)}%',
-                            positive: controller.averageSalePercentage.value >= 0,
+                            value:
+                                'Rs ${controller.averageSale.value.toStringAsFixed(2)}',
+                            percentage:
+                                '${controller.averageSalePercentage.value >= 0 ? '+' : ''}${controller.averageSalePercentage.value.toStringAsFixed(1)}%',
+                            positive:
+                                controller.averageSalePercentage.value >= 0,
                             icon: Icons.trending_up_rounded,
                             iconColor: theme.profit,
                             theme: theme,
@@ -130,8 +131,11 @@ class SaleReport extends GetView<SaleReportController> {
                         Expanded(
                           child: SummaryCard(
                             title: AppConstants.itemsSold,
-                            value: '${controller.itemsSold.value.toStringAsFixed(0)}',
-                            percentage: '${controller.itemsSoldPercentage.value >= 0 ? '+' : ''}${controller.itemsSoldPercentage.value.toStringAsFixed(1)}%',
+                            value: controller.itemsSold.value.toStringAsFixed(
+                              0,
+                            ),
+                            percentage:
+                                '${controller.itemsSoldPercentage.value >= 0 ? '+' : ''}${controller.itemsSoldPercentage.value.toStringAsFixed(1)}%',
                             positive: controller.itemsSoldPercentage.value >= 0,
                             icon: Icons.inventory_2_outlined,
                             iconColor: theme.purchases,
@@ -201,10 +205,13 @@ class SaleReport extends GetView<SaleReportController> {
                           else
                             ...controller.categorySales.map((catReport) {
                               return Padding(
-                                padding: const EdgeInsets.only(bottom: AppConstants.spaceLG),
+                                padding: const EdgeInsets.only(
+                                  bottom: AppConstants.spaceLG,
+                                ),
                                 child: _CategoryProgress(
                                   title: catReport.name,
-                                  amount: 'Rs ${catReport.amount.toStringAsFixed(0)}',
+                                  amount:
+                                      'Rs ${catReport.amount.toStringAsFixed(0)}',
                                   percentage: catReport.percentage.round(),
                                   color: theme.sales,
                                   theme: theme,
@@ -251,11 +258,18 @@ class SaleReport extends GetView<SaleReportController> {
                               return Column(
                                 children: [
                                   _SaleItem(
-                                    invoice: sale.saleNo.isNotEmpty ? sale.saleNo : 'INV-${sale.id.substring(0, 6)}',
-                                    customer: 'Payment: ${sale.paymentMethod.capitalizeFirst}',
-                                    date: DateFormat('dd MMM, hh:mm a').format(sale.saleDate),
-                                    items: sale.status.capitalizeFirst ?? 'Completed',
-                                    amount: 'Rs ${sale.totalAmount.toStringAsFixed(0)}',
+                                    invoice: sale.saleNo.isNotEmpty
+                                        ? sale.saleNo
+                                        : 'INV-${sale.id.substring(0, 6)}',
+                                    customer:
+                                        'Payment: ${sale.paymentMethod.capitalizeFirst}',
+                                    date: DateFormat('dd MMM, hh:mm a')
+                                        .format(sale.saleDate),
+                                    items:
+                                        sale.status.capitalizeFirst ??
+                                        'Completed',
+                                    amount:
+                                        'Rs ${sale.totalAmount.toStringAsFixed(0)}',
                                     theme: theme,
                                   ),
                                   Divider(
@@ -283,10 +297,7 @@ class _PeriodSelector extends StatelessWidget {
   final AppThemeHelper theme;
   final SaleReportController controller;
 
-  const _PeriodSelector({
-    required this.theme,
-    required this.controller,
-  });
+  const _PeriodSelector({required this.theme, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -297,12 +308,8 @@ class _PeriodSelector extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: theme.surface,
-        borderRadius: BorderRadius.circular(
-          AppConstants.radiusMD,
-        ),
-        border: Border.all(
-          color: theme.border,
-        ),
+        borderRadius: BorderRadius.circular(AppConstants.radiusMD),
+        border: Border.all(color: theme.border),
       ),
       child: Row(
         children: [
@@ -339,7 +346,8 @@ class _PeriodSelector extends StatelessWidget {
               ],
             ),
           ),
-          if (controller.selectedFilter.value != 'Custom' && controller.hasNextPeriod)
+          if (controller.selectedFilter.value != 'Custom' &&
+              controller.hasNextPeriod)
             IconButton(
               onPressed: () => controller.nextPeriod(),
               icon: Icon(
@@ -360,26 +368,17 @@ class _ReportSection extends StatelessWidget {
   final Widget child;
   final AppThemeHelper theme;
 
-  const _ReportSection({
-    required this.child,
-    required this.theme,
-  });
+  const _ReportSection({required this.child, required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(
-        AppConstants.spaceLG,
-      ),
+      padding: const EdgeInsets.all(AppConstants.spaceLG),
       decoration: BoxDecoration(
         color: theme.surface,
-        borderRadius: BorderRadius.circular(
-          AppConstants.radiusLG,
-        ),
-        border: Border.all(
-          color: theme.border,
-        ),
+        borderRadius: BorderRadius.circular(AppConstants.radiusLG),
+        border: Border.all(color: theme.border),
       ),
       child: child,
     );
@@ -416,13 +415,9 @@ class _SectionHeader extends StatelessWidget {
         if (actionText != null && onViewAll != null)
           InkWell(
             onTap: onViewAll,
-            borderRadius: BorderRadius.circular(
-              AppConstants.radiusSM,
-            ),
+            borderRadius: BorderRadius.circular(AppConstants.radiusSM),
             child: Padding(
-              padding: const EdgeInsets.all(
-                AppConstants.spaceXS,
-              ),
+              padding: const EdgeInsets.all(AppConstants.spaceXS),
               child: Text(
                 actionText!,
                 style: GoogleFonts.plusJakartaSans(
@@ -462,10 +457,7 @@ class _CategoryProgress extends StatelessWidget {
             Container(
               width: AppConstants.spaceSM,
               height: AppConstants.spaceSM,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: AppConstants.spaceSM),
             Expanded(
@@ -503,16 +495,12 @@ class _CategoryProgress extends StatelessWidget {
         ),
         const SizedBox(height: AppConstants.spaceSM),
         ClipRRect(
-          borderRadius: BorderRadius.circular(
-            AppConstants.radiusXL,
-          ),
+          borderRadius: BorderRadius.circular(AppConstants.radiusXL),
           child: LinearProgressIndicator(
             value: (percentage / 100).clamp(0.0, 1.0),
             minHeight: AppConstants.reportProgressHeight,
             backgroundColor: theme.surfaceMuted,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              color,
-            ),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
       ],
@@ -545,12 +533,8 @@ class _SaleItem extends StatelessWidget {
           width: AppConstants.reportIconBoxSize,
           height: AppConstants.reportIconBoxSize,
           decoration: BoxDecoration(
-            color: theme.sales.withValues(
-              alpha: 0.10,
-            ),
-            borderRadius: BorderRadius.circular(
-              AppConstants.radiusMD,
-            ),
+            color: theme.sales.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(AppConstants.radiusMD),
           ),
           child: Icon(
             Icons.receipt_long_outlined,
@@ -740,10 +724,7 @@ class _SalesChart extends StatelessWidget {
   final AppThemeHelper theme;
   final List<SaleChartData> chartData;
 
-  const _SalesChart({
-    required this.theme,
-    required this.chartData,
-  });
+  const _SalesChart({required this.theme, required this.chartData});
 
   @override
   Widget build(BuildContext context) {
@@ -755,10 +736,7 @@ class _SalesChart extends StatelessWidget {
         fillColor: theme.sales.withValues(alpha: 0.08),
         textColor: theme.textSecondary,
       ),
-      size: const Size(
-        double.infinity,
-        AppConstants.reportChartHeight,
-      ),
+      size: const Size(double.infinity, AppConstants.reportChartHeight),
     );
   }
 }
@@ -793,11 +771,9 @@ class _SalesChartPainter extends CustomPainter {
     // CHART AREA
     // ============================================================
 
-    final chartWidth =
-        size.width - leftPadding - rightPadding;
+    final chartWidth = size.width - leftPadding - rightPadding;
 
-    final chartHeight =
-        size.height - topPadding - bottomPadding;
+    final chartHeight = size.height - topPadding - bottomPadding;
 
     // ============================================================
     // MAX VALUE
@@ -806,10 +782,9 @@ class _SalesChartPainter extends CustomPainter {
     final rawMax = chartData
         .map((e) => e.amount)
         .fold<double>(
-      0,
-          (previous, value) =>
-      value > previous ? value : previous,
-    );
+          0,
+          (previous, value) => value > previous ? value : previous,
+        );
 
     final maxY = _calculateNiceMax(rawMax);
 
@@ -843,19 +818,14 @@ class _SalesChartPainter extends CustomPainter {
     for (int i = 0; i <= ySections; i++) {
       final ratio = i / ySections;
 
-      final y =
-          topPadding + (chartHeight * ratio);
+      final y = topPadding + (chartHeight * ratio);
 
-      final value =
-          maxY - (maxY * ratio);
+      final value = maxY - (maxY * ratio);
 
       // Grid line
       canvas.drawLine(
         Offset(leftPadding, y),
-        Offset(
-          size.width - rightPadding,
-          y,
-        ),
+        Offset(size.width - rightPadding, y),
         gridPaint,
       );
 
@@ -876,12 +846,7 @@ class _SalesChartPainter extends CustomPainter {
 
       textPainter.paint(
         canvas,
-        Offset(
-          leftPadding -
-              textPainter.width -
-              7,
-          y - textPainter.height / 2,
-        ),
+        Offset(leftPadding - textPainter.width - 7, y - textPainter.height / 2),
       );
     }
 
@@ -894,24 +859,13 @@ class _SalesChartPainter extends CustomPainter {
     for (int i = 0; i < chartData.length; i++) {
       final x = chartData.length == 1
           ? leftPadding + chartWidth / 2
-          : leftPadding +
-          (chartWidth /
-              (chartData.length - 1)) *
-              i;
+          : leftPadding + (chartWidth / (chartData.length - 1)) * i;
 
-      final normalizedValue =
-      maxY == 0
-          ? 0
-          : chartData[i].amount / maxY;
+      final normalizedValue = maxY == 0 ? 0 : chartData[i].amount / maxY;
 
-      final y =
-          topPadding +
-              chartHeight -
-              (normalizedValue * chartHeight);
+      final y = topPadding + chartHeight - (normalizedValue * chartHeight);
 
-      points.add(
-        Offset(x, y),
-      );
+      points.add(Offset(x, y));
     }
 
     if (points.isEmpty) return;
@@ -920,74 +874,44 @@ class _SalesChartPainter extends CustomPainter {
     // LINE PATH
     // ============================================================
 
-    final linePath = Path()
-      ..moveTo(
-        points.first.dx,
-        points.first.dy,
-      );
+    final linePath = Path()..moveTo(points.first.dx, points.first.dy);
 
     for (int i = 1; i < points.length; i++) {
-      linePath.lineTo(
-        points[i].dx,
-        points[i].dy,
-      );
+      linePath.lineTo(points[i].dx, points[i].dy);
     }
 
     // ============================================================
     // FILL PATH
     // ============================================================
 
-    final bottomY =
-        topPadding + chartHeight;
+    final bottomY = topPadding + chartHeight;
 
-    final fillPath =
-    Path.from(linePath)
-      ..lineTo(
-        points.last.dx,
-        bottomY,
-      )
-      ..lineTo(
-        points.first.dx,
-        bottomY,
-      )
+    final fillPath = Path.from(linePath)
+      ..lineTo(points.last.dx, bottomY)
+      ..lineTo(points.first.dx, bottomY)
       ..close();
 
-    canvas.drawPath(
-      fillPath,
-      fillPaint,
-    );
+    canvas.drawPath(fillPath, fillPaint);
 
     // ============================================================
     // LINE
     // ============================================================
 
-    canvas.drawPath(
-      linePath,
-      linePaint,
-    );
+    canvas.drawPath(linePath, linePaint);
 
     // ============================================================
     // DOTS
     // ============================================================
 
     for (final point in points) {
-      canvas.drawCircle(
-        point,
-        3,
-        dotPaint,
-      );
+      canvas.drawCircle(point, 3, dotPaint);
     }
 
     // ============================================================
     // X AXIS
     // ============================================================
 
-    _drawXAxis(
-      canvas,
-      size,
-      chartWidth,
-      chartHeight,
-    );
+    _drawXAxis(canvas, size, chartWidth, chartHeight);
   }
 
   // ============================================================
@@ -995,11 +919,11 @@ class _SalesChartPainter extends CustomPainter {
   // ============================================================
 
   void _drawXAxis(
-      Canvas canvas,
-      Size size,
-      double chartWidth,
-      double chartHeight,
-      ) {
+    Canvas canvas,
+    Size size,
+    double chartWidth,
+    double chartHeight,
+  ) {
     if (chartData.isEmpty) return;
 
     /*
@@ -1017,17 +941,12 @@ class _SalesChartPainter extends CustomPainter {
 
     final indexes = <int>[];
 
-    for (
-    int i = 0;
-    i < chartData.length;
-    i += step
-    ) {
+    for (int i = 0; i < chartData.length; i += step) {
       indexes.add(i);
     }
 
     // Always show last date
-    final lastIndex =
-        chartData.length - 1;
+    final lastIndex = chartData.length - 1;
 
     if (!indexes.contains(lastIndex)) {
       indexes.add(lastIndex);
@@ -1038,16 +957,9 @@ class _SalesChartPainter extends CustomPainter {
 
       final x = chartData.length == 1
           ? leftPadding + chartWidth / 2
-          : leftPadding +
-          (chartWidth /
-              (chartData.length - 1)) *
-              index;
+          : leftPadding + (chartWidth / (chartData.length - 1)) * index;
 
-      final label =
-      data.date.day.toString().padLeft(
-        2,
-        '0',
-      );
+      final label = data.date.day.toString().padLeft(2, '0');
 
       final textPainter = TextPainter(
         text: TextSpan(
@@ -1065,12 +977,7 @@ class _SalesChartPainter extends CustomPainter {
 
       textPainter.paint(
         canvas,
-        Offset(
-          x - textPainter.width / 2,
-          topPadding +
-              chartHeight +
-              8,
-        ),
+        Offset(x - textPainter.width / 2, topPadding + chartHeight + 8),
       );
     }
   }
@@ -1079,9 +986,7 @@ class _SalesChartPainter extends CustomPainter {
   // NICE MAX Y VALUE
   // ============================================================
 
-  double _calculateNiceMax(
-      double value,
-      ) {
+  double _calculateNiceMax(double value) {
     if (value <= 0) {
       return 100;
     }
@@ -1108,27 +1013,22 @@ class _SalesChartPainter extends CustomPainter {
       interval = 250000;
     }
 
-    return (value / interval).ceil() *
-        interval;
+    return (value / interval).ceil() * interval;
   }
 
   // ============================================================
   // FORMAT Y VALUE
   // ============================================================
 
-  String _formatAmount(
-      double value,
-      ) {
+  String _formatAmount(double value) {
     if (value >= 1000000) {
-      final result =
-          value / 1000000;
+      final result = value / 1000000;
 
       return '${_removeZero(result)}M';
     }
 
     if (value >= 1000) {
-      final result =
-          value / 1000;
+      final result = value / 1000;
 
       return '${_removeZero(result)}K';
     }
@@ -1136,14 +1036,9 @@ class _SalesChartPainter extends CustomPainter {
     return value.toStringAsFixed(0);
   }
 
-  String _removeZero(
-      double value,
-      ) {
-    if (value ==
-        value.roundToDouble()) {
-      return value
-          .toInt()
-          .toString();
+  String _removeZero(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
     }
 
     return value.toStringAsFixed(1);
@@ -1154,9 +1049,7 @@ class _SalesChartPainter extends CustomPainter {
   // ============================================================
 
   @override
-  bool shouldRepaint(
-      covariant _SalesChartPainter oldDelegate,
-      ) {
+  bool shouldRepaint(covariant _SalesChartPainter oldDelegate) {
     return oldDelegate.chartData != chartData ||
         oldDelegate.lineColor != lineColor ||
         oldDelegate.gridColor != gridColor ||

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/data/countries_data.dart';
-import 'package:stockpulse/common/data/phone_hint.dart';
 import 'package:stockpulse/common/theme/theme_helper.dart';
 import 'package:stockpulse/common/widgets/custom_button.dart';
 import 'package:stockpulse/common/widgets/custom_TextField.dart';
@@ -11,6 +10,7 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/themetogglebtn.dart';
@@ -24,7 +24,7 @@ class PhoneDetailScreen extends GetView<LoginController> {
 
     return CustomScreen(
       glowColor: theme.glow,
-      appBar:CustomAppBar(
+      appBar: CustomAppBar(
         showBackArrow: true,
         title: Text(AppConstants.phoneLoginTitle),
         actions: const [ThemeToggleButton()],
@@ -118,83 +118,82 @@ class PhoneDetailScreen extends GetView<LoginController> {
                     const SizedBox(height: 8),
 
                     // Phone input with country code picker
-                    Obx(()=>Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 52,
-                          decoration: BoxDecoration(
-                            color: theme.surfaceMuted,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: theme.border,
-                              width: 1,
+                    Obx(
+                      () => Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: theme.surfaceMuted,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: theme.border, width: 1),
                             ),
-                          ),
-                          child: Obx(
-                                () => DropdownButton<CountryModel>(
-                              value: controller.selectedCountry.value,
-                              dropdownColor: theme.card,
-                              isExpanded: true,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              icon: Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                                color: theme.textSecondary,
-                                size: 18,
-                              ),
-                              items: countries.map((country) {
-                                return DropdownMenuItem<CountryModel>(
-                                  value: country,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        country.flagEmoji,
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        country.dialCode,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: theme.textPrimary,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
+                            child: Obx(
+                              () => DropdownButton<CountryModel>(
+                                value: controller.selectedCountry.value,
+                                dropdownColor: theme.card,
+                                isExpanded: true,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: theme.textSecondary,
+                                  size: 18,
+                                ),
+                                items: countries.map((country) {
+                                  return DropdownMenuItem<CountryModel>(
+                                    value: country,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          country.flagEmoji,
+                                          style: const TextStyle(fontSize: 20),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (country) {
-                                if (country != null) {
-                                  controller.changeCountry(country);
-                                }
-                              },
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          country.dialCode,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: theme.textPrimary,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (country) {
+                                  if (country != null) {
+                                    controller.changeCountry(country);
+                                  }
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: CustomTextField(
-                            controller: controller.phoneController,
-                            hintText: controller.phoneHint,
-                            keyboardType: TextInputType.phone,
-                            textInputAction: TextInputAction.done,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(11),
-                            ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: CustomTextField(
+                              controller: controller.phoneController,
+                              hintText: controller.phoneHint,
+                              keyboardType: TextInputType.phone,
+                              textInputAction: TextInputAction.done,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(11),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 22),
 
                     Obx(
-                          () => AppButton(
+                      () => AppButton(
                         text: AppConstants.sendVerificationCode,
                         onPressed: controller.sendPhoneOtp,
                         isLoading: controller.isPhoneLoading.value,

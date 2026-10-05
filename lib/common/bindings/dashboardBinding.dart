@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import '../../controllers/dashboardController.dart';
 import '../../controllers/allProductsController.dart';
-import '../../controllers/homecontroller.dart';
+import '../../controllers/home_controller.dart';
 import '../../repositories/product_repository.dart';
 import '../../controllers/purchase_controller.dart';
 import '../../repositories/purchase_repo.dart';

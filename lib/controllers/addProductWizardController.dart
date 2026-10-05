@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stockpulse/controllers/homecontroller.dart';
+import 'package:stockpulse/controllers/home_controller.dart';
 
 import '../../models/productItemModel.dart';
 import '../common/exceptional/platform_exceptions.dart';

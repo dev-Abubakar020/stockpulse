@@ -47,6 +47,7 @@ dependencies:
   gal: ^2.3.3
   local_auth: ^3.0.2
   flutter_secure_storage: ^11.2.0
+  barcode: ^2.2.9
 #  barcode_scanner: ^9.0.0
 
 dev_dependencies:

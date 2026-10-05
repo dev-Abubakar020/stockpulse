@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +12,7 @@ import 'package:stockpulse/models/country_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../common/widgets/StandardScreen.dart';
-  import '../common/widgets/appbar.dart';
+import '../common/widgets/appbar.dart';
 
 class CreateShop extends GetView<ShopCreateController> {
   const CreateShop({super.key});
@@ -112,7 +113,8 @@ class CreateShop extends GetView<ShopCreateController> {
                       ),
                       const SizedBox(height: 12),
                       Obx(
-                            () => DropdownButtonFormField<CountryModel>(
+                        () => DropdownButtonFormField<CountryModel>(
+                          //  ignore: deprecated_member_use
                           value: controller.selectedCountry.value,
                           isExpanded: true,
 
@@ -162,42 +164,48 @@ class CreateShop extends GetView<ShopCreateController> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Obx(() => Row(
-                            children: [
-                              Expanded(
-                                child: _ReadOnlyValue(
-                                  label: AppConstants.symbol,
-                                  value: controller.currency.symbol,
-                                  theme: theme,
-                                ),
+                      Obx(
+                        () => Row(
+                          children: [
+                            Expanded(
+                              child: _ReadOnlyValue(
+                                label: AppConstants.symbol,
+                                value: controller.currency.symbol,
+                                theme: theme,
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _ReadOnlyValue(
-                                  label: AppConstants.currencyCode,
-                                  value: controller.currency.code,
-                                  theme: theme,
-                                ),
-                              ),
-                            ],
-                          )),
-                      const SizedBox(height: 18),
-                      Obx(() => _ImagePickerTile(
-                            imageBytes: controller.imageBytes.value,
-                            onPressed: controller.pickImage,
-                            theme: theme,
-                          )),
-                      const SizedBox(height: 22),
-                      Obx(() => AppButton(
-                            text: AppConstants.saveAndContinue,
-                            onPressed: controller.saveShop,
-                            isLoading: controller.isSaving.value,
-                            suffixIcon: const Icon(
-                              Icons.arrow_forward_rounded,
-                              color: Colors.white,
-                              size: 18,
                             ),
-                          )),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _ReadOnlyValue(
+                                label: AppConstants.currencyCode,
+                                value: controller.currency.code,
+                                theme: theme,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Obx(
+                        () => _ImagePickerTile(
+                          imageBytes: controller.imageBytes.value,
+                          onPressed: controller.pickImage,
+                          theme: theme,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      Obx(
+                        () => AppButton(
+                          text: AppConstants.saveAndContinue,
+                          onPressed: controller.saveShop,
+                          isLoading: controller.isSaving.value,
+                          suffixIcon: const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -325,7 +333,9 @@ class _ImagePickerTile extends StatelessWidget {
               ),
             ),
       label: Text(
-        imageBytes == null ? AppConstants.addShopImage : AppConstants.changeShopImage,
+        imageBytes == null
+            ? AppConstants.addShopImage
+            : AppConstants.changeShopImage,
       ),
       style: OutlinedButton.styleFrom(
         foregroundColor: theme.primary,
