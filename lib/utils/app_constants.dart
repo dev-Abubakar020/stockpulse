@@ -2,9 +2,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConstants {
   AppConstants._();
-  ///App Constants
-  static const String appName = 'StockPulse';
-  static const String appVersion = '1.0.0';
 
   ///url's
   static String? get supabaseUrl => dotenv.env['SUPABASE_URL'] ;
@@ -15,10 +12,15 @@ class AppConstants {
   static const String splashSlug = 'Initializing Data...';
 
   /// All Assets
-  static const String googleLogo = 'assets/images/googlelogo.png';
-  static const String appleLogo = 'assets/images/applelogo.png';
-  static const String phoneLogo = 'assets/images/phonelogo.png';
-  static const String splashImage = 'assets/images/splashImage.png';
+  static const String appName = 'StockPulse';
+  static const String appVersion = '1.0.0';
+
+  static const String _baseImgPath = 'assets/images/';
+  static const String googleLogo = '${_baseImgPath}google_logo.png';
+  static const String appleLogo  = '${_baseImgPath}apple_logo.png';
+  static const String phoneLogo  = '${_baseImgPath}phone_logo.png';
+  static const String splashImage = '${_baseImgPath}splash_image.png';
+
   static const String onboardingImage1 =
       "https://raw.githubusercontent.com/muhxdan/Flutter-Onboarding-Screen/refs/heads/master/assets/images/image1.png";
   static const String onboardingImage2 =
