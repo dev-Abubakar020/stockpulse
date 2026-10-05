@@ -1,18 +1,16 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConstants {
   AppConstants._();
-
   ///App Constants
   static const String appName = 'StockPulse';
   static const String appVersion = '1.0.0';
 
-  ///All API Endpoints - Supabase
-  static const String supabaseUrl = 'https://lrfszjtnmsvevmkkiuna.supabase.co';
-  static const String supabaseAnonKey =
-      'sb_publishable_GRRl45M2HhkvRoLKgT6R1A_Jr04DeT7';
-  static const String googleWebClientId =
-      '875735535485-6jb7n1hgrknqsfnnf2i641co6o2cb971.apps.googleusercontent.com';
-  static const String googleIosClientId =
-      '875735535485-2opp6las5tn4lt6o8tvir4rq97dokhjd.apps.googleusercontent.com';
+  ///url's
+  static String? get supabaseUrl => dotenv.env['SUPABASE_URL'] ;
+  static String? get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'];
+  static String? get googleWebClientId => dotenv.env['GOOGLE_WEB_CLIENT_ID'] ;
+  static String? get googleIosClientId => dotenv.env['GOOGLE_IOS_CLIENT_ID'] ;
   static const String stagAppName = 'StockPulse';
   static const String splashSlug = 'Initializing Data...';
 
