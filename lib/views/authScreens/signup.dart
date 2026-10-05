@@ -13,7 +13,6 @@ import 'package:stockpulse/controllers/signupController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
-import '../../common/widgets/themetogglebtn.dart';
 
 class SignupView extends GetView<SignupController> {
   const SignupView({super.key});

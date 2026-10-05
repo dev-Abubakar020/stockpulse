@@ -17,32 +17,25 @@ class InitialBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(NetworkManager());
-    Get.put<AuthRepository>(AuthRepository(), permanent: true,);
+    Get.put<AuthRepository>(AuthRepository(), permanent: true);
     if (!Get.isRegistered<RoleService>()) {
       Get.put(RoleService(), permanent: true);
     }
-    Get.lazyPut<ShopRepository>(
-          () => ShopRepository(),
-      fenix: true,
-    );
+    Get.lazyPut<ShopRepository>(() => ShopRepository(), fenix: true);
     Get.lazyPut(() => DashboardController(), fenix: true);
     Get.put<ThemeController>(ThemeController(), permanent: true);
     Get.lazyPut<ShopCreateController>(
-          () => ShopCreateController(
+      () => ShopCreateController(
         Get.find<ShopRepository>(),
+        Get.find<AuthRepository>(),
       ),
       fenix: true,
     );
     Get.lazyPut<ProductRepository>(() => ProductRepository());
     Get.lazyPut<ProductController>(
-      () => ProductController(
-        Get.find<ProductRepository>(),
-      ),
+      () => ProductController(Get.find<ProductRepository>()),
     );
 
-    Get.put(
-      ThermalPrinterService(),
-      permanent: true,
-    );
+    Get.put(ThermalPrinterService(), permanent: true);
   }
 }

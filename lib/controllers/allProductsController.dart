@@ -46,16 +46,13 @@ class ProductController extends GetxController {
   // FETCH PRODUCTS
   // =========================
 
-  Future<ProductItemModel?> findProductByBarcode(
-      String barcode,
-      ) async {
+  Future<ProductItemModel?> findProductByBarcode(String barcode) async {
     final code = barcode.trim().toUpperCase();
 
     // First check already loaded products
     final localProduct = products.firstWhereOrNull(
-          (product) =>
-      product.barcode?.trim().toUpperCase() == code &&
-          product.isActive,
+      (product) =>
+          product.barcode?.trim().toUpperCase() == code && product.isActive,
     );
 
     if (localProduct != null) {
@@ -77,9 +74,7 @@ class ProductController extends GetxController {
 
       if (product != null) {
         // Important because SaleController uses this list.
-        final existingIndex = products.indexWhere(
-              (p) => p.id == product.id,
-        );
+        final existingIndex = products.indexWhere((p) => p.id == product.id);
 
         if (existingIndex == -1) {
           products.add(product);
@@ -88,9 +83,7 @@ class ProductController extends GetxController {
 
       return product;
     } catch (e) {
-      debugPrint(
-        'findProductByBarcode error: $e',
-      );
+      debugPrint('findProductByBarcode error: $e');
       return null;
     }
   }
@@ -198,5 +191,4 @@ class ProductController extends GetxController {
       isSaving.value = false;
     }
   }
-    }
-
+}

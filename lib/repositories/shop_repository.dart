@@ -1,4 +1,5 @@
 import 'package:image_picker/image_picker.dart';
+import 'package:stockpulse/models/shop_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -8,33 +9,57 @@ class ShopRepository {
   ShopRepository({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
+  // ============================================================
+  // CHECK CURRENT USER HAS SHOP
+  // ============================================================
+
   Future<bool> currentUserHasShop() async {
     final user = _supabase.auth.currentUser;
-    if (user == null) return false;
 
-    final shop = await _supabase
+    if (user == null) {
+      return false;
+    }
+
+    final response = await _supabase
         .from('shops')
-        .select('auth_uid')
+        .select('id')
         .eq('auth_uid', user.id)
         .limit(1)
         .maybeSingle();
-    return shop != null;
+
+    return response != null;
   }
 
-  Future<Map<String, dynamic>?> getShop() async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) return null;
+  // ============================================================
+  // GET CURRENT USER SHOP
+  // ============================================================
 
-    final shop = await _supabase
+  Future<ShopModel?> getShop() async {
+    final user = _supabase.auth.currentUser;
+
+    if (user == null) {
+      return null;
+    }
+
+    final response = await _supabase
         .from('shops')
         .select()
         .eq('auth_uid', user.id)
         .limit(1)
         .maybeSingle();
-    return shop;
+
+    if (response == null) {
+      return null;
+    }
+
+    return ShopModel.fromJson(response);
   }
 
-  Future<void> createShop({
+  // ============================================================
+  // CREATE SHOP
+  // ============================================================
+
+  Future<ShopModel> createShop({
     required String ownerName,
     required String shopName,
     required String phone,
@@ -44,61 +69,72 @@ class ShopRepository {
     XFile? image,
   }) async {
     final user = _supabase.auth.currentUser;
+
     if (user == null) {
       throw StateError(AppConstants.mustBeSignIn);
     }
 
-    String? imageUrl;
-    if (image != null) {
-      final extension = image.name.contains('.')
-          ? image.name.split('.').last.toLowerCase()
-          : 'jpg';
-      final path =
-          '${user.id}/${DateTime.now().microsecondsSinceEpoch}.$extension';
+    // ----------------------------------------------------------
+    // Upload image
+    // ----------------------------------------------------------
 
-      await _supabase.storage
-          .from('shop-images')
-          .uploadBinary(
-            path,
-            await image.readAsBytes(),
-            fileOptions: FileOptions(
-              contentType: 'image/$extension',
-              upsert: false,
-            ),
-          );
-      imageUrl = _supabase.storage.from('shop-images').getPublicUrl(path);
+    String? imageUrl;
+
+    if (image != null) {
+      imageUrl = await _uploadShopImage(userId: user.id, image: image);
     }
 
-    final now = DateTime.now().toUtc().toIso8601String();
-    final shop = await _supabase
+    // ----------------------------------------------------------
+    // Prepare model
+    // ----------------------------------------------------------
+
+    final shop = ShopModel.create(
+      userId: user.id,
+      shopName: shopName,
+      ownerName: ownerName,
+      phone: phone,
+      address: address,
+      currencySymbol: currencySymbol,
+      currencyCode: currencyCode,
+      imageUrl: imageUrl,
+    );
+
+    // ----------------------------------------------------------
+    // Create shop
+    // ----------------------------------------------------------
+
+    final response = await _supabase
         .from('shops')
-        .insert({
-          'auth_uid': user.id,
-          'shopename': shopName,
-          'ownerame': ownerName,
-          'phone': phone.isEmpty ? null : phone,
-          'address': address,
-          'selectedsymbole': currencySymbol,
-          'selectedcurrency': currencyCode,
-          'shopimg': imageUrl,
-          'createdat': now,
-          'updatedat': now,
-        })
-        .select('id')
+        .insert(shop.toJson())
+        .select()
         .single();
 
-    final shopId = shop['id'];
+    final createdShop = ShopModel.fromJson(response);
+
+    if (createdShop.id == null) {
+      throw StateError('Shop created but shop ID was not returned');
+    }
+
+    // ----------------------------------------------------------
+    // Create OWNER membership
+    // ----------------------------------------------------------
 
     await _supabase.from('shop_members').insert({
-      'shop_id': shopId,
+      'shop_id': createdShop.id,
       'user_id': user.id,
       'role': 'owner',
       'is_active': true,
       'created_by': user.id,
     });
+
+    return createdShop;
   }
 
-  Future<Map<String, dynamic>> updateShop({
+  // ============================================================
+  // UPDATE SHOP
+  // ============================================================
+
+  Future<ShopModel> updateShop({
     required String shopName,
     required String ownerName,
     required String address,
@@ -108,43 +144,102 @@ class ShopRepository {
     final user = _supabase.auth.currentUser;
 
     if (user == null) {
-      throw Exception('User not authenticated');
+      throw StateError(AppConstants.mustBeSignIn);
     }
+
+    // ----------------------------------------------------------
+    // Image
+    // ----------------------------------------------------------
 
     String? imageUrl = existingImageUrl;
-    if (image != null) {
-      final extension = image.name.contains('.')
-          ? image.name.split('.').last.toLowerCase()
-          : 'jpg';
-      final path =
-          '${user.id}/${DateTime.now().microsecondsSinceEpoch}.$extension';
 
-      await _supabase.storage
-          .from('shop-images')
-          .uploadBinary(
-            path,
-            await image.readAsBytes(),
-            fileOptions: FileOptions(
-              contentType: 'image/$extension',
-              upsert: false,
-            ),
-          );
-      imageUrl = _supabase.storage.from('shop-images').getPublicUrl(path);
+    if (image != null) {
+      imageUrl = await _uploadShopImage(userId: user.id, image: image);
     }
+
+    // ----------------------------------------------------------
+    // Get existing shop
+    // ----------------------------------------------------------
+
+    final existingShop = await getShop();
+
+    if (existingShop == null) {
+      throw StateError('Shop details not found');
+    }
+
+    // ----------------------------------------------------------
+    // Update model
+    // ----------------------------------------------------------
+
+    final updatedModel = existingShop.copyWith(
+      shopname: shopName.trim(),
+      ownername: ownerName.trim(),
+      address: address.trim(),
+      shopimg: imageUrl,
+      updatedAt: DateTime.now().toUtc(),
+    );
+
+    // ----------------------------------------------------------
+    // Update database
+    // ----------------------------------------------------------
 
     final response = await _supabase
         .from('shops')
-        .update({
-          'shopename': shopName.trim(),
-          'ownerame': ownerName.trim(),
-          'address': address.trim(),
-          'shopimg': imageUrl,
-          'updatedat': DateTime.now().toUtc().toIso8601String(),
-        })
+        .update(updatedModel.toJson())
         .eq('auth_uid', user.id)
         .select()
         .single();
 
-    return response;
+    return ShopModel.fromJson(response);
+  }
+
+  // ============================================================
+  // UPLOAD SHOP IMAGE
+  // ============================================================
+
+  Future<String> _uploadShopImage({
+    required String userId,
+    required XFile image,
+  }) async {
+    final extension = image.name.contains('.')
+        ? image.name.split('.').last.toLowerCase()
+        : 'jpg';
+
+    final path = '$userId/${DateTime.now().microsecondsSinceEpoch}.$extension';
+
+    await _supabase.storage
+        .from('shop-images')
+        .uploadBinary(
+          path,
+          await image.readAsBytes(),
+          fileOptions: FileOptions(
+            contentType: _getContentType(extension),
+            upsert: false,
+          ),
+        );
+
+    return _supabase.storage.from('shop-images').getPublicUrl(path);
+  }
+
+  // ============================================================
+  // IMAGE CONTENT TYPE
+  // ============================================================
+
+  String _getContentType(String extension) {
+    switch (extension) {
+      case 'png':
+        return 'image/png';
+
+      case 'webp':
+        return 'image/webp';
+
+      case 'gif':
+        return 'image/gif';
+
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return 'image/jpeg';
+    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:stockpulse/common/widgets/custom_snackbar.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../models/expense_model.dart';
 import '../repositories/expense_repo.dart';
 
@@ -26,8 +27,10 @@ class ExpenseController extends GetxController {
 
   final searchQuery = ''.obs;
   final expenses = <ExpenseModel>[].obs;
+
   final isLoading = false.obs;
   final isSaving = false.obs;
+
   final currencySymbol = 'Rs.'.obs;
 
   final selectedCategory = 'Rent'.obs;
@@ -41,52 +44,108 @@ class ExpenseController extends GetxController {
   final descriptionController = TextEditingController();
 
   // ---------------------------------------------------------
-  // CATEGORIES WITH UI METADATA (Icons & Colors for UI only)
+  // CATEGORIES WITH UI METADATA
   // ---------------------------------------------------------
 
   static const List<ExpenseCategoryInfo> categoryMeta = [
     ExpenseCategoryInfo('Rent', Icons.home_rounded, Color(0xFF7C3AED)),
     ExpenseCategoryInfo('Electricity', Icons.bolt_rounded, Color(0xFFD97706)),
-    ExpenseCategoryInfo('Gas / Fuel', Icons.local_gas_station_rounded, Color(0xFFDC2626)),
-    ExpenseCategoryInfo('Staff Salaries', Icons.group_rounded, Color(0xFF2563EB)),
-    ExpenseCategoryInfo('Maintenance & Repairs', Icons.build_rounded, Color(0xFF059669)),
-    ExpenseCategoryInfo('Marketing & Advertising', Icons.campaign_rounded, Color(0xFFDB2777)),
-    ExpenseCategoryInfo('Transport & Logistics', Icons.local_shipping_rounded, Color(0xFF0891B2)),
-    ExpenseCategoryInfo('Packaging & Supplies', Icons.inventory_2_rounded, Color(0xFF65A30D)),
-    ExpenseCategoryInfo('Internet & Phone', Icons.wifi_rounded, Color(0xFF6366F1)),
-    ExpenseCategoryInfo('Bank Charges', Icons.account_balance_rounded, Color(0xFF475569)),
+    ExpenseCategoryInfo(
+      'Gas / Fuel',
+      Icons.local_gas_station_rounded,
+      Color(0xFFDC2626),
+    ),
+    ExpenseCategoryInfo(
+      'Staff Salaries',
+      Icons.group_rounded,
+      Color(0xFF2563EB),
+    ),
+    ExpenseCategoryInfo(
+      'Maintenance & Repairs',
+      Icons.build_rounded,
+      Color(0xFF059669),
+    ),
+    ExpenseCategoryInfo(
+      'Marketing & Advertising',
+      Icons.campaign_rounded,
+      Color(0xFFDB2777),
+    ),
+    ExpenseCategoryInfo(
+      'Transport & Logistics',
+      Icons.local_shipping_rounded,
+      Color(0xFF0891B2),
+    ),
+    ExpenseCategoryInfo(
+      'Packaging & Supplies',
+      Icons.inventory_2_rounded,
+      Color(0xFF65A30D),
+    ),
+    ExpenseCategoryInfo(
+      'Internet & Phone',
+      Icons.wifi_rounded,
+      Color(0xFF6366F1),
+    ),
+    ExpenseCategoryInfo(
+      'Bank Charges',
+      Icons.account_balance_rounded,
+      Color(0xFF475569),
+    ),
     ExpenseCategoryInfo('Insurance', Icons.shield_rounded, Color(0xFF0F766E)),
-    ExpenseCategoryInfo('Miscellaneous', Icons.more_horiz_rounded, Color(0xFF78716C)),
+    ExpenseCategoryInfo(
+      'Miscellaneous',
+      Icons.more_horiz_rounded,
+      Color(0xFF78716C),
+    ),
   ];
 
-  List<String> get categories => categoryMeta.map((c) => c.name).toList();
+  // ---------------------------------------------------------
+  // CATEGORY HELPERS
+  // ---------------------------------------------------------
+
+  List<String> get categories {
+    return categoryMeta.map((category) => category.name).toList();
+  }
 
   ExpenseCategoryInfo get currentCategoryMeta {
     return categoryMeta.firstWhere(
-      (m) => m.name == selectedCategory.value,
+      (category) => category.name == selectedCategory.value,
       orElse: () => categoryMeta.last,
     );
   }
 
   static ExpenseCategoryInfo getCategoryMeta(String categoryName) {
     return categoryMeta.firstWhere(
-      (m) => m.name == categoryName,
+      (category) => category.name == categoryName,
       orElse: () => categoryMeta.last,
     );
   }
 
+  // ---------------------------------------------------------
+  // FILTERED EXPENSES
+  // ---------------------------------------------------------
+
   List<ExpenseModel> get filteredExpenses {
-    if (searchQuery.value.trim().isEmpty) {
+    final query = searchQuery.value.trim().toLowerCase();
+
+    if (query.isEmpty) {
       return expenses;
     }
-    final query = searchQuery.value.trim().toLowerCase();
-    return expenses.where((e) {
-      final matchesCategory = e.category.toLowerCase().contains(query);
-      final matchesDesc = e.description?.toLowerCase().contains(query) ?? false;
-      final matchesAmount = e.amount.toString().contains(query);
-      return matchesCategory || matchesDesc || matchesAmount;
+
+    return expenses.where((expense) {
+      final matchesCategory = expense.category.toLowerCase().contains(query);
+
+      final matchesDescription =
+          expense.description?.toLowerCase().contains(query) ?? false;
+
+      final matchesAmount = expense.amount.toString().contains(query);
+
+      return matchesCategory || matchesDescription || matchesAmount;
     }).toList();
   }
+
+  // ---------------------------------------------------------
+  // INIT
+  // ---------------------------------------------------------
 
   @override
   void onInit() {
@@ -95,22 +154,26 @@ class ExpenseController extends GetxController {
   }
 
   // ---------------------------------------------------------
-  // FETCH EXPENSES FOR CURRENT SHOP
+  // FETCH EXPENSES
   // ---------------------------------------------------------
 
   Future<void> fetchExpenses([int? explicitShopId]) async {
     try {
       isLoading.value = true;
+
       int? targetShopId = explicitShopId;
 
       final shop = await _shopRepository.getShop();
+
       if (shop != null) {
-        if (shop['id'] != null) {
-          targetShopId = (shop['id'] as num).toInt();
-        }
-        if (shop['selectedsymbole'] != null &&
-            (shop['selectedsymbole'] as String).isNotEmpty) {
-          currencySymbol.value = shop['selectedsymbole'] as String;
+        // ShopModel now gives us id directly
+        targetShopId ??= shop.id;
+
+        // selectedsymbole -> currencySymbol in ShopModel
+        final symbol = shop.currencySymbol;
+
+        if (symbol != null && symbol.trim().isNotEmpty) {
+          currencySymbol.value = symbol;
         }
       }
 
@@ -124,6 +187,8 @@ class ExpenseController extends GetxController {
 
       expenses.value = await _repository.getExpenses(targetShopId);
     } catch (e) {
+      debugPrint('Fetch expenses error: $e');
+
       CustomSnackBar.errorSnackBar(
         title: AppConstants.errorTitle,
         message: 'Failed to load expenses',
@@ -139,6 +204,7 @@ class ExpenseController extends GetxController {
 
   Future<bool> addExpense() async {
     if (isSaving.value) return false;
+
     final amountText = amountController.text.trim().replaceAll(',', '');
     final amount = double.tryParse(amountText);
 
@@ -151,6 +217,7 @@ class ExpenseController extends GetxController {
     }
 
     final user = _supabase.auth.currentUser;
+
     if (user == null) {
       CustomSnackBar.errorSnackBar(
         title: AppConstants.errorTitle,
@@ -159,19 +226,22 @@ class ExpenseController extends GetxController {
       return false;
     }
 
-    final shop = await _shopRepository.getShop();
-    if (shop == null || shop['id'] == null) {
-      CustomSnackBar.errorSnackBar(
-        title: AppConstants.errorTitle,
-        message: 'Shop details not found',
-      );
-      return false;
-    }
-
-    final shopId = (shop['id'] as num).toInt();
-
     try {
       isSaving.value = true;
+
+      // Get ShopModel
+      final shop = await _shopRepository.getShop();
+
+      if (shop == null || shop.id == null) {
+        CustomSnackBar.errorSnackBar(
+          title: AppConstants.errorTitle,
+          message: 'Shop details not found',
+        );
+        return false;
+      }
+
+      // After null check Dart knows this is int
+      final int shopId = shop.id!;
 
       final expense = ExpenseModel(
         shopId: shopId,
@@ -185,9 +255,11 @@ class ExpenseController extends GetxController {
       );
 
       final savedExpense = await _repository.addExpense(expense);
+
       expenses.insert(0, savedExpense);
 
       resetForm();
+
       Get.back();
 
       Future.delayed(const Duration(milliseconds: 200), () {
@@ -199,10 +271,13 @@ class ExpenseController extends GetxController {
 
       return true;
     } catch (e) {
+      debugPrint('Add expense error: $e');
+
       CustomSnackBar.errorSnackBar(
         title: AppConstants.errorTitle,
         message: 'Failed to add expense',
       );
+
       return false;
     } finally {
       isSaving.value = false;
@@ -214,12 +289,19 @@ class ExpenseController extends GetxController {
   // ---------------------------------------------------------
 
   Future<void> deleteExpense(ExpenseModel expense) async {
-    if (expense.id == null) return;
-    if (isLoading.value) return;
+    if (expense.id == null) {
+      return;
+    }
+
+    if (isLoading.value) {
+      return;
+    }
 
     try {
       isLoading.value = true;
+
       await _repository.deleteExpense(expense.id!);
+
       expenses.removeWhere((item) => item.id == expense.id);
 
       CustomSnackBar.successSnackBar(
@@ -227,6 +309,8 @@ class ExpenseController extends GetxController {
         message: 'Expense deleted successfully',
       );
     } catch (e) {
+      debugPrint('Delete expense error: $e');
+
       CustomSnackBar.errorSnackBar(
         title: AppConstants.errorTitle,
         message: 'Failed to delete expense',
@@ -241,10 +325,7 @@ class ExpenseController extends GetxController {
   // ---------------------------------------------------------
 
   double get totalExpenses {
-    return expenses.fold(
-      0.0,
-      (total, expense) => total + expense.amount,
-    );
+    return expenses.fold(0.0, (total, expense) => total + expense.amount);
   }
 
   // ---------------------------------------------------------
@@ -254,14 +335,20 @@ class ExpenseController extends GetxController {
   void resetForm() {
     amountController.clear();
     descriptionController.clear();
+
     selectedCategory.value = 'Rent';
     selectedDate.value = DateTime.now();
   }
+
+  // ---------------------------------------------------------
+  // DISPOSE
+  // ---------------------------------------------------------
 
   @override
   void onClose() {
     amountController.dispose();
     descriptionController.dispose();
+
     super.onClose();
   }
 }

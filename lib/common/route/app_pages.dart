@@ -5,7 +5,7 @@ import 'package:stockpulse/common/bindings/signUpBinding.dart';
 import 'package:stockpulse/common/bindings/shopCreateBinding.dart';
 import 'package:stockpulse/controllers/purchase_report_Controller.dart';
 import 'package:stockpulse/controllers/sale_report_Controller.dart';
-import 'package:stockpulse/views/PurchaseReport.dart';
+import 'package:stockpulse/views/reports/PurchaseReport.dart';
 import 'package:stockpulse/views/authScreens/edit_profile.dart';
 import 'package:stockpulse/views/authScreens/login.dart';
 import 'package:stockpulse/views/starterScreens/onboarding.dart';
@@ -16,6 +16,7 @@ import 'package:stockpulse/views/authScreens/phonedetailScreen.dart';
 import 'package:stockpulse/views/authScreens/resetPassword.dart';
 import 'package:stockpulse/views/dashboardScreens/dashboard.dart';
 import 'package:stockpulse/views/create_shop.dart';
+
 import '../../printingview.dart';
 import '../../views/dashboardScreens/More/Staff/addstaff.dart';
 import '../../views/dashboardScreens/More/Staff/allstaffs.dart';
@@ -35,7 +36,7 @@ import '../../views/dashboardScreens/Sale/saleView.dart';
 import '../../views/dashboardScreens/Product/productDetailView.dart';
 import '../../views/dashboardScreens/Sale/saleDetailView.dart';
 import '../../views/dashboardScreens/Purchase/purchaseDetailView.dart';
-import '../../views/saleReport.dart';
+import '../../views/reports/saleReport.dart';
 import '../bindings/AllProductsBinding.dart';
 import '../bindings/PurchaseBinding.dart';
 import '../bindings/categoryBinding.dart';
@@ -55,9 +56,9 @@ class AppPages {
 
     ///Starting screens
     GetPage(
-        name: Routes.onboarding,
-        page: () => const OnboardingScreen(),
-        binding: OnboardingBinding(),
+      name: Routes.onboarding,
+      page: () => const OnboardingScreen(),
+      binding: OnboardingBinding(),
     ),
     GetPage(
       name: Routes.login,
@@ -141,12 +142,12 @@ class AppPages {
 
     GetPage(
       name: Routes.addSale,
-      page: () =>  AddSale(),
+      page: () => AddSale(),
       binding: SaleBinding(),
     ),
     GetPage(
       name: Routes.addPurchase,
-      page: () =>  AddPurchase(),
+      page: () => AddPurchase(),
       binding: PurchaseBinding(),
     ),
     GetPage(
@@ -189,10 +190,7 @@ class AppPages {
       binding: PurchaseBinding(),
     ),
 
-    GetPage(
-      name: Routes.printingSetting,
-      page: () => PrinterSettingsView(),
-    ),
+    GetPage(name: Routes.printingSetting, page: () => PrinterSettingsView()),
 
     GetPage(
       name: Routes.allStaff,

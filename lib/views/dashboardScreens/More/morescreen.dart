@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/common/widgets/StandardScreen.dart';
 import 'package:stockpulse/common/widgets/custom_header.dart';
+import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,13 +26,14 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShopCreateController controller =
-    Get.isRegistered<ShopCreateController>()
+        Get.isRegistered<ShopCreateController>()
         ? Get.find<ShopCreateController>()
         : Get.put(
-      ShopCreateController(
-        Get.find<ShopRepository>(),
-      ),
-    );
+            ShopCreateController(
+              Get.find<ShopRepository>(),
+              Get.find<AuthRepository>(),
+            ),
+          );
     final roleService = Get.isRegistered<RoleService>()
         ? Get.find<RoleService>()
         : Get.put(RoleService(), permanent: true);
@@ -62,12 +65,11 @@ class MoreScreen extends StatelessWidget {
                 return CustomShimmer.circle(size: 64);
               }
 
-              final profileImg =
-                  controller.userProfileImageUrl.value.isNotEmpty
-                      ? controller.userProfileImageUrl.value
-                      : (controller.shopImageUrl.value.isNotEmpty
-                          ? controller.shopImageUrl.value
-                          : AppConstants.defaultUserIcon);
+              final profileImg = controller.userProfileImageUrl.value.isNotEmpty
+                  ? controller.userProfileImageUrl.value
+                  : (controller.shopImageUrl.value.isNotEmpty
+                        ? controller.shopImageUrl.value
+                        : AppConstants.defaultUserIcon);
 
               return Container(
                 padding: const EdgeInsets.all(2),
@@ -112,8 +114,8 @@ class MoreScreen extends StatelessWidget {
                 final displayName = controller.userName.value.isNotEmpty
                     ? controller.userName.value
                     : (controller.ownerController.text.isNotEmpty
-                        ? controller.ownerController.text
-                        : AppConstants.defaultUserTitle);
+                          ? controller.ownerController.text
+                          : AppConstants.defaultUserTitle);
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -138,8 +140,8 @@ class MoreScreen extends StatelessWidget {
                       roleService.isStaff
                           ? AppConstants.staffMemberRole
                           : (controller.shopController.text.isNotEmpty
-                              ? controller.shopController.text
-                              : AppConstants.shopOwnerRole),
+                                ? controller.shopController.text
+                                : AppConstants.shopOwnerRole),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.notoSans(
@@ -210,11 +212,24 @@ class MoreScreen extends StatelessWidget {
                       MoreMenuTile(
                         icon: Icons.category_outlined,
                         title: AppConstants.categoriesTitle,
-                        showDivider: roleService.canManageExpenses ||
+                        showDivider:
+                            roleService.canManageExpenses ||
                             roleService.canManageStaff ||
                             roleService.isOwner,
                         onTap: () {
                           Get.toNamed(Routes.allCategories);
+                        },
+                      ),
+                    if (roleService.canManagePurchases)
+                      MoreMenuTile(
+                        icon: CupertinoIcons.purchased_circle,
+                        title: AppConstants.purchaseTitle,
+                        showDivider:
+                            roleService.canManageExpenses ||
+                            roleService.canManageStaff ||
+                            roleService.isOwner,
+                        onTap: () {
+                          Get.toNamed(Routes.allPurchase);
                         },
                       ),
                     if (roleService.canManageExpenses)
@@ -267,7 +282,7 @@ class MoreScreen extends StatelessWidget {
                       _launchUrl2();
                     },
                   ),
-                  SizedBox(height: 12,),
+                  SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Material(
@@ -276,15 +291,15 @@ class MoreScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         onTap: () {
                           Get.dialog(
-                              CustomConfirmDialog(
-                                title: AppConstants.logout,
-                                subtitle: AppConstants.logoutAlertSubTitle,
-                                confirmText: AppConstants.logout,
-                                onConfirm: () {
-                                  Get.back();
-                                  Get.find<LoginController>().logout();
-                                },
-                              ),
+                            CustomConfirmDialog(
+                              title: AppConstants.logout,
+                              subtitle: AppConstants.logoutAlertSubTitle,
+                              confirmText: AppConstants.logout,
+                              onConfirm: () {
+                                Get.back();
+                                Get.find<LoginController>().logout();
+                              },
+                            ),
                           );
                         },
                         child: Container(

@@ -12,7 +12,7 @@ import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../../services/initialpdfview.dart';
 import '../../../services/purchase_pdf_service.dart';
-import '../../thermal_purchase_receipt.dart';
+import '../../receipts/thermal_purchase_receipt.dart';
 
 class PurchaseDetailView extends GetView<PurchaseController> {
   PurchaseDetailView({super.key}) {
@@ -70,8 +70,8 @@ class PurchaseDetailView extends GetView<PurchaseController> {
                         ),
                       ),
                       CustomStatusChip(
-                        textTitle: purchase.status.capitalizeFirst ??
-                            purchase.status,
+                        textTitle:
+                            purchase.status.capitalizeFirst ?? purchase.status,
                         type: statusType,
                       ),
                     ],
@@ -88,10 +88,13 @@ class PurchaseDetailView extends GetView<PurchaseController> {
                       theme,
                     ),
                   ),
-                  if (purchase.notes != null &&
-                      purchase.notes!.isNotEmpty) ...[
+                  if (purchase.notes != null && purchase.notes!.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    _buildInfoRow(AppConstants.notesLabel, purchase.notes!, theme),
+                    _buildInfoRow(
+                      AppConstants.notesLabel,
+                      purchase.notes!,
+                      theme,
+                    ),
                   ],
                 ],
               ),
@@ -312,7 +315,7 @@ class PurchaseDetailView extends GetView<PurchaseController> {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -371,8 +374,12 @@ class PurchaseDetailView extends GetView<PurchaseController> {
   }
 
   Widget _buildDetailItemsShimmer(AppThemeHelper theme) {
-    final baseColor = theme.isDark ? const Color(0xFF131D2E) : Colors.grey.shade300;
-    final highlightColor = theme.isDark ? const Color(0xFF1E2D44) : Colors.grey.shade100;
+    final baseColor = theme.isDark
+        ? const Color(0xFF131D2E)
+        : Colors.grey.shade300;
+    final highlightColor = theme.isDark
+        ? const Color(0xFF1E2D44)
+        : Colors.grey.shade100;
 
     return Shimmer.fromColors(
       baseColor: baseColor,

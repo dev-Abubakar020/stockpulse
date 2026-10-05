@@ -26,6 +26,7 @@ class PurchasePage extends GetView<PurchaseController> {
     return CustomScreen(
       backgroundColor: theme.background,
       appBar: CustomAppBar(
+        showBackArrow: true,
         title: Text(AppConstants.purchaseTitle),
         actions: [
           Material(

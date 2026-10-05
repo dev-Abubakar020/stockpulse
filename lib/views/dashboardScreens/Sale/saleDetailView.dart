@@ -9,9 +9,10 @@ import 'package:stockpulse/common/widgets/custom_status_chip.dart';
 import 'package:stockpulse/controllers/sale_controller.dart';
 import 'package:stockpulse/models/sale_model.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+
 import '../../../services/initialpdfview.dart';
 import '../../../services/sale_pdf_service.dart';
-import '../../thermal_sale_receipt.dart';
+import '../../receipts/thermal_sale_receipt.dart';
 
 class SaleDetailView extends GetView<SaleController> {
   SaleDetailView({super.key}) {
@@ -314,7 +315,7 @@ class SaleDetailView extends GetView<SaleController> {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -373,8 +374,12 @@ class SaleDetailView extends GetView<SaleController> {
   }
 
   Widget _buildDetailItemsShimmer(AppThemeHelper theme) {
-    final baseColor = theme.isDark ? const Color(0xFF131D2E) : Colors.grey.shade300;
-    final highlightColor = theme.isDark ? const Color(0xFF1E2D44) : Colors.grey.shade100;
+    final baseColor = theme.isDark
+        ? const Color(0xFF131D2E)
+        : Colors.grey.shade300;
+    final highlightColor = theme.isDark
+        ? const Color(0xFF1E2D44)
+        : Colors.grey.shade100;
 
     return Shimmer.fromColors(
       baseColor: baseColor,

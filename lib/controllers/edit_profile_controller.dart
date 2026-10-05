@@ -10,7 +10,6 @@ import 'package:stockpulse/controllers/shopCreateController.dart';
 import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:stockpulse/services/networkManager.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfileController extends GetxController {
   final AuthRepository authRepository;
@@ -24,27 +23,24 @@ class EditProfileController extends GetxController {
   final profileImageUrl = ''.obs;
   final selectedImage = Rxn<XFile>();
   final imageBytes = Rxn<Uint8List>();
+
   final imagePicker = ImagePicker();
 
   final isSaving = false.obs;
   final isLoading = false.obs;
+  final isFormChanged = false.obs;
 
-  // Baseline variables to track initial form state
   String _initialName = '';
   String _initialPhone = '';
   String _initialImageUrl = '';
 
-  // Reactive state to enable/disable submit button
-  final isFormChanged = false.obs;
-
   @override
   void onInit() {
     super.onInit();
-    // Listen to text controller changes
+
     nameController.addListener(_checkFormChanged);
     phoneController.addListener(_checkFormChanged);
 
-    // Listen to reactive image changes
     ever(selectedImage, (_) => _checkFormChanged());
     ever(profileImageUrl, (_) => _checkFormChanged());
 
@@ -56,81 +52,60 @@ class EditProfileController extends GetxController {
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+
     super.onClose();
   }
 
-  /// Compares current form values against baseline values
+  // ============================================================
+  // CHECK FORM CHANGES
+  // ============================================================
+
   void _checkFormChanged() {
     final hasNameChanged = nameController.text.trim() != _initialName;
+
     final hasPhoneChanged = phoneController.text.trim() != _initialPhone;
-    final hasImageChanged = selectedImage.value != null || profileImageUrl.value != _initialImageUrl;
+
+    final hasImageChanged =
+        selectedImage.value != null ||
+        profileImageUrl.value != _initialImageUrl;
 
     isFormChanged.value = hasNameChanged || hasPhoneChanged || hasImageChanged;
   }
 
+  // ============================================================
+  // LOAD USER PROFILE
+  // ============================================================
+
   Future<void> loadUserProfile() async {
     try {
       isLoading.value = true;
-      final user =
-          authRepository.currentUser ??
-              Supabase.instance.client.auth.currentUser;
-      emailController.text = user?.email ?? '';
 
-      final metadata = user?.userMetadata ?? <String, dynamic>{};
-      var name =
-      (metadata['name'] ??
-          metadata['full_name'] ??
-          metadata['display_name'] ??
-          user?.email?.split('@').first ??
-          '')
-          .toString();
-      var phone = (metadata['phone'] ?? '').toString();
-      var img =
-      (metadata['profile_img'] ??
-          metadata['avatar_url'] ??
-          metadata['picture'] ??
-          '')
-          .toString();
+      final user = authRepository.currentUser;
+      if (user == null) return;
 
-      if (user != null) {
-        final profile = await authRepository.getProfile(user.id);
-        if (profile != null) {
-          if (profile['name'] != null &&
-              profile['name'].toString().isNotEmpty) {
-            name = profile['name'].toString();
-          } else if (profile['full_name'] != null &&
-              profile['full_name'].toString().isNotEmpty) {
-            name = profile['full_name'].toString();
-          }
-          if (profile['phone'] != null &&
-              profile['phone'].toString().isNotEmpty) {
-            phone = profile['phone'].toString();
-          }
-          if (profile['profile_img'] != null &&
-              profile['profile_img'].toString().isNotEmpty) {
-            img = profile['profile_img'].toString();
-          } else if (profile['avatar_url'] != null &&
-              profile['avatar_url'].toString().isNotEmpty) {
-            img = profile['avatar_url'].toString();
-          }
-        }
-      }
+      emailController.text = user.email ?? '';
 
-      nameController.text = name;
-      phoneController.text = phone;
-      profileImageUrl.value = img;
+      final profile = await authRepository.getProfile(user.id);
+      if (profile == null) return;
 
-      // Set baseline values after initial load
-      _initialName = name.trim();
-      _initialPhone = phone.trim();
-      _initialImageUrl = img.trim();
+      nameController.text = profile.fullName ?? '';
+      phoneController.text = profile.phone ?? '';
+      profileImageUrl.value = profile.profileImg ?? '';
 
-      // Reset change flag
+      _initialName = nameController.text.trim();
+      _initialPhone = phoneController.text.trim();
+      _initialImageUrl = profileImageUrl.value.trim();
+
       isFormChanged.value = false;
+    } catch (e) {
+      debugPrint('Load user profile error: $e');
     } finally {
       isLoading.value = false;
     }
   }
+  // ============================================================
+  // PICK IMAGE
+  // ============================================================
 
   Future<void> pickImage() async {
     final image = await imagePicker.pickImage(
@@ -138,12 +113,17 @@ class EditProfileController extends GetxController {
       imageQuality: 80,
       maxWidth: 1200,
     );
+
     if (image == null) return;
 
     selectedImage.value = image;
-    final bytes = await image.readAsBytes();
-    imageBytes.value = bytes;
+
+    imageBytes.value = await image.readAsBytes();
   }
+
+  // ============================================================
+  // REMOVE SELECTED IMAGE
+  // ============================================================
 
   void removeSelectedImage() {
     selectedImage.value = null;
@@ -151,30 +131,54 @@ class EditProfileController extends GetxController {
     profileImageUrl.value = '';
   }
 
+  // ============================================================
+  // UPDATE PROFILE
+  // ============================================================
+
   Future<void> updateProfile() async {
     if (isSaving.value) return;
+
     final name = nameController.text.trim();
+
     final phone = phoneController.text.trim();
 
+    // ----------------------------------------------------------
+    // Validate name
+    // ----------------------------------------------------------
+
     final nameError = CustomValidator.validateName(name);
+
     if (nameError != null) {
       CustomSnackBar.warningSnackBar(
         title: AppConstants.warningTitle,
         message: nameError,
       );
+
       return;
     }
 
+    // ----------------------------------------------------------
+    // Validate phone
+    // ----------------------------------------------------------
+
     final phoneError = CustomValidator.validatePhone(phone);
+
     if (phoneError != null) {
       CustomSnackBar.warningSnackBar(
         title: AppConstants.warningTitle,
         message: phoneError,
       );
+
       return;
     }
 
-    if (!await NetworkManager.instance.checkInternet()) return;
+    // ----------------------------------------------------------
+    // Internet
+    // ----------------------------------------------------------
+
+    if (!await NetworkManager.instance.checkInternet()) {
+      return;
+    }
 
     try {
       isSaving.value = true;
@@ -188,26 +192,32 @@ class EditProfileController extends GetxController {
             : null,
       );
 
-      // Update baseline values upon successful save
+      // Fetch updated profile from profiles table
+      final user = authRepository.currentUser;
+
+      if (user != null) {
+        final profile = await authRepository.getProfile(user.id);
+
+        profileImageUrl.value = profile?.profileImg ?? '';
+      }
+
+      // Update baseline
       _initialName = name;
       _initialPhone = phone;
       _initialImageUrl = profileImageUrl.value;
+
       selectedImage.value = null;
       imageBytes.value = null;
       isFormChanged.value = false;
 
-      // Refresh Shop / More screen state
+      // Refresh Shop / More screen
       if (Get.isRegistered<ShopCreateController>()) {
         await Get.find<ShopCreateController>().fetchShopDetails();
       }
 
-      // Close Edit Profile screen first
       Get.back();
 
-      // Allow previous screen to become active
-      await Future.delayed(
-        const Duration(milliseconds: 200),
-      );
+      await Future.delayed(const Duration(milliseconds: 200));
 
       CustomSnackBar.successSnackBar(
         title: AppConstants.successTitle,

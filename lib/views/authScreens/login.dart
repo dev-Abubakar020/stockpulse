@@ -12,7 +12,6 @@ import 'package:stockpulse/controllers/loginController.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 
 import '../../common/widgets/StandardScreen.dart';
-import '../../common/widgets/themetogglebtn.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:stockpulse/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,7 +11,6 @@ import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/networkManager.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../common/exceptional/platform_exceptions.dart';
 import '../common/exceptional/validator.dart';
@@ -18,8 +18,8 @@ import '../common/widgets/custom_snackbar.dart';
 
 class ShopCreateController extends GetxController {
   final ShopRepository shopRepository;
-
-  ShopCreateController(this.shopRepository);
+  final AuthRepository authRepository;
+  ShopCreateController(this.shopRepository, this.authRepository);
 
   final ownerController = TextEditingController();
   final shopController = TextEditingController();
@@ -59,59 +59,34 @@ class ShopCreateController extends GetxController {
   Future<void> fetchShopDetails() async {
     try {
       isProfileLoading.value = true;
-      final user = Supabase.instance.client.auth.currentUser;
-      final metadata = user?.userMetadata ?? <String, dynamic>{};
-      userName.value =
-          (metadata['name'] ??
-                  metadata['full_name'] ??
-                  metadata['display_name'] ??
-                  user?.email?.split('@').first ??
-                  '')
-              .toString();
-      userProfileImageUrl.value =
-          (metadata['profile_img'] ??
-                  metadata['avatar_url'] ??
-                  metadata['picture'] ??
-                  '')
-              .toString();
+
+      final user = authRepository.currentUser;
 
       if (user != null) {
-        try {
-          final profile = await Supabase.instance.client
-              .from('profiles')
-              .select()
-              .eq('id', user.id)
-              .maybeSingle();
-          if (profile != null) {
-            if (profile['name'] != null &&
-                profile['name'].toString().isNotEmpty) {
-              userName.value = profile['name'].toString();
-            } else if (profile['full_name'] != null &&
-                profile['full_name'].toString().isNotEmpty) {
-              userName.value = profile['full_name'].toString();
-            }
-            if (profile['profile_img'] != null &&
-                profile['profile_img'].toString().isNotEmpty) {
-              userProfileImageUrl.value = profile['profile_img'].toString();
-            } else if (profile['avatar_url'] != null &&
-                profile['avatar_url'].toString().isNotEmpty) {
-              userProfileImageUrl.value = profile['avatar_url'].toString();
-            }
-          }
-        } catch (_) {}
+        final profile = await authRepository.getProfile(user.id);
+
+        userName.value = profile?.fullName ?? '';
+        userProfileImageUrl.value = profile?.profileImg ?? '';
       }
 
       final shop = await shopRepository.getShop();
+
       if (shop != null) {
-        ownerController.text = shop['ownerame'] ?? userName.value;
-        shopController.text = shop['shopename'] ?? '';
-        addressController.text = shop['address'] ?? '';
-        shopImageUrl.value = shop['shopimg'] ?? '';
-        final currencyCode = shop['selectedcurrency'];
+        ownerController.text = shop.ownername ?? userName.value;
+
+        shopController.text = shop.shopname ?? '';
+
+        addressController.text = shop.address ?? '';
+
+        shopImageUrl.value = shop.shopimg ?? '';
+
+        final currencyCode = shop.currencyCode;
+
         if (currencyCode != null) {
           final country = countries.firstWhereOrNull(
             (c) => getCurrency(c.isoCode).code == currencyCode,
           );
+
           if (country != null) {
             selectedCountry.value = country;
           }
@@ -119,23 +94,8 @@ class ShopCreateController extends GetxController {
       } else {
         ownerController.text = userName.value;
       }
-    } catch (_) {
-      final user = Supabase.instance.client.auth.currentUser;
-      final metadata = user?.userMetadata ?? <String, dynamic>{};
-      userName.value =
-          (metadata['name'] ??
-                  metadata['full_name'] ??
-                  metadata['display_name'] ??
-                  user?.email?.split('@').first ??
-                  '')
-              .toString();
-      userProfileImageUrl.value =
-          (metadata['profile_img'] ??
-                  metadata['avatar_url'] ??
-                  metadata['picture'] ??
-                  '')
-              .toString();
-      ownerController.text = userName.value;
+    } catch (e) {
+      debugPrint('Fetch shop details error: $e');
     } finally {
       isProfileLoading.value = false;
     }
@@ -297,10 +257,10 @@ class ShopCreateController extends GetxController {
             : shopImageUrl.value,
       );
 
-      shopController.text = updatedShop['shopename'] ?? '';
-      ownerController.text = updatedShop['ownerame'] ?? '';
-      addressController.text = updatedShop['address'] ?? '';
-      shopImageUrl.value = updatedShop['shopimg'] ?? '';
+      shopController.text = updatedShop.shopname ?? '';
+      ownerController.text = updatedShop.ownername ?? '';
+      addressController.text = updatedShop.address ?? '';
+      shopImageUrl.value = updatedShop.shopimg ?? '';
       isEditable.value = false;
 
       CustomSnackBar.successSnackBar(

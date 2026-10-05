@@ -7,14 +7,8 @@ import '../models/sale_model.dart';
 class SaleRepository {
   final SupabaseClient _supabase;
 
-  SaleRepository({
-    SupabaseClient? supabase,
-  }) : _supabase =
-      supabase ?? Supabase.instance.client;
-
-  // ============================================================
-  // CREATE SALE
-  // ============================================================
+  SaleRepository({SupabaseClient? supabase})
+    : _supabase = supabase ?? Supabase.instance.client;
 
   Future<String> createSale({
     required List<SaleItemModel> items,
@@ -23,16 +17,12 @@ class SaleRepository {
     String? notes,
   }) async {
     if (items.isEmpty) {
-      throw Exception(
-        'Sale must contain at least one product.',
-      );
+      throw Exception('Sale must contain at least one product.');
     }
 
     try {
       final params = {
-        'p_items': items
-            .map((item) => item.toRpcJson())
-            .toList(),
+        'p_items': items.map((item) => item.toRpcJson()).toList(),
         'p_discount': discount,
         'p_payment_method': paymentMethod.toLowerCase(),
         'p_notes': _cleanNotes(notes),
@@ -44,19 +34,14 @@ class SaleRepository {
       debugPrint('Payment: $paymentMethod');
       debugPrint('Params: $params');
 
-      final response = await _supabase.rpc(
-        'create_sale',
-        params: params,
-      );
+      final response = await _supabase.rpc('create_sale', params: params);
 
       debugPrint('CREATE SALE RESPONSE: $response');
       debugPrint('RESPONSE TYPE: ${response.runtimeType}');
       debugPrint('=================================');
 
       if (response == null) {
-        throw Exception(
-          'Sale could not be created.',
-        );
+        throw Exception('Sale could not be created.');
       }
 
       return response.toString();
@@ -83,27 +68,15 @@ class SaleRepository {
   // GET ALL SALES
   // ============================================================
 
-  Future<List<SaleModel>>
-  getSales() async {
+  Future<List<SaleModel>> getSales() async {
     try {
-      final response =
-      await _supabase
+      final response = await _supabase
           .from('sales')
           .select()
-          .order(
-        'sale_date',
-        ascending: false,
-      );
+          .order('sale_date', ascending: false);
 
       return (response as List)
-          .map(
-            (json) =>
-            SaleModel.fromJson(
-              Map<String, dynamic>.from(
-                json,
-              ),
-            ),
-      )
+          .map((json) => SaleModel.fromJson(Map<String, dynamic>.from(json)))
           .toList();
     } on PostgrestException catch (e) {
       throw Exception(e.message);
@@ -114,22 +87,15 @@ class SaleRepository {
   // GET SINGLE SALE
   // ============================================================
 
-  Future<SaleModel> getSaleById(
-      String saleId,
-      ) async {
+  Future<SaleModel> getSaleById(String saleId) async {
     try {
-      final response =
-      await _supabase
+      final response = await _supabase
           .from('sales')
           .select()
           .eq('id', saleId)
           .single();
 
-      return SaleModel.fromJson(
-        Map<String, dynamic>.from(
-          response,
-        ),
-      );
+      return SaleModel.fromJson(Map<String, dynamic>.from(response));
     } on PostgrestException catch (e) {
       throw Exception(e.message);
     }
@@ -156,9 +122,7 @@ class SaleRepository {
 
       return (response as List)
           .map(
-            (json) => SaleItemModel.fromJson(
-              Map<String, dynamic>.from(json),
-            ),
+            (json) => SaleItemModel.fromJson(Map<String, dynamic>.from(json)),
           )
           .toList();
     } on PostgrestException catch (e) {
@@ -174,7 +138,8 @@ class SaleRepository {
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser != null && currentUser.id == userId) {
-        final metaName = currentUser.userMetadata?['name'] as String? ??
+        final metaName =
+            currentUser.userMetadata?['name'] as String? ??
             currentUser.userMetadata?['full_name'] as String?;
         if (metaName != null && metaName.trim().isNotEmpty) {
           return metaName.trim();
@@ -191,7 +156,8 @@ class SaleRepository {
           .maybeSingle();
 
       if (response != null) {
-        final name = response['full_name'] as String? ??
+        final name =
+            response['full_name'] as String? ??
             response['name'] as String? ??
             response['email'] as String?;
         if (name != null && name.trim().isNotEmpty) {
@@ -207,13 +173,14 @@ class SaleRepository {
     return 'Staff Member';
   }
 
-  Future<String> getSaleCreatorName(String saleId, {String? createdByUserId}) async {
+  Future<String> getSaleCreatorName(
+    String saleId, {
+    String? createdByUserId,
+  }) async {
     try {
       final response = await _supabase.rpc(
         'get_sale_creator_name',
-        params: {
-          'p_sale_id': saleId,
-        },
+        params: {'p_sale_id': saleId},
       );
 
       final name = response?.toString().trim();
@@ -236,13 +203,10 @@ class SaleRepository {
   // CLEAN NOTES
   // ============================================================
 
-  String? _cleanNotes(
-      String? notes,
-      ) {
+  String? _cleanNotes(String? notes) {
     final value = notes?.trim();
 
-    if (value == null ||
-        value.isEmpty) {
+    if (value == null || value.isEmpty) {
       return null;
     }
 
