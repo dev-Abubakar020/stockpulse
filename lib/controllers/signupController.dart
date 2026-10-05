@@ -20,7 +20,7 @@ import '../common/widgets/custom_snackbar.dart';
 class SignupController extends GetxController {
   final AuthRepository authRepository;
   SignupController(this.authRepository);
-  bool agreeToTerms = true;
+  Rx<bool> agreeToTerms = true.obs;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -37,8 +37,9 @@ class SignupController extends GetxController {
   final isStaffInviteValid = false.obs;
   final isStaffInviteExpired = false.obs;
   void toggleTerms(bool? value) {
-    agreeToTerms = value ?? false;
+    agreeToTerms.value = value ?? false;
   }
+
   String? _resolveInvitationToken() {
     if (!Get.isRegistered<DeepLinkService>()) return null;
     final deepLinkService = Get.find<DeepLinkService>();
@@ -103,8 +104,7 @@ class SignupController extends GetxController {
       final message = e.message.toLowerCase();
 
       isStaffInviteValid.value = false;
-      isStaffInviteExpired.value =
-          message.contains('invitation has expired');
+      isStaffInviteExpired.value = message.contains('invitation has expired');
 
       CustomSnackBar.errorSnackBar(
         title: isStaffInviteExpired.value
@@ -204,7 +204,6 @@ class SignupController extends GetxController {
     selectedImage.value = null;
     imageBytes.value = null;
   }
-
 
   Future<void> signInWithGoogle() async {
     if (isGoogleLoading.value) return;

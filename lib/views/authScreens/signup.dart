@@ -15,7 +15,6 @@ import 'package:stockpulse/utils/app_constants.dart';
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/themetogglebtn.dart';
 
-
 class SignupView extends GetView<SignupController> {
   const SignupView({super.key});
 
@@ -34,17 +33,15 @@ class SignupView extends GetView<SignupController> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: AppConstants.spaceXXL,),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: const ThemeToggleButton(),
-                ),
-                const SizedBox(height: 8),
+                // SizedBox(height: AppConstants.spaceXXL,),
+                // Align(
+                //   alignment: Alignment.topRight,
+                //   child: const ThemeToggleButton(),
+                // ),
+                const SizedBox(height: AppConstants.spaceXXL),
                 _BrandHeader(controller: controller),
                 const SizedBox(height: 24),
-                _SignupCard(
-                  controller: controller,
-                ),
+                _SignupCard(controller: controller),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -162,9 +159,7 @@ class _BrandHeader extends StatelessWidget {
 }
 
 class _SignupCard extends StatelessWidget {
-  const _SignupCard({
-    required this.controller,
-  });
+  const _SignupCard({required this.controller});
 
   final SignupController controller;
 
@@ -282,15 +277,12 @@ class _SignupCard extends StatelessWidget {
                 width: 22,
                 height: 22,
                 child: Obx(
-                      () => Checkbox(
-                    value: controller.agreeToTerms,
+                  () => Checkbox(
+                    value: controller.agreeToTerms.value,
                     onChanged: controller.toggleTerms,
                     activeColor: theme.primary,
                     checkColor: Colors.white,
-                    side: BorderSide(
-                      color: theme.border,
-                      width: 1.5,
-                    ),
+                    side: BorderSide(color: theme.border, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
@@ -314,9 +306,7 @@ class _SignupCard extends StatelessWidget {
                           color: theme.primary,
                           fontWeight: FontWeight.bold,
                         ),
-                        recognizer: TapGestureRecognizer()..onTap = () {
-
-                          },
+                        recognizer: TapGestureRecognizer()..onTap = () {},
                       ),
                       const TextSpan(text: AppConstants.agreeAnd),
                       TextSpan(
@@ -341,7 +331,7 @@ class _SignupCard extends StatelessWidget {
           Obx(
             () => AppButton(
               text: AppConstants.createAccountBtn,
-              onPressed: controller.agreeToTerms
+              onPressed: controller.agreeToTerms.value
                   ? controller.signup
                   : null,
               isLoading: controller.isLoading.value,

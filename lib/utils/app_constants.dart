@@ -6,8 +6,8 @@ class AppConstants {
   ///url's
   static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
   static String? get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'];
-  static String? get googleWebClientId => dotenv.env['GOOGLE_WEB_CLIENT_ID'] ;
-  static String? get googleIosClientId => dotenv.env['GOOGLE_IOS_CLIENT_ID'] ;
+  static String? get googleWebClientId => dotenv.env['GOOGLE_WEB_CLIENT_ID'];
+  static String? get googleIosClientId => dotenv.env['GOOGLE_IOS_CLIENT_ID'];
   static const String stagAppName = 'StockPulse';
   static const String splashSlug = 'Initializing Data...';
 
@@ -16,10 +16,10 @@ class AppConstants {
   static const String appVersion = '1.0.0';
 
   static const String _baseImgPath = 'assets/images/';
-  static const String googleLogo = '${_baseImgPath}google_logo.png';
-  static const String appleLogo  = '${_baseImgPath}apple_logo.png';
-  static const String phoneLogo  = '${_baseImgPath}phone_logo.png';
-  static const String splashImage = '${_baseImgPath}splash_image.png';
+  static const String googleLogo = '${_baseImgPath}googlelogo.png';
+  static const String appleLogo = '${_baseImgPath}applelogo.png';
+  static const String phoneLogo = '${_baseImgPath}phonelogo.png';
+  static const String splashImage = '${_baseImgPath}splashImage.png';
 
   static const String onboardingImage1 =
       "https://raw.githubusercontent.com/muhxdan/Flutter-Onboarding-Screen/refs/heads/master/assets/images/image1.png";
@@ -40,8 +40,10 @@ class AppConstants {
       "Get Real-time insights And Make Data-Driven Decisions.";
   static const String onboardingDesc3 =
       "Mark your attendance and monitor your daily schedule with ease and accuracy.";
-  static const String recError = 'This password reset link is invalid or has expired. Please request a new one.';
-  static const String unableToSentLink = 'Unable to verify password reset link. Please request a new one.';
+  static const String recError =
+      'This password reset link is invalid or has expired. Please request a new one.';
+  static const String unableToSentLink =
+      'Unable to verify password reset link. Please request a new one.';
   static const String loginWelcomeTitle = 'Welcome Back';
   static const String phoneLoginTitle = 'Login Via Phone';
   static const String start = 'START';
@@ -128,17 +130,19 @@ class AppConstants {
   static const String reset = 'Reset';
   static const String categoryName = 'Category Name ';
   static const String staffName = 'Staff Email ';
-  static const String staffEmailDesc = 'Enter the email address of the staff member you want to invite.';
+  static const String staffEmailDesc =
+      'Enter the email address of the staff member you want to invite.';
   static const String staffEmailLabelHint = 'abc@gmail.com';
   static const String staffEmailHint =
-                                     'An invitation will be sent to this email.\nThe staff member will need to create \na new StockPulse account using the same email address.';
+      'An invitation will be sent to this email.\nThe staff member will need to create \na new StockPulse account using the same email address.';
   static const String requiredAsterisk = '*';
   static const String required = 'Required';
   static const String inviteExpired = 'Invitation Expired';
   static const String invalidInvitation = 'Invalid Invitation';
   static const String unableToLoad = 'Unable to load staff invitation.';
   static const String accInActive = 'Account Inactive';
-  static const String accInValidSubTitle = 'Your staff account is inactive. Please contact the shop owner.';
+  static const String accInValidSubTitle =
+      'Your staff account is inactive. Please contact the shop owner.';
 
   static const String categoryNameHint =
       'Enter a unique and descriptive category name for your catalog.';
@@ -578,8 +582,8 @@ class AppConstants {
   static const String recentPurchases = 'Recent Purchases';
 
   // =========================
-// PRINTER / BLUETOOTH
-// =========================
+  // PRINTER / BLUETOOTH
+  // =========================
 
   static const String bluetoothOff =
       'Bluetooth is turned off. Please turn on Bluetooth and try again.';
@@ -614,8 +618,8 @@ class AppConstants {
   static const String supplier = 'Supplier';
   static const String amount = 'Amount';
   static const String others = 'Others';
-  static const String salesPerformanceSubtitle = 'Track your sales performance over time';
-
+  static const String salesPerformanceSubtitle =
+      'Track your sales performance over time';
 
   static const String printerSettingsTitle = 'Printer Settings';
   static const String btnScanning = 'Scanning...';
@@ -628,7 +632,7 @@ class AppConstants {
   static const String msgPrinterConnected = 'Printer connected';
   static const String snackbarTitleConnected = 'Connected';
 
- // Receipt Labels & Text
+  // Receipt Labels & Text
   static const String receiptStoreName = 'STOCKPULSE';
   static const String receiptTitle = 'PURCHASE RECEIPT';
   static const String receiptSaleTitle = 'SALE RECEIPT';
@@ -659,7 +663,8 @@ class AppConstants {
   static const String noExpensesFound = 'No expenses found';
   static const String expenseNoteHeader = 'EXPENSE NOTE';
   static const String expenseDeleteTitle = 'Delete Expense';
-  static const String expenseDeleteSubtitle = 'Are you sure you want to delete this expense?';
+  static const String expenseDeleteSubtitle =
+      'Are you sure you want to delete this expense?';
   static const String btnDelete = 'Delete';
   static const String btnDeleteExpense = 'Delete Expense';
 
@@ -775,8 +780,7 @@ class AppConstants {
   static const String trackStockQty = 'Track Stock Quantity';
   static const String deductAutoSale = 'Deduct automatically with each sale';
   static const String activeAvailableSale = 'Active & Available for Sale';
-  static const String visibleCatalogPos =
-      'Visible in catalog and POS checkout';
+  static const String visibleCatalogPos = 'Visible in catalog and POS checkout';
   static const String backBtn = 'Back';
   static const String updateAndReview = 'Update & Review →';
   static const String saveAndReview = 'Save & Review →';
@@ -828,18 +832,21 @@ class AppConstants {
   static const String productNotFound = 'Product Not Found';
 
   static String data(dynamic value) {
-    return '$value pcs' ;
+    return '$value pcs';
   }
+
   //Enable Biometric consts
   static const String notNow = 'Not Now';
   static const String enabled = 'Enable';
   static const String contLogin = 'Continue';
   static const String manualLogin = 'Manual Login';
-  static const String enableBiometric = 'Biometric Enabled' ;
-  static const String biometricEnabled = 'Enable Biometric Login?' ;
+  static const String enableBiometric = 'Biometric Enabled';
+  static const String biometricEnabled = 'Enable Biometric Login?';
   static const String biometricAvailable = 'Biometric Login Available';
-  static const String biometricDetail = 'You can now use your fingerprint to log in.';
-  static const String enableBiometricSlug = 'Log in faster and securely with your fingerprint or face ID.';
-  static const String manualLoginDetail = 'Would you like to continue logging in with biometrics or use manual login?';
-
+  static const String biometricDetail =
+      'You can now use your fingerprint to log in.';
+  static const String enableBiometricSlug =
+      'Log in faster and securely with your fingerprint or face ID.';
+  static const String manualLoginDetail =
+      'Would you like to continue logging in with biometrics or use manual login?';
 }

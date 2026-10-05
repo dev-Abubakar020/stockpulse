@@ -36,10 +36,10 @@ class LoginScreen extends GetView<LoginController> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Top bar with optional theme toggle
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: const ThemeToggleButton(),
-                      ),
+                      // Align(
+                      //   alignment: Alignment.topRight,
+                      //   child: const ThemeToggleButton(),
+                      // ),
                       const SizedBox(height: 8),
                       const _BrandHeader(),
                       const SizedBox(height: 12),

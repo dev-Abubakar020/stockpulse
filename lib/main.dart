@@ -22,9 +22,7 @@ Future<void> main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // Initialize DotEnv
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Supabase.initialize(
     url: AppConstants.supabaseUrl,
@@ -48,16 +46,15 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   final String initialRoute;
 
-  const MyApp({
-    super.key,
-    required this.initialRoute,
-  });
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     final storage = Get.find<LocalStorageService>();
     final savedDark = storage.isDarkMode();
-    final initialThemeMode = savedDark == true ? ThemeMode.dark : ThemeMode.light;
+    final initialThemeMode = savedDark == true
+        ? ThemeMode.dark
+        : ThemeMode.light;
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,

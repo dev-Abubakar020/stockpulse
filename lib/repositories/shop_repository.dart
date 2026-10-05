@@ -21,7 +21,6 @@ class ShopRepository {
     return shop != null;
   }
 
-
   Future<Map<String, dynamic>?> getShop() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return null;
@@ -43,8 +42,7 @@ class ShopRepository {
     required String currencySymbol,
     required String currencyCode,
     XFile? image,
-  }) async
-  {
+  }) async {
     final user = _supabase.auth.currentUser;
     if (user == null) {
       throw StateError(AppConstants.mustBeSignIn);
@@ -72,17 +70,31 @@ class ShopRepository {
     }
 
     final now = DateTime.now().toUtc().toIso8601String();
-    await _supabase.from('shops').insert({
-      'auth_uid': user.id,
-      'shopename': shopName,
-      'ownerame': ownerName,
-      'phone': phone.isEmpty ? null : phone,
-      'address': address,
-      'selectedsymbole': currencySymbol,
-      'selectedcurrency': currencyCode,
-      'shopimg': imageUrl,
-      'createdat': now,
-      'updatedat': now,
+    final shop = await _supabase
+        .from('shops')
+        .insert({
+          'auth_uid': user.id,
+          'shopename': shopName,
+          'ownerame': ownerName,
+          'phone': phone.isEmpty ? null : phone,
+          'address': address,
+          'selectedsymbole': currencySymbol,
+          'selectedcurrency': currencyCode,
+          'shopimg': imageUrl,
+          'createdat': now,
+          'updatedat': now,
+        })
+        .select('id')
+        .single();
+
+    final shopId = shop['id'];
+
+    await _supabase.from('shop_members').insert({
+      'shop_id': shopId,
+      'user_id': user.id,
+      'role': 'owner',
+      'is_active': true,
+      'created_by': user.id,
     });
   }
 
@@ -123,12 +135,12 @@ class ShopRepository {
     final response = await _supabase
         .from('shops')
         .update({
-      'shopename': shopName.trim(),
-      'ownerame': ownerName.trim(),
-      'address': address.trim(),
-      'shopimg': imageUrl,
-      'updatedat': DateTime.now().toUtc().toIso8601String(),
-    })
+          'shopename': shopName.trim(),
+          'ownerame': ownerName.trim(),
+          'address': address.trim(),
+          'shopimg': imageUrl,
+          'updatedat': DateTime.now().toUtc().toIso8601String(),
+        })
         .eq('auth_uid', user.id)
         .select()
         .single();

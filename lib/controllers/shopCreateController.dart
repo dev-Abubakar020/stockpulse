@@ -8,6 +8,7 @@ import 'package:stockpulse/common/data/country_currency.dart';
 import 'package:stockpulse/common/route/app_routes.dart';
 import 'package:stockpulse/repositories/shop_repository.dart';
 import 'package:stockpulse/services/networkManager.dart';
+import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -46,9 +47,11 @@ class ShopCreateController extends GetxController {
     super.onInit();
     fetchShopDetails();
   }
-  void resetEditable(){
+
+  void resetEditable() {
     isEditable.value = false;
   }
+
   void toggleEditable() {
     isEditable.toggle();
   }
@@ -80,14 +83,18 @@ class ShopCreateController extends GetxController {
               .eq('id', user.id)
               .maybeSingle();
           if (profile != null) {
-            if (profile['name'] != null && profile['name'].toString().isNotEmpty) {
+            if (profile['name'] != null &&
+                profile['name'].toString().isNotEmpty) {
               userName.value = profile['name'].toString();
-            } else if (profile['full_name'] != null && profile['full_name'].toString().isNotEmpty) {
+            } else if (profile['full_name'] != null &&
+                profile['full_name'].toString().isNotEmpty) {
               userName.value = profile['full_name'].toString();
             }
-            if (profile['profile_img'] != null && profile['profile_img'].toString().isNotEmpty) {
+            if (profile['profile_img'] != null &&
+                profile['profile_img'].toString().isNotEmpty) {
               userProfileImageUrl.value = profile['profile_img'].toString();
-            } else if (profile['avatar_url'] != null && profile['avatar_url'].toString().isNotEmpty) {
+            } else if (profile['avatar_url'] != null &&
+                profile['avatar_url'].toString().isNotEmpty) {
               userProfileImageUrl.value = profile['avatar_url'].toString();
             }
           }
@@ -218,6 +225,9 @@ class ShopCreateController extends GetxController {
         title: AppConstants.successTitle,
         message: AppConstants.shopCreatedSuccessMsg,
       );
+      if (Get.isRegistered<RoleService>()) {
+        await Get.find<RoleService>().fetchMembership();
+      }
       Get.offAllNamed(Routes.dashboard);
     } catch (error) {
       final exception = AppException.fromException(error);
