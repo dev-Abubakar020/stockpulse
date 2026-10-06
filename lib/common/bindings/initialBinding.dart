@@ -3,6 +3,7 @@ import "package:get/get_instance/src/bindings_interface.dart";
 import "package:get/get_instance/src/extension_instance.dart";
 import "package:stockpulse/common/theme/theme_helper.dart";
 import "package:stockpulse/controllers/allProductsController.dart";
+import "package:stockpulse/controllers/home_controller.dart";
 import "package:stockpulse/repositories/auth_repository.dart";
 import "package:stockpulse/repositories/shop_repository.dart";
 import "package:stockpulse/services/role_service.dart";
@@ -21,9 +22,20 @@ class InitialBinding extends Bindings {
     if (!Get.isRegistered<RoleService>()) {
       Get.put(RoleService(), permanent: true);
     }
-    Get.lazyPut<ShopRepository>(() => ShopRepository(), fenix: true);
-    Get.lazyPut(() => DashboardController(), fenix: true);
+
     Get.put<ThemeController>(ThemeController(), permanent: true);
+    Get.put<ThermalPrinterService>(ThermalPrinterService(), permanent: true);
+
+    // Repositories
+    Get.lazyPut<ShopRepository>(() => ShopRepository(), fenix: true);
+    Get.lazyPut<ProductRepository>(() => ProductRepository(), fenix: true);
+
+    // Controllers
+    Get.lazyPut<ProductController>(
+      () => ProductController(Get.find<ProductRepository>()),
+      fenix: true,
+    );
+
     Get.lazyPut<ShopCreateController>(
       () => ShopCreateController(
         Get.find<ShopRepository>(),
@@ -31,11 +43,8 @@ class InitialBinding extends Bindings {
       ),
       fenix: true,
     );
-    Get.lazyPut<ProductRepository>(() => ProductRepository());
-    Get.lazyPut<ProductController>(
-      () => ProductController(Get.find<ProductRepository>()),
-    );
 
-    Get.put(ThermalPrinterService(), permanent: true);
+    Get.lazyPut<DashboardController>(() => DashboardController(), fenix: true);
+    Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
   }
 }

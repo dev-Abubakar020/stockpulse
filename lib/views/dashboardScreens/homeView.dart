@@ -12,6 +12,7 @@ import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import '../../common/widgets/StandardScreen.dart';
 import '../../common/widgets/appbar.dart';
 import '../../common/widgets/premiumdial.dart';
@@ -22,9 +23,11 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-
     final theme = context.appTheme;
-    final double nameFontSize = controller.userName.length > AppConstants.spaceLG ? AppConstants.spaceMLG : AppConstants.spaceLXL;
+    final double nameFontSize =
+        controller.userName.length > AppConstants.spaceLG
+        ? AppConstants.spaceMLG
+        : AppConstants.spaceLXL;
     if (!Get.isRegistered<HomeController>()) {
       return const SizedBox.shrink();
     }
@@ -401,7 +404,9 @@ class HomeView extends GetView<HomeController> {
                                   return Container(
                                     height: AppConstants.reportChartHeight,
                                     decoration: BoxDecoration(
-                                      color: Colors.grey.withValues(alpha: 0.47),
+                                      color: Colors.grey.withValues(
+                                        alpha: 0.47,
+                                      ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   );
@@ -432,7 +437,7 @@ class HomeView extends GetView<HomeController> {
                               title: AppConstants.topSellingProducts,
                               actionText: AppConstants.seeAll,
                               onPressed: () {
-                                Get.find<DashboardController>().changePage(2);
+                                Get.find<DashboardController>().changePage(1);
                               },
                             ),
                             const SizedBox(height: 12),
@@ -762,10 +767,7 @@ class _HomeSalesChart extends StatelessWidget {
   final HomeController controller;
   final dynamic theme;
 
-  const _HomeSalesChart({
-    required this.controller,
-    required this.theme,
-  });
+  const _HomeSalesChart({required this.controller, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -833,8 +835,12 @@ class _HomeSalesChart extends StatelessWidget {
           ),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -845,7 +851,10 @@ class _HomeSalesChart extends StatelessWidget {
                     meta: meta,
                     child: Text(
                       _formatAmount(value),
-                      style: GoogleFonts.plusJakartaSans(fontSize: 9, color: theme.textHint),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 9,
+                        color: theme.textHint,
+                      ),
                     ),
                   );
                 },
@@ -863,23 +872,35 @@ class _HomeSalesChart extends StatelessWidget {
                       meta: meta,
                       child: Text(
                         _formatDate(data.first.date),
-                        style: GoogleFonts.plusJakartaSans(fontSize: 9, fontWeight: FontWeight.w500, color: theme.textHint),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w500,
+                          color: theme.textHint,
+                        ),
                       ),
                     );
                   }
 
                   final index = value.toInt();
-                  if (index < 0 || index >= data.length) return const SizedBox.shrink();
+                  if (index < 0 || index >= data.length)
+                    return const SizedBox.shrink();
                   final isLastIndex = index == data.length - 1;
 
-                  if (filter == 'today' || filter == 'yesterday' || filter == 'week') {
+                  if (filter == 'today' ||
+                      filter == 'yesterday' ||
+                      filter == 'week') {
                     return SideTitleWidget(
                       meta: meta,
                       child: Padding(
-                        padding: EdgeInsets.only(right: isLastIndex ? 24.0 : 0.0),
+                        padding: EdgeInsets.only(
+                          right: isLastIndex ? 24.0 : 0.0,
+                        ),
                         child: Text(
                           _formatDate(data[index].date),
-                          style: GoogleFonts.plusJakartaSans(fontSize: 9, color: theme.textHint),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 9,
+                            color: theme.textHint,
+                          ),
                         ),
                       ),
                     );
@@ -889,10 +910,16 @@ class _HomeSalesChart extends StatelessWidget {
                     return SideTitleWidget(
                       meta: meta,
                       child: Padding(
-                        padding: EdgeInsets.only(right: isLastIndex ? 24.0 : 0.0),
+                        padding: EdgeInsets.only(
+                          right: isLastIndex ? 24.0 : 0.0,
+                        ),
                         child: Text(
                           _month(data[index].date.month),
-                          style: GoogleFonts.plusJakartaSans(fontSize: 9, fontWeight: FontWeight.w500, color: theme.textHint),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w500,
+                            color: theme.textHint,
+                          ),
                         ),
                       ),
                     );
@@ -913,11 +940,18 @@ class _HomeSalesChart extends StatelessWidget {
                   final item = data[index];
                   return LineTooltipItem(
                     '${_formatDate(item.date)}\n',
-                    GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white70),
+                    GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      color: Colors.white70,
+                    ),
                     children: [
                       TextSpan(
                         text: 'Rs ${_formatAmount(item.salesAmount)}',
-                        style: GoogleFonts.sora(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
+                        style: GoogleFonts.sora(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   );
@@ -944,7 +978,20 @@ class _HomeSalesChart extends StatelessWidget {
   }
 
   String _month(int month) {
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[month - 1];
   }
 
@@ -960,22 +1007,35 @@ class _HomeSalesChart extends StatelessWidget {
   }
 
   double _niceMax(double value) {
-    if (value <= 0)      return 100;
-    if (value <= 100)    return (value / 20).ceil() * 20.0;
-    if (value <= 1000)   return (value / 100).ceil() * 100.0;
-    if (value <= 10000)  return (value / 1000).ceil() * 1000.0;
+    if (value <= 0) return 100;
+    if (value <= 100) return (value / 20).ceil() * 20.0;
+    if (value <= 1000) return (value / 100).ceil() * 100.0;
+    if (value <= 10000) return (value / 1000).ceil() * 1000.0;
     if (value <= 100000) return (value / 10000).ceil() * 10000.0;
     return (value / 100000).ceil() * 100000.0;
   }
 
   String _formatDate(DateTime date) {
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${date.day}-${months[date.month - 1]}';
   }
 
   String _formatAmount(double value) {
     if (value >= 1000000) return '${(value / 1000000).toStringAsFixed(1)}M';
-    if (value >= 1000)    return '${(value / 1000).toStringAsFixed(1)}K';
+    if (value >= 1000) return '${(value / 1000).toStringAsFixed(1)}K';
     return value.toStringAsFixed(0);
   }
 }
@@ -988,7 +1048,11 @@ class _TimeSlot {
   final String label;
   final int startHour;
   final int endHour;
-  const _TimeSlot({required this.label, required this.startHour, required this.endHour});
+  const _TimeSlot({
+    required this.label,
+    required this.startHour,
+    required this.endHour,
+  });
 }
 
 class _SingleDayChart extends StatefulWidget {
@@ -1012,12 +1076,12 @@ class _SingleDayChart extends StatefulWidget {
 
 class _SingleDayChartState extends State<_SingleDayChart> {
   static const _slots = [
-    _TimeSlot(label: '12 AM', startHour: 0,  endHour: 4),
-    _TimeSlot(label: '4 AM',  startHour: 4,  endHour: 8),
-    _TimeSlot(label: '8 AM',  startHour: 8,  endHour: 12),
+    _TimeSlot(label: '12 AM', startHour: 0, endHour: 4),
+    _TimeSlot(label: '4 AM', startHour: 4, endHour: 8),
+    _TimeSlot(label: '8 AM', startHour: 8, endHour: 12),
     _TimeSlot(label: '12 PM', startHour: 12, endHour: 16),
-    _TimeSlot(label: '4 PM',  startHour: 16, endHour: 20),
-    _TimeSlot(label: '8 PM',  startHour: 20, endHour: 24),
+    _TimeSlot(label: '4 PM', startHour: 16, endHour: 20),
+    _TimeSlot(label: '8 PM', startHour: 20, endHour: 24),
   ];
 
   int? _touchedIndex;
@@ -1038,7 +1102,7 @@ class _SingleDayChartState extends State<_SingleDayChart> {
 
   String _fmt(double v) {
     if (v >= 1000000) return '${(v / 1000000).toStringAsFixed(1)}M';
-    if (v >= 1000)    return '${(v / 1000).toStringAsFixed(1)}K';
+    if (v >= 1000) return '${(v / 1000).toStringAsFixed(1)}K';
     return v.toStringAsFixed(0);
   }
 
@@ -1062,16 +1126,26 @@ class _SingleDayChartState extends State<_SingleDayChart> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.bar_chart_rounded, size: 48, color: (theme.textHint as Color).withValues(alpha: 0.4)),
+            Icon(
+              Icons.bar_chart_rounded,
+              size: 48,
+              color: (theme.textHint as Color).withValues(alpha: 0.4),
+            ),
             const SizedBox(height: 12),
             Text(
               'No sales recorded for ${widget.filter == 'today' ? 'today' : 'yesterday'}',
-              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: theme.textSecondary),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                color: theme.textSecondary,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               'Sales will appear here once recorded',
-              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textHint),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                color: theme.textHint,
+              ),
             ),
           ],
         );
@@ -1087,12 +1161,14 @@ class _SingleDayChartState extends State<_SingleDayChart> {
             BarChartRodData(
               toY: slotAmounts[i],
               width: 22,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(6),
+              ),
               color: isTouched
                   ? barColor
                   : isPeak
-                      ? barColor.withValues(alpha: 0.9)
-                      : barColor.withValues(alpha: 0.45),
+                  ? barColor.withValues(alpha: 0.9)
+                  : barColor.withValues(alpha: 0.45),
               backDrawRodData: BackgroundBarChartRodData(
                 show: true,
                 toY: maxSlot > 0 ? maxSlot : 100,
@@ -1103,8 +1179,12 @@ class _SingleDayChartState extends State<_SingleDayChart> {
         );
       });
 
-      final touchedSlotLabel = _touchedIndex != null ? _slots[_touchedIndex!].label : null;
-      final touchedAmount = _touchedIndex != null ? slotAmounts[_touchedIndex!] : null;
+      final touchedSlotLabel = _touchedIndex != null
+          ? _slots[_touchedIndex!].label
+          : null;
+      final touchedAmount = _touchedIndex != null
+          ? slotAmounts[_touchedIndex!]
+          : null;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1115,19 +1195,34 @@ class _SingleDayChartState extends State<_SingleDayChart> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Total Sales', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textHint)),
+                  Text(
+                    'Total Sales',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      color: theme.textHint,
+                    ),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     'Rs. ${_fmt(widget.totalAmount)}',
-                    style: GoogleFonts.sora(fontSize: 22, fontWeight: FontWeight.w700, color: theme.textPrimary),
+                    style: GoogleFonts.sora(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: theme.textPrimary,
+                    ),
                   ),
                 ],
               ),
               const Spacer(),
-              if (touchedSlotLabel != null && touchedAmount != null && touchedAmount > 0)
+              if (touchedSlotLabel != null &&
+                  touchedAmount != null &&
+                  touchedAmount > 0)
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: barColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
@@ -1136,20 +1231,50 @@ class _SingleDayChartState extends State<_SingleDayChart> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(touchedSlotLabel, style: GoogleFonts.plusJakartaSans(fontSize: 10, color: theme.textSecondary)),
-                      Text('Rs. ${_fmt(touchedAmount)}', style: GoogleFonts.sora(fontSize: 13, fontWeight: FontWeight.w700, color: barColor)),
+                      Text(
+                        touchedSlotLabel,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          color: theme.textSecondary,
+                        ),
+                      ),
+                      Text(
+                        'Rs. ${_fmt(touchedAmount)}',
+                        style: GoogleFonts.sora(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: barColor,
+                        ),
+                      ),
                     ],
                   ),
                 )
               else if (slotAmounts[peakIndex] > 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(color: barColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: barColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Row(
                     children: [
-                      Icon(Icons.trending_up_rounded, size: 13, color: barColor),
+                      Icon(
+                        Icons.trending_up_rounded,
+                        size: 13,
+                        color: barColor,
+                      ),
                       const SizedBox(width: 4),
-                      Text('Peak: ${_slots[peakIndex].label}', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600, color: barColor)),
+                      Text(
+                        'Peak: ${_slots[peakIndex].label}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: barColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1170,13 +1295,20 @@ class _SingleDayChartState extends State<_SingleDayChart> {
                       if (amount <= 0) return null;
                       return BarTooltipItem(
                         'Rs ${_fmt(amount)}',
-                        GoogleFonts.sora(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
+                        GoogleFonts.sora(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       );
                     },
                   ),
                   touchCallback: (event, response) {
                     setState(() {
-                      if (response == null || response.spot == null || event is FlTapUpEvent || event is FlPanEndEvent) {
+                      if (response == null ||
+                          response.spot == null ||
+                          event is FlTapUpEvent ||
+                          event is FlPanEndEvent) {
                         _touchedIndex = null;
                       } else {
                         _touchedIndex = response.spot!.touchedBarGroupIndex;
@@ -1185,8 +1317,12 @@ class _SingleDayChartState extends State<_SingleDayChart> {
                   },
                 ),
                 titlesData: FlTitlesData(
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -1195,7 +1331,13 @@ class _SingleDayChartState extends State<_SingleDayChart> {
                         if (value == 0) return const SizedBox.shrink();
                         return SideTitleWidget(
                           meta: meta,
-                          child: Text(_fmt(value), style: GoogleFonts.plusJakartaSans(fontSize: 9, color: theme.textHint)),
+                          child: Text(
+                            _fmt(value),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 9,
+                              color: theme.textHint,
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -1206,15 +1348,20 @@ class _SingleDayChartState extends State<_SingleDayChart> {
                       reservedSize: 26,
                       getTitlesWidget: (value, meta) {
                         final i = value.toInt();
-                        if (i < 0 || i >= _slots.length) return const SizedBox.shrink();
+                        if (i < 0 || i >= _slots.length)
+                          return const SizedBox.shrink();
                         return SideTitleWidget(
                           meta: meta,
                           child: Text(
                             _slots[i].label,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 8,
-                              color: i == _touchedIndex ? barColor : theme.textHint,
-                              fontWeight: i == _touchedIndex ? FontWeight.w700 : FontWeight.normal,
+                              color: i == _touchedIndex
+                                  ? barColor
+                                  : theme.textHint,
+                              fontWeight: i == _touchedIndex
+                                  ? FontWeight.w700
+                                  : FontWeight.normal,
                             ),
                           ),
                         );
@@ -1243,10 +1390,18 @@ class _SingleDayChartState extends State<_SingleDayChart> {
 
           Row(
             children: [
-              _StatChip(icon: Icons.receipt_long_rounded, label: '${sales.length} sale${sales.length == 1 ? '' : 's'}', theme: theme),
+              _StatChip(
+                icon: Icons.receipt_long_rounded,
+                label: '${sales.length} sale${sales.length == 1 ? '' : 's'}',
+                theme: theme,
+              ),
               const SizedBox(width: 8),
               if (sales.isNotEmpty)
-                _StatChip(icon: Icons.calculate_outlined, label: 'Avg Rs. ${_fmt(widget.totalAmount / sales.length)}', theme: theme),
+                _StatChip(
+                  icon: Icons.calculate_outlined,
+                  label: 'Avg Rs. ${_fmt(widget.totalAmount / sales.length)}',
+                  theme: theme,
+                ),
             ],
           ),
         ],
@@ -1260,7 +1415,11 @@ class _StatChip extends StatelessWidget {
   final String label;
   final dynamic theme;
 
-  const _StatChip({required this.icon, required this.label, required this.theme});
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1275,7 +1434,13 @@ class _StatChip extends StatelessWidget {
         children: [
           Icon(icon, size: 12, color: theme.textSecondary),
           const SizedBox(width: 5),
-          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: theme.textSecondary)),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              color: theme.textSecondary,
+            ),
+          ),
         ],
       ),
     );
