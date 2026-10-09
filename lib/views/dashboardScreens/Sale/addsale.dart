@@ -149,12 +149,7 @@ class AddSale extends GetView<SaleController> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) {
-        final products = controller.products
-            .where((product) => product.isActive)
-            .toList();
-
         return _SaleProductPickerSheet(
-          products: products,
           onSelected: (product) {
             controller.addProduct(product);
           },
@@ -1464,21 +1459,24 @@ class _QuantityFieldState extends State<_QuantityField> {
 }
 
 class _SaleProductPickerSheet extends StatelessWidget {
-  final List<ProductItemModel> products;
   final ValueChanged<ProductItemModel> onSelected;
   final RxString _query = ''.obs;
 
   _SaleProductPickerSheet({
-    required this.products,
     required this.onSelected,
   });
 
   List<ProductItemModel> get _filteredProducts {
     final query = _query.value.trim().toLowerCase();
+    final saleController = Get.find<SaleController>();
+    final activeProducts = saleController.products
+        .where((product) => product.isActive)
+        .toList();
+
     if (query.isEmpty) {
-      return products;
+      return activeProducts;
     }
-    return products.where((product) {
+    return activeProducts.where((product) {
       final article = product.article.toLowerCase();
       final barcode = (product.barcode ?? '').toLowerCase();
       final color = (product.color ?? '').toLowerCase();
@@ -1526,7 +1524,24 @@ class _SaleProductPickerSheet extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => Get.toNamed(Routes.addProductWizard),
+                    onTap: () async {
+                      final saleController = Get.find<SaleController>();
+                      final previousProductIds =
+                          saleController.products.map((p) => p.id).toSet();
+
+                      await Get.toNamed(Routes.addProductWizard);
+
+                      final newProduct = saleController.products.firstWhereOrNull(
+                        (p) => p.isActive && !previousProductIds.contains(p.id),
+                      );
+
+                      if (newProduct != null) {
+                        onSelected(newProduct);
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      }
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
