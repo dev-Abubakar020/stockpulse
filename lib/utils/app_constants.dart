@@ -50,6 +50,7 @@ class AppConstants {
   static const String skip = 'SKIP';
   static const String next = 'NEXT';
   static const String signupTitle = 'Create Account';
+  static const String createShop = 'Create Shop';
   static const String saleTitle = 'Sale';
   static const String saleSummary = 'Sale Summary';
   static const String newSale = 'New Sale';

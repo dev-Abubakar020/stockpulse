@@ -252,20 +252,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 color: isCurrent
                                     ? theme.primary
                                     : (isFilled
-                                          ? theme.primary.withValues(alpha: 0.7)
-                                          : theme.border),
+                                    ? theme.primary.withValues(alpha: 0.7)
+                                    : theme.border),
                                 width: isCurrent ? 2 : 1,
                               ),
                               boxShadow: isCurrent
                                   ? [
-                                      BoxShadow(
-                                        color: theme.primary.withValues(
-                                          alpha: 0.25,
-                                        ),
-                                        blurRadius: 10,
-                                        spreadRadius: 1,
-                                      ),
-                                    ]
+                                BoxShadow(
+                                  color: theme.primary.withValues(
+                                    alpha: 0.25,
+                                  ),
+                                  blurRadius: 10,
+                                  spreadRadius: 1,
+                                ),
+                              ]
                                   : null,
                             ),
                             alignment: Alignment.center,
@@ -329,7 +329,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
                       // Verify button
                       Obx(
-                        () => AppButton(
+                            () => AppButton(
                           text: AppConstants.verifyAndProceedBtn,
                           onPressed: verifyCode,
                           isLoading: controller is ForgotPasswordController

@@ -39,6 +39,7 @@ class ShopCreateController extends GetxController {
   final selectedImage = Rxn<XFile>();
   final imageBytes = Rxn<Uint8List>();
   final isSaving = false.obs;
+  final isGoogleUser = false.obs;
 
   CurrencyInfo get currency => getCurrency(selectedCountry.value.isoCode);
 
@@ -67,6 +68,18 @@ class ShopCreateController extends GetxController {
 
         userName.value = profile?.fullName ?? '';
         userProfileImageUrl.value = profile?.profileImg ?? '';
+
+        final provider = user.appMetadata['provider']?.toString() ?? '';
+        final providers = user.appMetadata['providers'] as List?;
+        final isGoogle = provider == 'google' ||
+            (providers != null && providers.contains('google')) ||
+            (user.identities?.any((i) => i.provider == 'google') ?? false);
+
+        isGoogleUser.value = isGoogle;
+
+        if (profile?.phone != null && profile!.phone!.isNotEmpty) {
+          phoneController.text = profile.phone!;
+        }
       }
 
       final shop = await shopRepository.getShop();
@@ -172,6 +185,16 @@ class ShopCreateController extends GetxController {
 
     try {
       isSaving.value = true;
+      if (isGoogleUser.value && phone.isNotEmpty) {
+        final user = authRepository.currentUser;
+        if (user != null) {
+          await authRepository.syncProfileToDatabase(
+            userId: user.id,
+            name: ownerName,
+            phone: phone,
+          );
+        }
+      }
       await shopRepository.createShop(
         ownerName: ownerName,
         shopName: shopName,

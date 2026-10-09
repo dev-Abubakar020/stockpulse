@@ -25,7 +25,7 @@ class CreateShop extends GetView<ShopCreateController> {
       appBar: CustomAppBar(
         showBackArrow: true,
         title: Text(
-          AppConstants.report,
+          AppConstants.createShop,
           style: GoogleFonts.sora(fontWeight: FontWeight.w700),
         ),
         actions: [
@@ -83,16 +83,25 @@ class CreateShop extends GetView<ShopCreateController> {
                           color: theme.primary,
                         ),
                       ),
-                      const SizedBox(height: 14),
-                      CustomTextField(
-                        controller: controller.phoneController,
-                        labelText: AppConstants.phoneOptional,
-                        hintText: AppConstants.enterPhoneNumber,
-                        prefixIcon: Icon(
-                          Icons.phone_outlined,
-                          color: theme.primary,
-                        ),
-                        keyboardType: TextInputType.phone,
+                      Obx(
+                        () => controller.isGoogleUser.value
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: 14),
+                                  CustomTextField(
+                                    controller: controller.phoneController,
+                                    labelText: AppConstants.phoneOptional,
+                                    hintText: AppConstants.enterPhoneNumber,
+                                    prefixIcon: Icon(
+                                      Icons.phone_outlined,
+                                      color: theme.primary,
+                                    ),
+                                    keyboardType: TextInputType.phone,
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
                       ),
                       const SizedBox(height: 14),
                       CustomTextField(

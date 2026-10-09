@@ -119,7 +119,7 @@ class PhoneDetailScreen extends GetView<LoginController> {
 
                     // Phone input with country code picker
                     Obx(
-                      () => Row(
+                          () => Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
@@ -131,7 +131,7 @@ class PhoneDetailScreen extends GetView<LoginController> {
                               border: Border.all(color: theme.border, width: 1),
                             ),
                             child: Obx(
-                              () => DropdownButton<CountryModel>(
+                                  () => DropdownButton<CountryModel>(
                                 value: controller.selectedCountry.value,
                                 dropdownColor: theme.card,
                                 isExpanded: true,
@@ -193,7 +193,7 @@ class PhoneDetailScreen extends GetView<LoginController> {
                     const SizedBox(height: 22),
 
                     Obx(
-                      () => AppButton(
+                          () => AppButton(
                         text: AppConstants.sendVerificationCode,
                         onPressed: controller.sendPhoneOtp,
                         isLoading: controller.isPhoneLoading.value,
