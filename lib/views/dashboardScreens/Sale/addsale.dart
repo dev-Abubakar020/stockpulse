@@ -13,7 +13,6 @@ import 'package:stockpulse/utils/app_constants.dart';
 import '../../../common/route/app_routes.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_snackbar.dart';
-import '../../../controllers/dashboardController.dart';
 import '../../../controllers/sale_controller.dart';
 import '../../../models/productItemModel.dart';
 import '../../../models/sale_model.dart';
