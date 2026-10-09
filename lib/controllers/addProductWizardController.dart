@@ -60,8 +60,8 @@ class AddProductWizardController extends GetxController {
   final salePriceController = TextEditingController();
   final RxDouble estimatedProfit = 0.0.obs;
   final RxDouble marginPercentage = 0.0.obs;
-  final initialStockController = TextEditingController(text: '24');
-  final lowStockController = TextEditingController(text: '5');
+  final initialStockController = TextEditingController(text: '0');
+  final lowStockController = TextEditingController(text: '0');
   final RxBool trackStock = true.obs;
   final RxBool activeForSale = true.obs;
 

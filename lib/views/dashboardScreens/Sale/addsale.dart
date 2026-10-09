@@ -10,10 +10,16 @@ import 'package:stockpulse/common/widgets/custome_textbutton.dart';
 import 'package:stockpulse/services/role_service.dart';
 import 'package:stockpulse/utils/app_colors.dart';
 import 'package:stockpulse/utils/app_constants.dart';
+import '../../../common/route/app_routes.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/custom_snackbar.dart';
+import '../../../controllers/dashboardController.dart';
 import '../../../controllers/sale_controller.dart';
 import '../../../models/productItemModel.dart';
+import '../../../models/sale_model.dart';
+import '../../../services/initialpdfview.dart';
+import '../../../services/sale_pdf_service.dart';
+import '../../receipts/thermal_sale_receipt.dart';
 import 'barcodescanner.dart';
 
 class AddSale extends GetView<SaleController> {
@@ -68,7 +74,7 @@ class AddSale extends GetView<SaleController> {
     if (step == 2) {
       return CustomAppBar(
         leadingIcon: Icons.close_rounded,
-        leadingOnPressed: () => Navigator.of(context).pop(),
+        leadingOnPressed: () => controller.viewSale(),
       );
     }
 
@@ -496,7 +502,10 @@ class AddSale extends GetView<SaleController> {
 
   Widget _buildStep4Success(BuildContext context) {
     final isDark = context.isDark;
+    final theme = context.appTheme;
     final createdId = controller.createdSaleId.value;
+    final SaleModel? sale = controller.createdSale.value ??
+        (Get.arguments is SaleModel ? Get.arguments as SaleModel : null);
 
     return Center(
       child: SingleChildScrollView(
@@ -579,9 +588,7 @@ class AddSale extends GetView<SaleController> {
             const SizedBox(height: 32),
             AppButton(
               text: AppConstants.viewSales,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: controller.viewSale,
               backgroundColor: primaryGreen,
             ),
             const SizedBox(height: 12),
@@ -593,6 +600,67 @@ class AddSale extends GetView<SaleController> {
                   : const Color(0xFFF3F4F6),
               foregroundColor: isDark ? Colors.white : textDark,
             ),
+            if (sale != null) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      Get.to(
+                        () => PrintPreviewScreen(
+                          documentName: sale.saleNo,
+                          buildPdf: (format) {
+                            return SalePdfService.generateSale(
+                              format: format,
+                              sale: sale,
+                              items: controller.currentSaleItems,
+                              creatorName: controller.creatorName.value,
+                            );
+                          },
+                          thermalWidget: ThermalSaleReceipt(
+                            sale: sale,
+                            items: controller.currentSaleItems,
+                            creatorName: controller.creatorName.value,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: theme.primary.withValues(alpha: 0.20),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: theme.primary.withValues(alpha: 0.20),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.picture_as_pdf_outlined,
+                            size: 20,
+                            color: theme.primary.withValues(alpha: 0.8),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            AppConstants.viewAsPdf,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: theme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -1455,6 +1523,38 @@ class _SaleProductPickerSheet extends StatelessWidget {
                       style: GoogleFonts.sora(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Get.toNamed(Routes.addProductWizard),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            AppConstants.add,
+                            style: GoogleFonts.sora(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

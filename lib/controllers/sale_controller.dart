@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:stockpulse/controllers/home_controller.dart';
 
 import '../common/exceptional/platform_exceptions.dart';
+import '../common/route/app_routes.dart';
 import '../common/widgets/custom_snackbar.dart';
 import '../models/productItemModel.dart';
 import '../models/sale_item_model.dart';
@@ -12,6 +13,7 @@ import '../repositories/sale_repository.dart';
 import '../services/networkManager.dart';
 import '../utils/app_constants.dart';
 import 'allProductsController.dart';
+import 'dashboardController.dart';
 
 class SaleController extends GetxController {
   final SaleRepository repository;
@@ -27,19 +29,37 @@ class SaleController extends GetxController {
 
   final RxInt currentStep = 0.obs;
   final RxnString createdSaleId = RxnString();
+  final Rxn<SaleModel> createdSale = Rxn<SaleModel>();
 
   void handleBack(BuildContext context) {
     if (currentStep.value > 0 && currentStep.value < 2) {
       currentStep.value--;
+    } else if (currentStep.value == 2) {
+      viewSale();
     } else {
       Navigator.of(context).pop();
     }
   }
 
+  void viewSale() {
+    resetSale();
+    if (Get.isRegistered<DashboardController>()) {
+      Get.find<DashboardController>().changePage(1);
+    }
+    if (Get.key.currentState?.canPop() ?? false) {
+      Get.back();
+    } else {
+      Get.offAllNamed(Routes.dashboard);
+    }
+  }
+
   void resetSale() {
     clearCart();
+    currentSaleItems.clear();
+    creatorName.value = '';
     currentStep.value = 0;
     createdSaleId.value = null;
+    createdSale.value = null;
   }
 
   Future<void> completeSale(BuildContext context) async {
@@ -54,6 +74,12 @@ class SaleController extends GetxController {
 
     debugPrint('SALE SUCCESS: $saleId');
     createdSaleId.value = saleId;
+    final sale = sales.firstWhereOrNull((s) => s.id == saleId);
+    createdSale.value = sale;
+    if (saleId.isNotEmpty) {
+      await fetchSaleItems(saleId);
+      await fetchCreatorName(saleId, createdByUserId: sale?.createdBy);
+    }
     currentStep.value = 2;
   }
 
