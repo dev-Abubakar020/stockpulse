@@ -1169,25 +1169,25 @@ class AddProductWizardView extends GetView<AddProductWizardController> {
                         const SizedBox(width: 8),
 
                         // Print Button
-                        Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: theme.primary.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: theme.primary.withValues(alpha: 0.20),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.print_outlined,
-                              size: 20,
-                              color: theme.primary,
-                            ),
-                          ),
-                        ),
+                        // Material(
+                        //   color: Colors.transparent,
+                        //   child: Container(
+                        //     width: 42,
+                        //     height: 42,
+                        //     decoration: BoxDecoration(
+                        //       color: theme.primary.withValues(alpha: 0.10),
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       border: Border.all(
+                        //         color: theme.primary.withValues(alpha: 0.20),
+                        //       ),
+                        //     ),
+                        //     child: Icon(
+                        //       Icons.print_outlined,
+                        //       size: 20,
+                        //       color: theme.primary,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 16),
