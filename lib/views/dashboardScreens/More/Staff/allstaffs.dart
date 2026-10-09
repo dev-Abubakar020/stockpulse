@@ -65,10 +65,28 @@ class AllStaffView extends GetView<StaffController> {
               final staffList = controller.filteredStaff;
 
               if (staffList.isEmpty) {
-                return const Center(
-                  child: Text(
-                    AppConstants.noStaffFound,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                return RefreshIndicator(
+                  onRefresh: controller.fetchStaff,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: constraints.maxHeight,
+                            child: const Center(
+                              child: Text(
+                                AppConstants.noStaffFound,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 );
               }
